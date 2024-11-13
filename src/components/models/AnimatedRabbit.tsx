@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import React, { useEffect, useState } from 'react';
-import { useFrame, useGraph } from '@react-three/fiber';
+import React, { useEffect } from 'react';
+import { useGraph } from '@react-three/fiber';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { GLTF, SkeletonUtils } from 'three-stdlib';
 
-type ActionName =
+export type RabbitActionName =
   | 'CharacterArmature|Death'
   | 'CharacterArmature|Duck'
   | 'CharacterArmature|HitReact'
@@ -25,7 +25,7 @@ type ActionName =
   | 'CharacterArmature|Yes';
 
 interface GLTFAction extends THREE.AnimationClip {
-  name: ActionName;
+  name: RabbitActionName;
 }
 
 type GLTFResult = GLTF & {
@@ -54,12 +54,23 @@ type GLTFResult = GLTF & {
   animations: GLTFAction[];
 };
 
-export function AnimatedRabbit(props: JSX.IntrinsicElements['group']) {
+type AnimatedRabbitProps = {
+  animation: RabbitActionName;
+} & JSX.IntrinsicElements['group'];
+
+export function AnimatedRabbit({ animation, ...props }: AnimatedRabbitProps) {
   const group = React.useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF('/models/AnimatedRabbit.glb');
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
+
+  useEffect(() => {
+    actions[animation]?.reset().fadeIn(0.5).play();
+    return () => {
+      actions[animation]?.fadeOut(0.5);
+    };
+  }, [animation]);
 
   return (
     <group ref={group} {...props} dispose={null}>
