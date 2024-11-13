@@ -21,7 +21,7 @@ function App() {
       >
         <color attach="background" args={['skyblue']} />
         <Scene />
-        <OrbitControls />
+        {/* <OrbitControls /> */}
       </Canvas>
     </KeyboardControls>
   );
