@@ -1,3 +1,4 @@
+import { RigidBody } from '@react-three/rapier';
 import React from 'react';
 
 export const PLATFORM_WIDTH = 200;
@@ -7,12 +8,12 @@ export const PLATFORM_COLOR = 'plum';
 
 const GroundMap: React.FC = () => {
   return (
-    <group>
+    <RigidBody type="fixed" colliders="hull">
       <mesh rotation-x={-Math.PI / 2} position-y={-0.001}>
         <planeGeometry args={[PLATFORM_WIDTH, PLATFORM_HEIGHT]} />
         <meshStandardMaterial color={PLATFORM_COLOR} />
       </mesh>
-    </group>
+    </RigidBody>
   );
 };
 

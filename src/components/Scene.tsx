@@ -8,7 +8,7 @@ export default function Scene() {
     <>
       <Environment preset="sunset" />
       <ambientLight intensity={0.3} />
-      <Physics>
+      <Physics debug>
         <GroundMap />
         <RabbitController />
       </Physics>
