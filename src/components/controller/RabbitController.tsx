@@ -11,6 +11,7 @@ import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
 import { Tail } from '../models/Tail';
+import TailEffect from '../effect/TailEffect';
 
 interface RabbitControllerProps {
   hasTail?: boolean;
@@ -167,8 +168,9 @@ const RabbitController = ({ hasTail = false }: RabbitControllerProps): JSX.Eleme
         <group ref={character}>
           <AnimatedRabbit animation={animation} />
           {hasTail && (
-            <group position={[0, 0.3, -0.2]} scale={[3,3,3]}>
-              <Tail />
+            <group position={[0, 0.3, -0.2]}>
+              <Tail scale={[3, 3, 3]} />
+              <TailEffect />
             </group>
           )}
         </group>
