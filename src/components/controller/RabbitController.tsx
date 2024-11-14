@@ -3,24 +3,33 @@ import {
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
 import { useControls } from 'leva';
 import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
 import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
-import { useKeyboardControls } from '@react-three/drei';
+import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
 
 const RabbitController = () => {
-  const { SPEED, ROTATION_SPEED } = useControls('Rabbit Control', {
-    SPEED: { value: 1.6, min: 0.2, max: 12, step: 0.1 },
-    ROTATION_SPEED: {
-      value: degToRad(0.5),
-      min: degToRad(0.1),
-      max: degToRad(5),
-      step: degToRad(0.1),
-    },
-  });
+  const { SPEED, ROTATION_SPEED, MOUSE_SPEED } = useControls(
+    '스피드 컨트롤러🐰',
+    {
+      SPEED: { value: 1.6, min: 0.2, max: 12, step: 0.1 },
+      ROTATION_SPEED: {
+        value: degToRad(0.5),
+        min: degToRad(0.1),
+        max: degToRad(5),
+        step: degToRad(0.1),
+      },
+      MOUSE_SPEED: {
+        value: 0.002,
+        min: 0.001,
+        max: 0.01,
+        step: 0.001,
+      },
+    }
+  );
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle'
   );
@@ -28,6 +37,7 @@ const RabbitController = () => {
   const container = useRef<Group>();
   const character = useRef<Group>();
 
+  const mouseControlRef = useRef<any>();
   const characterRotationTarget = useRef(0);
   const rotationTarget = useRef(0); // 실제
   const cameraTarget = useRef<Group>();
@@ -38,6 +48,26 @@ const RabbitController = () => {
 
   const [, get] = useKeyboardControls();
 
+  // Mouse Control 부분
+  useEffect(() => {
+    const handleClick = () => {
+      if (mouseControlRef.current && !mouseControlRef.current.isLocked)
+        mouseControlRef.current.lock();
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, []);
+
+  useEffect(() => {
+    const onMouseMove = (event: MouseEvent) => {
+      if (mouseControlRef.current?.isLocked)
+        rotationTarget.current -= event.movementX * MOUSE_SPEED;
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    return () => document.removeEventListener('mousemove', onMouseMove);
+  }, [MOUSE_SPEED]);
+
+  // Keyboard Control 부분
   const normalizeAngle = useCallback((angle: any) => {
     while (angle > Math.PI) angle -= 2 * Math.PI;
     while (angle < -Math.PI) angle += 2 * Math.PI;
@@ -71,7 +101,7 @@ const RabbitController = () => {
       if (get().right) movement.x = -1;
       if (get().jump) movement.y = 1;
 
-      if (movement.x !== 0) {
+      if (movement.x !== 0 && !mouseControlRef.current?.isLocked) {
         // 전체 회전
         rotationTarget.current += ROTATION_SPEED * movement.x;
       }
@@ -122,6 +152,7 @@ const RabbitController = () => {
   return (
     // 충돌 감지 비활성화: Capsule 쓰기 위해서, lockRotations: 안넘어지게
     <RigidBody colliders={false} lockRotations ref={rb}>
+      <PointerLockControls ref={mouseControlRef} />
       {/* 캐릭터를 감싸는 그룹 ref */}
       <group ref={container}>
         {/* 실제 카메라가 보는 부분 ref */}
