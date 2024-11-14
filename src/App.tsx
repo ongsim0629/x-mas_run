@@ -1,35 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Canvas } from '@react-three/fiber';
+import Scene from './components/Scene';
+import { KeyboardControls, OrbitControls } from '@react-three/drei';
+
+const keyboardMap = [
+  { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
+  { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
+  { name: 'left', keys: ['ArrowLeft', 'KeyA'] },
+  { name: 'right', keys: ['ArrowRight', 'KeyD'] },
+  { name: 'jump', keys: ['Space'] },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <KeyboardControls map={keyboardMap}>
+      {/* near 최소 가시 거리, fov 시야 각 */}
+      <Canvas
+        shadows
+        camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
+        style={{ touchAction: 'none' }} // 브라우저 기본 동작 방지
+      >
+        <color attach="background" args={['skyblue']} />
+        <Scene />
+        {/* <OrbitControls /> */}
+      </Canvas>
+    </KeyboardControls>
+  );
 }
 
-export default App
+export default App;
