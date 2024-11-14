@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import Scene from './components/Scene';
-import { KeyboardControls, OrbitControls } from '@react-three/drei';
+import { KeyboardControls } from '@react-three/drei';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -21,7 +21,6 @@ function App() {
       >
         <color attach="background" args={['skyblue']} />
         <Scene />
-        {/* <OrbitControls /> */}
       </Canvas>
     </KeyboardControls>
   );
