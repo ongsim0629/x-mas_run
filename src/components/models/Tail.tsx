@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import React from 'react'
+import React, { useEffect }  from 'react'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
@@ -23,6 +23,25 @@ export function Tail(props: JSX.IntrinsicElements['group']) {
   const group = React.useRef<THREE.Group>()
   const { nodes, materials, animations } = useGLTF('/models/Tail.glb') as GLTFResult
   const { actions } = useAnimations(animations, group)
+  
+  // 꼬리 애니메이션
+  useEffect(() => {
+    const tailAction = actions['000_mesh_id5Action.001'];
+    if (tailAction) {
+      tailAction.reset()
+        .setLoop(THREE.LoopRepeat, Infinity)
+        .setEffectiveTimeScale(1)
+        .setEffectiveWeight(0.5)
+        .play();
+    }
+
+    return () => {
+      if (tailAction) {
+        tailAction.stop();
+      }
+    };
+  }, [actions]);
+  
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Sketchfab_Scene">
