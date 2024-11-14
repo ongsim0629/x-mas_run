@@ -10,7 +10,8 @@ export default function Scene() {
       <ambientLight intensity={0.3} />
       <Physics debug>
         <GroundMap />
-        <RabbitController />
+        {/* 꼬리 렌더링 확인 위해서 true로 임시 설정 */}
+        <RabbitController hasTail={true} />
       </Physics>
     </>
   );
