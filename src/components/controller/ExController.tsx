@@ -10,6 +10,7 @@ import {
   RapierRigidBody,
   RigidBody,
 } from "@react-three/rapier";
+import { PointerLockControls } from "@react-three/drei";
 
 type RabbitControllerProps = {
   player: Character;
@@ -31,6 +32,7 @@ const ExController = ({
   const character = useRef<Group>();
   const cameraTarget = useRef<Group>();
   const cameraPosition = useRef<Group>(); // 그룹 내에서의 상대적 위치
+  const mouseControlRef = useRef<any>();
 
   // 현재 위치/회전
   const rotationTarget = useRef(0);
@@ -62,6 +64,25 @@ const ExController = ({
     return normalizeAngle(start + (end - start) * t);
   }, []);
 
+  // Mouse Control 부분
+  useEffect(() => {
+    const handleClick = () => {
+      if (mouseControlRef.current && !mouseControlRef.current.isLocked)
+        mouseControlRef.current.lock();
+    };
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
+
+  useEffect(() => {
+    const onMouseMove = (event: MouseEvent) => {
+      if (mouseControlRef.current?.isLocked)
+        rotationTarget.current -= event.movementX * MOUSE_SPEED;
+    };
+    document.addEventListener("mousemove", onMouseMove);
+    return () => document.removeEventListener("mousemove", onMouseMove);
+  }, [MOUSE_SPEED]);
+
   // 초기 위치 설정
   useEffect(() => {
     if (container.current) {
@@ -88,7 +109,7 @@ const ExController = ({
 
     if (velocity.x) {
       // 전체 회전
-      // rotationTarget.current += 0.01 * velocity.x;
+      rotationTarget.current += 0.01 * velocity.x;
     }
 
     // 캐릭터 이동 방향 회전
@@ -129,7 +150,7 @@ const ExController = ({
 
   return (
     <RigidBody colliders={false} lockRotations ref={rb}>
-      {/* <PointerLockControls ref={mouseControlRef} /> */}
+      <PointerLockControls ref={mouseControlRef} />
       {/* 캐릭터를 감싸는 그룹 ref */}
       <group ref={container}>
         {/* 실제 카메라가 보는 부분 ref */}

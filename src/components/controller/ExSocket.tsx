@@ -77,17 +77,17 @@ const ExSocketController = () => {
     let movementInterval: number;
 
     const handleKeyboardControls = (state: any) => {
-      const isAnyKeyPressed = 
-        state.forward || 
-        state.backward || 
-        state.left || 
-        state.right || 
+      const isAnyKeyPressed =
+        state.forward ||
+        state.backward ||
+        state.left ||
+        state.right ||
         state.jump;
 
       if (isAnyKeyPressed && !movementInterval) {
         // 키가 눌렸고 interval이 없으면 시작
         movementInterval = window.setInterval(sendDirections, 1000 / 60);
-        
+
         // Jump 상태 전송
         if (state.jump) {
           socketRef.current?.emit('jump', true);
@@ -97,7 +97,7 @@ const ExSocketController = () => {
         window.clearInterval(movementInterval);
         movementInterval = 0;
         sendDirections(); // 마지막 상태 전송
-        
+
         // Jump 상태 해제 전송
         socketRef.current?.emit('jump', false);
       }
