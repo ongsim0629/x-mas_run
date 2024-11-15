@@ -3,4 +3,4 @@ import { atomWithStorage } from 'jotai/utils';
 import { Character } from '../types/player';
 
 export const playersAtom = atom<Character[]>([]);
-export const playerIdAtom = atomWithStorage('playerId', null);
+export const playerIdAtom = atomWithStorage<string | null>('playerId', null);

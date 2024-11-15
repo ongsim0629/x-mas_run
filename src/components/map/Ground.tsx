@@ -1,8 +1,8 @@
 import { RigidBody } from '@react-three/rapier';
 import React from 'react';
 
-export const PLATFORM_WIDTH = 200;
-export const PLATFORM_HEIGHT = 200;
+export const PLATFORM_WIDTH = 50;
+export const PLATFORM_HEIGHT = 50;
 // 다양한 색상을 쓰고 싶은 경우, Color 객체에 multiplyScalar로 진하기 랜덤 조정 가능
 export const PLATFORM_COLOR = 'plum';
 

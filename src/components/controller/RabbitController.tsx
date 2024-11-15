@@ -160,7 +160,12 @@ const RabbitController = () => {
         {/* 카메라가 위치할 부분 ref */}
         <group ref={cameraPosition} position-y={7} position-z={-15} />
         <group ref={character}>
-          <AnimatedRabbit animation={animation} />
+          <AnimatedRabbit
+            animation={animation}
+            bodyColor={'gold'}
+            bellyColor={'white'}
+            hairColor={'black'}
+          />
         </group>
       </group>
       {/* args: [halfHeight, radius], rabbit 사이즈만큼 position으로 끌어올려야함 */}

@@ -4,7 +4,7 @@ export type Directions = {
   left: boolean;
   right: boolean;
 };
-export type Position = [number, number, number];
+export type Position = { x: number; y: number; z: number };
 
 export interface Character {
   id: string;
@@ -15,5 +15,5 @@ export interface Character {
   velocity: Position;
   isOnGround: boolean;
   hasTail: boolean;
-  facingAngleRad?: number;
+  facingAngleRad: number;
 }
