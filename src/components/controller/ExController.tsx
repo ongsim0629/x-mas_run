@@ -88,18 +88,16 @@ const ExController = ({
 
     if (velocity.x) {
       // 전체 회전
-      // rotationTarget.current +=
-      //   import.meta.env.VITE_ROTATION_LERP_FACTOR * velocity.x;
+      // rotationTarget.current += 0.01 * velocity.x;
     }
 
     // 캐릭터 이동 방향 회전
     if (velocity.x || velocity.z) {
-      const characterRotation = Math.atan2(velocity.x, velocity.z);
-      vel.x = Math.sin(rotationTarget.current + characterRotation) * 2;
-      vel.z = Math.cos(rotationTarget.current + characterRotation) * 2;
+      vel.x = Math.sin(facingAngleRad);
+      vel.z = Math.cos(facingAngleRad);
       character.current.rotation.y = lerpAngle(
         character.current.rotation.y,
-        characterRotation,
+        facingAngleRad,
         import.meta.env.VITE_ROTATION_LERP_FACTOR,
       );
     }
