@@ -10,8 +10,16 @@ import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
 import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
+import { Tail } from '../models/Tail';
+import TailEffect from '../effect/TailEffect';
 
-const RabbitController = () => {
+interface RabbitControllerProps {
+  hasTail?: boolean;
+}
+
+const RabbitController = ({
+  hasTail = false,
+}: RabbitControllerProps): JSX.Element => {
   const { SPEED, ROTATION_SPEED, MOUSE_SPEED } = useControls(
     '스피드 컨트롤러🐰',
     {
@@ -28,10 +36,10 @@ const RabbitController = () => {
         max: 0.01,
         step: 0.001,
       },
-    }
+    },
   );
   const [animation, setAnimation] = useState<RabbitActionName>(
-    'CharacterArmature|Idle'
+    'CharacterArmature|Idle',
   );
   const rb = useRef<RapierRigidBody>();
   const container = useRef<Group>();
@@ -124,7 +132,7 @@ const RabbitController = () => {
         character.current.rotation.y = lerpAngle(
           character.current.rotation.y,
           characterRotationTarget.current,
-          0.1
+          0.1,
         );
       }
 
@@ -135,7 +143,7 @@ const RabbitController = () => {
       container.current.rotation.y = MathUtils.lerp(
         container.current.rotation.y,
         rotationTarget.current,
-        0.1
+        0.1,
       );
     }
 
@@ -161,6 +169,12 @@ const RabbitController = () => {
         <group ref={cameraPosition} position-y={7} position-z={-15} />
         <group ref={character}>
           <AnimatedRabbit animation={animation} />
+          {hasTail && (
+            <group position={[0, 0.3, -0.2]}>
+              <Tail scale={[3, 3, 3]} />
+              <TailEffect />
+            </group>
+          )}
         </group>
       </group>
       {/* args: [halfHeight, radius], rabbit 사이즈만큼 position으로 끌어올려야함 */}
