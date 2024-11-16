@@ -56,9 +56,18 @@ type GLTFResult = GLTF & {
 
 type AnimatedRabbitProps = {
   animation: RabbitActionName;
+  bodyColor: string;
+  bellyColor: string;
+  hairColor: string;
 } & JSX.IntrinsicElements['group'];
 
-export function AnimatedRabbit({ animation, ...props }: AnimatedRabbitProps) {
+export function AnimatedRabbit({
+  animation,
+  bodyColor = 'gold',
+  bellyColor = 'white',
+  hairColor = 'black',
+  ...props
+}: AnimatedRabbitProps) {
   const group = React.useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF('/models/AnimatedRabbit.glb');
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
@@ -89,7 +98,9 @@ export function AnimatedRabbit({ animation, ...props }: AnimatedRabbitProps) {
               geometry={nodes.Body_2.geometry}
               material={materials.Main}
               skeleton={nodes.Body_2.skeleton}
-            />
+            >
+              <meshStandardMaterial color={bodyColor} />
+            </skinnedMesh>
             <skinnedMesh
               name="Body_3"
               geometry={nodes.Body_3.geometry}
@@ -101,7 +112,9 @@ export function AnimatedRabbit({ animation, ...props }: AnimatedRabbitProps) {
               geometry={nodes.Body_4.geometry}
               material={materials.Main2}
               skeleton={nodes.Body_4.skeleton}
-            />
+            >
+              <meshStandardMaterial color={bellyColor} />
+            </skinnedMesh>
           </group>
           <skinnedMesh
             name="Ears"
@@ -110,14 +123,18 @@ export function AnimatedRabbit({ animation, ...props }: AnimatedRabbitProps) {
             skeleton={nodes.Ears.skeleton}
             rotation={[-Math.PI / 2, 0, 0]}
             scale={100}
-          />
+          >
+            <meshStandardMaterial color={hairColor} />
+          </skinnedMesh>
           <group name="Head_1" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
             <skinnedMesh
               name="Head_2"
               geometry={nodes.Head_2.geometry}
               material={materials.Main}
               skeleton={nodes.Head_2.skeleton}
-            />
+            >
+              <meshStandardMaterial color={hairColor} />
+            </skinnedMesh>
             <skinnedMesh
               name="Head_3"
               geometry={nodes.Head_3.geometry}
@@ -149,7 +166,9 @@ export function AnimatedRabbit({ animation, ...props }: AnimatedRabbitProps) {
               geometry={nodes.Arms_1.geometry}
               material={materials.Main}
               skeleton={nodes.Arms_1.skeleton}
-            />
+            >
+              <meshStandardMaterial color={bodyColor} />
+            </skinnedMesh>
             <skinnedMesh
               name="Arms_2"
               geometry={nodes.Arms_2.geometry}
