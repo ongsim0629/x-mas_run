@@ -84,7 +84,10 @@ const SocketController = () => {
       return;
     }
 
-    if (hasSignificantMovement(currentPlayer.position, prevPosition.current)) {
+    if (
+      hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
+      get().catch
+    ) {
       socket.emit('move', {
         character: currentPlayer,
         shift: get().catch,
