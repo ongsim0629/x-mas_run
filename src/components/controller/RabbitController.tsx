@@ -242,12 +242,13 @@ const RabbitController = ({
       <group ref={container}>
         {isLocalPlayer && (
           <>
-            <group ref={cameraTarget} position-z={1.5} />
-            <group ref={cameraPosition} position-y={7} position-z={-15} />
+            <group ref={cameraTarget} position-z={6} />
+            <group ref={cameraPosition} position-y={10} position-z={-15} />
           </>
         )}
         <group ref={character}>
           <AnimatedRabbit
+            // scale={0.18}
             animation={animation}
             bodyColor={'gold'}
             bellyColor={'white'}

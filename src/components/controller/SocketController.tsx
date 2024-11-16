@@ -88,7 +88,6 @@ const SocketController = () => {
       socket.emit('move', {
         character: currentPlayer,
         shift: get().catch,
-        timestamp: Date.now(),
       });
       prevPosition.current = currentPlayer.position;
     }
