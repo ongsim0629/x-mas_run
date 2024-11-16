@@ -3,11 +3,12 @@ import GroundMap from './map/Ground';
 import RabbitController from './controller/RabbitController';
 import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
-import { playersAtom } from '../atoms/PlayerAtoms';
+import { playerIdAtom, playersAtom } from '../atoms/PlayerAtoms';
 import ExController from './controller/ExController';
 
 export default function Scene() {
   const players = useAtomValue(playersAtom);
+  const playerId = useAtomValue(playerIdAtom);
   return (
     <>
       <Environment preset="sunset" />
@@ -16,7 +17,12 @@ export default function Scene() {
         <GroundMap />
         {/* 꼬리 렌더링 확인 위해서 true로 임시 설정 */}
         {players.map((player) => (
-          <RabbitController player={player} key={player.id} />
+          <RabbitController
+            player={player}
+            key={player.id}
+            // isLocalPlayer={player.id === playerId}
+            isLocalPlayer={true}
+          />
         ))}
       </Physics>
     </>

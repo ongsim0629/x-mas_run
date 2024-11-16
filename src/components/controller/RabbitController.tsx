@@ -13,6 +13,8 @@ import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
 import { Tail } from '../models/Tail';
 import TailEffect from '../effect/TailEffect';
 import { Character } from '../../types/player';
+import { useAtom, useSetAtom } from 'jotai';
+import { playersAtom } from '../../atoms/PlayerAtoms';
 
 interface RabbitControllerProps {
   player: Character;
@@ -20,7 +22,8 @@ interface RabbitControllerProps {
 }
 
 const RabbitController = ({
-  player: { hasTail = false },
+  player: { id, hasTail, position, velocity },
+  isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
   const { SPEED, ROTATION_SPEED, MOUSE_SPEED } = useControls(
     '스피드 컨트롤러🐰',
@@ -40,6 +43,7 @@ const RabbitController = ({
       },
     },
   );
+  const setPlayers = useSetAtom(playersAtom);
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
@@ -95,80 +99,119 @@ const RabbitController = ({
   }, []);
 
   useFrame(({ camera }) => {
-    if (rb.current) {
-      // 직선 운동 속도
-      const vel = rb.current.linvel();
+    if (isLocalPlayer) {
+      if (rb.current) {
+        // 직선 운동 속도
+        const vel = rb.current.linvel();
+        const pos = rb.current.translation();
 
-      const movement = {
-        x: 0,
-        y: 0,
-        z: 0,
-      };
+        const movement = {
+          x: 0,
+          y: 0,
+          z: 0,
+        };
 
-      if (get().forward) movement.z = 1;
-      if (get().backward) movement.z = -1;
-      if (get().left) movement.x = 1;
-      if (get().right) movement.x = -1;
-      if (get().jump) movement.y = 1;
+        if (get().forward) movement.z = 1;
+        if (get().backward) movement.z = -1;
+        if (get().left) movement.x = 1;
+        if (get().right) movement.x = -1;
+        if (get().jump) movement.y = 1;
 
-      if (movement.x !== 0 && !mouseControlRef.current?.isLocked) {
-        // 전체 회전
-        rotationTarget.current += ROTATION_SPEED * movement.x;
+        if (movement.x !== 0 && !mouseControlRef.current?.isLocked) {
+          // 전체 회전
+          rotationTarget.current += ROTATION_SPEED * movement.x;
+        }
+
+        if (movement.x !== 0 || movement.z !== 0) {
+          // 각도를 구해서 캐릭터 회전을 더함
+          characterRotationTarget.current = Math.atan2(movement.x, movement.z);
+          vel.x =
+            Math.sin(rotationTarget.current + characterRotationTarget.current) *
+            SPEED;
+          vel.z =
+            Math.cos(rotationTarget.current + characterRotationTarget.current) *
+            SPEED;
+          setAnimation('CharacterArmature|Run');
+        } else {
+          setAnimation('CharacterArmature|Idle');
+        }
+
+        rb.current.setLinvel(vel, true);
+
+        setPlayers((prev) =>
+          prev.map((player) =>
+            player.id === id
+              ? {
+                  ...player,
+                  position,
+                  velocity,
+                  isOnGround: Math.abs(vel.y) < 0.1,
+                }
+              : player,
+          ),
+        );
+
+        if (character.current) {
+          character.current.rotation.y = lerpAngle(
+            character.current.rotation.y,
+            characterRotationTarget.current,
+            0.1,
+          );
+        }
       }
-
-      if (movement.x !== 0 || movement.z !== 0) {
-        // 각도를 구해서 캐릭터 회전을 더함
-        characterRotationTarget.current = Math.atan2(movement.x, movement.z);
-        vel.x =
-          Math.sin(rotationTarget.current + characterRotationTarget.current) *
-          SPEED;
-        vel.z =
-          Math.cos(rotationTarget.current + characterRotationTarget.current) *
-          SPEED;
-        setAnimation('CharacterArmature|Run');
-      } else {
-        setAnimation('CharacterArmature|Idle');
-      }
-
-      if (character.current) {
-        character.current.rotation.y = lerpAngle(
-          character.current.rotation.y,
-          characterRotationTarget.current,
+      if (container.current) {
+        container.current.rotation.y = MathUtils.lerp(
+          container.current.rotation.y,
+          rotationTarget.current,
           0.1,
         );
       }
 
-      rb.current.setLinvel(vel, true);
+      // Vector3 실행을 반복하지 않기 위해 나눠서 진행
+      cameraPosition.current?.getWorldPosition(cameraWorldPosition.current);
+      camera.position.lerp(cameraWorldPosition.current, 0.1);
+
+      cameraTarget.current?.getWorldPosition(cameraLookAtWorldPosition.current);
+      // 부드러운 회전을 위한 중간값 지정
+      cameraLookAt.current.lerp(cameraLookAtWorldPosition.current, 0.1);
+      camera.lookAt(cameraLookAt.current);
+    } else {
+      if (rb.current) {
+        // 서버에서 받은 위치로 업데이트
+        rb.current.setTranslation(position, true);
+        rb.current.setLinvel(velocity, true);
+
+        // 애니메이션 설정
+        const isMoving =
+          Math.abs(velocity.x) > 0.1 || Math.abs(velocity.z) > 0.1;
+        setAnimation(
+          isMoving ? 'CharacterArmature|Run' : 'CharacterArmature|Idle',
+        );
+
+        // 캐릭터 회전
+        if (character.current && isMoving) {
+          const targetAngle = Math.atan2(velocity.x, velocity.z);
+          character.current.rotation.y = lerpAngle(
+            character.current.rotation.y,
+            targetAngle,
+            0.1,
+          );
+        }
+      }
     }
-
-    if (container.current) {
-      container.current.rotation.y = MathUtils.lerp(
-        container.current.rotation.y,
-        rotationTarget.current,
-        0.1,
-      );
-    }
-
-    // Vector3 실행을 반복하지 않기 위해 나눠서 진행
-    cameraPosition.current?.getWorldPosition(cameraWorldPosition.current);
-    camera.position.lerp(cameraWorldPosition.current, 0.1);
-
-    cameraTarget.current?.getWorldPosition(cameraLookAtWorldPosition.current);
-    // 부드러운 회전을 위한 중간값 지정
-    cameraLookAt.current.lerp(cameraLookAtWorldPosition.current, 0.1);
-    camera.lookAt(cameraLookAt.current);
   });
 
   return (
     // 충돌 감지 비활성화: Capsule 쓰기 위해서, lockRotations: 안넘어지게
     <RigidBody colliders={false} lockRotations ref={rb}>
-      <PointerLockControls ref={mouseControlRef} />
-      {/* 캐릭터를 감싸는 그룹 ref */}
+      {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
       <group ref={container}>
-        {/* 실제 카메라가 보는 부분 ref */}
-        <group ref={cameraTarget} position-z={1.5} />
-        {/* 카메라가 위치할 부분 ref */}
-        <group ref={cameraPosition} position-y={7} position-z={-15} />
+        {isLocalPlayer && (
+          <>
+            <group ref={cameraTarget} position-z={1.5} />
+            <group ref={cameraPosition} position-y={7} position-z={-15} />
+          </>
+        )}
         <group ref={character}>
           <AnimatedRabbit
             animation={animation}
