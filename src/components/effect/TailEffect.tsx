@@ -40,7 +40,7 @@ const TailEffect: React.FC = () => {
       const material = new THREE.SpriteMaterial({
         map: texture,
         opacity,
-        color: color ? new THREE.Color(color) : undefined,
+        color: new THREE.Color(color),
         blending,
         fog,
       });
