@@ -15,5 +15,9 @@ export interface Character {
   velocity: Position;
   isOnGround: boolean;
   hasTail: boolean;
-  facingAngleRad: number;
+}
+
+export interface PlayerMovement {
+  shift: boolean;
+  character: Pick<Character, 'id' | 'position' | 'velocity' | 'isOnGround'>;
 }

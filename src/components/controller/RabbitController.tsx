@@ -12,18 +12,20 @@ import { useFrame } from '@react-three/fiber';
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
 import { Tail } from '../models/Tail';
 import TailEffect from '../effect/TailEffect';
+import { Character } from '../../types/player';
 
 interface RabbitControllerProps {
-  hasTail?: boolean;
+  player: Character;
+  isLocalPlayer?: boolean;
 }
 
 const RabbitController = ({
-  hasTail = false,
+  player: { hasTail = false },
 }: RabbitControllerProps): JSX.Element => {
   const { SPEED, ROTATION_SPEED, MOUSE_SPEED } = useControls(
     '스피드 컨트롤러🐰',
     {
-      SPEED: { value: 1.6, min: 0.2, max: 12, step: 0.1 },
+      SPEED: { value: 4, min: 0.2, max: 12, step: 0.1 },
       ROTATION_SPEED: {
         value: degToRad(0.5),
         min: degToRad(0.1),
@@ -47,7 +49,7 @@ const RabbitController = ({
 
   const mouseControlRef = useRef<any>();
   const characterRotationTarget = useRef(0);
-  const rotationTarget = useRef(0); // 실제
+  const rotationTarget = useRef(0);
   const cameraTarget = useRef<Group>();
   const cameraPosition = useRef<Group>(); // 그룹 내에서의 상대적 위치
   const cameraLookAtWorldPosition = useRef(new Vector3()); // cameraTarget의 절대 위치
@@ -168,7 +170,7 @@ const RabbitController = ({
         {/* 카메라가 위치할 부분 ref */}
         <group ref={cameraPosition} position-y={7} position-z={-15} />
         <group ref={character}>
-        <AnimatedRabbit
+          <AnimatedRabbit
             animation={animation}
             bodyColor={'gold'}
             bellyColor={'white'}
