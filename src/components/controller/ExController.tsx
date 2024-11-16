@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatedRabbit, RabbitActionName } from "../models/AnimatedRabbit";
-import { useControls } from "leva";
-import { MathUtils } from "three/src/math/MathUtils.js";
-import { Group, Vector3 } from "three";
-import { useFrame } from "@react-three/fiber";
-import { Character } from "../../types/player";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
+import { useControls } from 'leva';
+import { MathUtils } from 'three/src/math/MathUtils.js';
+import { Group, Vector3 } from 'three';
+import { useFrame } from '@react-three/fiber';
+import { Character } from '../../types/player';
 import {
   CapsuleCollider,
   RapierRigidBody,
   RigidBody,
-} from "@react-three/rapier";
-import { PointerLockControls } from "@react-three/drei";
+} from '@react-three/rapier';
+import { PointerLockControls } from '@react-three/drei';
 
 type RabbitControllerProps = {
   player: Character;
@@ -18,7 +18,7 @@ type RabbitControllerProps = {
 const ExController = ({
   player: { position, velocity, facingAngleRad = 0 },
 }: RabbitControllerProps) => {
-  const { MOUSE_SPEED } = useControls("스피드 컨트롤러🐰", {
+  const { MOUSE_SPEED } = useControls('스피드 컨트롤러🐰', {
     MOUSE_SPEED: {
       value: 0.002,
       min: 0.001,
@@ -44,7 +44,7 @@ const ExController = ({
   const cameraLookAt = useRef(new Vector3()); // 부드럽게 해당 위치로 회전하기 위한 Ref
 
   const [animation, setAnimation] = useState<RabbitActionName>(
-    "CharacterArmature|Idle",
+    'CharacterArmature|Idle',
   );
 
   const normalizeAngle = useCallback((angle: number) => {
@@ -70,8 +70,8 @@ const ExController = ({
       if (mouseControlRef.current && !mouseControlRef.current.isLocked)
         mouseControlRef.current.lock();
     };
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
   }, []);
 
   useEffect(() => {
@@ -79,8 +79,8 @@ const ExController = ({
       if (mouseControlRef.current?.isLocked)
         rotationTarget.current -= event.movementX * MOUSE_SPEED;
     };
-    document.addEventListener("mousemove", onMouseMove);
-    return () => document.removeEventListener("mousemove", onMouseMove);
+    document.addEventListener('mousemove', onMouseMove);
+    return () => document.removeEventListener('mousemove', onMouseMove);
   }, [MOUSE_SPEED]);
 
   // 초기 위치 설정
@@ -95,9 +95,9 @@ const ExController = ({
     const isMoving = velocity.x || velocity.z ? true : false;
     const isJumping =
       Math.abs(velocity.y) > import.meta.env.VITE_JUMP_VELOCITY_THRESHOLD;
-    if (isJumping) setAnimation("CharacterArmature|Jump");
-    else if (isMoving) setAnimation("CharacterArmature|Run");
-    else setAnimation("CharacterArmature|Idle");
+    if (isJumping) setAnimation('CharacterArmature|Jump');
+    else if (isMoving) setAnimation('CharacterArmature|Run');
+    else setAnimation('CharacterArmature|Idle');
 
     targetPosition.current.set(position.x, position.y, position.z);
   }, [position, velocity]);
@@ -109,13 +109,13 @@ const ExController = ({
 
     if (velocity.x) {
       // 전체 회전
-      rotationTarget.current += 0.01 * velocity.x;
+      // rotationTarget.current += 0.01 * velocity.x;
     }
 
     // 캐릭터 이동 방향 회전
     if (velocity.x || velocity.z) {
-      vel.x = Math.sin(facingAngleRad);
-      vel.z = Math.cos(facingAngleRad);
+      vel.x = velocity.x;
+      vel.z = velocity.z;
       character.current.rotation.y = lerpAngle(
         character.current.rotation.y,
         facingAngleRad,
@@ -160,9 +160,9 @@ const ExController = ({
         <group ref={character}>
           <AnimatedRabbit
             animation={animation}
-            bodyColor={"gold"}
-            bellyColor={"white"}
-            hairColor={"black"}
+            bodyColor={'gold'}
+            bellyColor={'white'}
+            hairColor={'black'}
           />
         </group>
       </group>

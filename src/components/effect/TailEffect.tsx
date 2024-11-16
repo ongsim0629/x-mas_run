@@ -27,9 +27,9 @@ const EFFECTS: {
     DURATION: { MIN: 1, MAX: 3 },
   },
 };
-
-// 단일 파티클 생성 함수
-const createSprite = useCallback(
+const TailEffect: React.FC = () => {
+  // 단일 파티클 생성 함수
+  const createSprite = useCallback(
     ({
       texture,
       opacity = 1,
@@ -49,7 +49,6 @@ const createSprite = useCallback(
     [],
   );
 
-  
   const animateSprite = useCallback(
     ({
       sprite,
@@ -58,19 +57,19 @@ const createSprite = useCallback(
       duration,
       onComplete,
     }: AnimateSpriteProps): void => {
-  // 위치
+      // 위치
       gsap.to(sprite.position, {
         ...position,
         duration,
         ease: 'power1.out',
       });
-  // 크기
+      // 크기
       gsap.to(sprite.scale, {
         ...scale,
         duration,
         ease: 'power1.out',
       });
-  // 투명도 (나타났다가 사라지기)
+      // 투명도 (나타났다가 사라지기)
       gsap
         .timeline()
         .to(sprite.material, {
@@ -88,17 +87,16 @@ const createSprite = useCallback(
     [],
   );
 
-  const TailEffect: React.FC = () => {
   // 이펙트의 고정 위치 (꼬리 근처)
-    const FIXED_POSITION: [number, number, number] = [0, 0, -0.1];
-  
+  const FIXED_POSITION: [number, number, number] = [0, 0, -0.1];
+
   // 파티클 2개 다 담아서 관리
-    const effectGroup = useRef<THREE.Group>(null);
-    const sprites = useRef<{
-      cloud: THREE.Sprite[];
-      sparkle: THREE.Sprite[];
-    }>({ cloud: [], sparkle: [] });
-    const loader = useMemo(() => new THREE.TextureLoader(), []);
+  const effectGroup = useRef<THREE.Group>(null);
+  const sprites = useRef<{
+    cloud: THREE.Sprite[];
+    sparkle: THREE.Sprite[];
+  }>({ cloud: [], sparkle: [] });
+  const loader = useMemo(() => new THREE.TextureLoader(), []);
 
   // 구름 파티클 만들기
   const createCloudEffect = useCallback(() => {
@@ -148,7 +146,7 @@ const createSprite = useCallback(
       sprites.current.cloud.push(sprite);
     }
   }, [loader, createSprite, animateSprite]);
-  
+
   // 반짝이 파티클 만들기
 
   const createSparkleEffect = useCallback(() => {
