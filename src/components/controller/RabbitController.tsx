@@ -60,6 +60,10 @@ const RabbitController = ({
   const cameraWorldPosition = useRef(new Vector3()); // cameraPosition의 절대 위치
   const cameraLookAt = useRef(new Vector3()); // 부드럽게 해당 위치로 회전하기 위한 Ref
 
+  // 다른 플레이어들의 부드러운 움직임을 위한 ref
+  const currentPosition = useRef(position);
+  const currentVelocity = useRef(velocity);
+
   const [, get] = useKeyboardControls();
 
   // Mouse Control 부분
@@ -143,8 +147,16 @@ const RabbitController = ({
             player.id === id
               ? {
                   ...player,
-                  position,
-                  velocity,
+                  position: {
+                    x: pos.x,
+                    y: pos.y,
+                    z: pos.z,
+                  },
+                  velocity: {
+                    x: vel.x,
+                    y: vel.y,
+                    z: vel.z,
+                  },
                   isOnGround: Math.abs(vel.y) < 0.1,
                 }
               : player,
@@ -177,9 +189,21 @@ const RabbitController = ({
       camera.lookAt(cameraLookAt.current);
     } else {
       if (rb.current) {
+        currentPosition.current = {
+          x: MathUtils.lerp(currentPosition.current.x, position.x, 0.2),
+          y: MathUtils.lerp(currentPosition.current.y, position.y, 0.2),
+          z: MathUtils.lerp(currentPosition.current.z, position.z, 0.2),
+        };
+
+        currentVelocity.current = {
+          x: MathUtils.lerp(currentVelocity.current.x, velocity.x, 0.2),
+          y: MathUtils.lerp(currentVelocity.current.y, velocity.y, 0.2),
+          z: MathUtils.lerp(currentVelocity.current.z, velocity.z, 0.2),
+        };
+
         // 서버에서 받은 위치로 업데이트
-        rb.current.setTranslation(position, true);
-        rb.current.setLinvel(velocity, true);
+        rb.current.setTranslation(currentPosition.current, true);
+        rb.current.setLinvel(currentVelocity.current, true);
 
         // 애니메이션 설정
         const isMoving =
@@ -200,6 +224,16 @@ const RabbitController = ({
       }
     }
   });
+
+  // 초기 위치 설정
+  useEffect(() => {
+    if (!isLocalPlayer && rb.current) {
+      currentPosition.current = position;
+      currentVelocity.current = velocity;
+      rb.current.setTranslation(position, true);
+      rb.current.setLinvel(velocity, true);
+    }
+  }, []);
 
   return (
     // 충돌 감지 비활성화: Capsule 쓰기 위해서, lockRotations: 안넘어지게

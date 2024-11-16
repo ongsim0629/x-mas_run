@@ -2,7 +2,6 @@ import { Canvas } from '@react-three/fiber';
 import Scene from './components/Scene';
 import { KeyboardControls } from '@react-three/drei';
 import SocketController from './components/controller/SocketController';
-import ExSocketController from './components/controller/ExSocket';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -16,9 +15,7 @@ const keyboardMap = [
 function App() {
   return (
     <KeyboardControls map={keyboardMap}>
-      {/* <SocketController /> */}
-      {/* <ExSocketController /> */}
-      {/* near 최소 가시 거리, fov 시야 각 */}
+      <SocketController />
       <Canvas
         shadows
         camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}

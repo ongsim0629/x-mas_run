@@ -1,5 +1,4 @@
 import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
 import { Character, PlayerMovement } from '../types/player';
 
 export const playerMovementAtom = atom<PlayerMovement>({
@@ -23,4 +22,4 @@ export const playersAtom = atom<Character[]>([
     hasTail: true,
   },
 ]);
-export const playerIdAtom = atomWithStorage<string | null>('playerId', null);
+export const playerIdAtom = atom<string | null>('');

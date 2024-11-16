@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { playerIdAtom, playersAtom } from '../../atoms/PlayerAtoms';
 import { Character, Position } from '../../types/player';
@@ -13,53 +13,67 @@ const SocketController = () => {
   const isInitialized = useRef(false);
   const [, get] = useKeyboardControls();
 
-  const hasSignificantMovement = useCallback(
-    (current: Position, prev: Position): boolean =>
-      Math.abs(current.x - prev.x) > import.meta.env.VITE_POSITION_THRESHOLD ||
-      Math.abs(current.y - prev.y) > import.meta.env.VITE_POSITION_THRESHOLD ||
-      Math.abs(current.z - prev.z) > import.meta.env.VITE_POSITION_THRESHOLD,
-    [],
-  );
-
+  // 소켓 연결 설정
   useEffect(() => {
-    if (!socketRef.current) {
-      socketRef.current = io(import.meta.env.VITE_DEV_SERVER_URL, {
-        reconnection: true,
-        reconnectionAttempts: 5,
-      });
-    }
-    const socket = socketRef.current;
+    let isMounted = true;
 
-    const onConnect = () => {
-      if (!playerId && socket.id) {
-        setPlayerId(socket.id);
+    const initializeSocket = () => {
+      try {
+        // 기존 소켓이 있다면 정리
+        if (socketRef.current) {
+          socketRef.current.removeAllListeners();
+          socketRef.current.disconnect();
+          socketRef.current = null;
+        }
+
+        // 새로운 소켓 연결
+        const socket = io(import.meta.env.VITE_DEV_SERVER_URL, {
+          transports: ['websocket'],
+          reconnection: true,
+          reconnectionDelay: 1000,
+          reconnectionAttempts: 3,
+        });
+
+        socket.on('connect', () => {
+          if (!isMounted) return;
+          if (socket.id) {
+            setPlayerId(socket.id);
+          }
+        });
+
+        socket.on('characters', (updatedPlayers: Character[]) => {
+          if (!isMounted) return;
+          setPlayers(updatedPlayers);
+        });
+
+        socket.on('disconnect', () => {
+          if (!isMounted) return;
+          console.log('Bye~👻');
+          isInitialized.current = false;
+        });
+
+        socketRef.current = socket;
+      } catch (error) {
+        console.error('Socket initialization error:', error);
       }
     };
 
-    const onCharacters = (characters: Character[]) => {
-      setPlayers(characters);
-    };
+    initializeSocket();
 
-    const onDisconnect = () => {
-      console.log('bye');
-      isInitialized.current = false;
-    };
-
-    socket.on('connect', onConnect);
-    socket.on('characters', onCharacters);
-    socket.on('disconnect', onDisconnect);
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('characters', onCharacters);
-      socket.off('disconnect');
-      socketRef.current?.disconnect();
-      socketRef.current = null;
+      isMounted = false;
+      if (socketRef.current) {
+        console.log('Cleaning up socket connection');
+        socketRef.current.removeAllListeners();
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, [playerId, setPlayerId]);
+  }, []);
 
   useEffect(() => {
     const socket = socketRef.current;
-    if (!socket || !playerId) return;
+    if (!socket?.connected || !playerId) return;
 
     const currentPlayer = players.find((p) => p.id === playerId);
     if (!currentPlayer) return;
@@ -74,10 +88,20 @@ const SocketController = () => {
       socket.emit('move', {
         character: currentPlayer,
         shift: get().catch,
+        timestamp: Date.now(),
       });
       prevPosition.current = currentPlayer.position;
     }
-  }, [playerId, players, hasSignificantMovement, get]);
+  }, [playerId, players, get]);
+
+  const hasSignificantMovement = useCallback(
+    (current: Position, prev: Position): boolean =>
+      Math.abs(current.x - prev.x) > import.meta.env.VITE_POSITION_THRESHOLD ||
+      Math.abs(current.y - prev.y) > import.meta.env.VITE_POSITION_THRESHOLD ||
+      Math.abs(current.z - prev.z) > import.meta.env.VITE_POSITION_THRESHOLD,
+    [],
+  );
+
   return null;
 };
 

@@ -4,7 +4,6 @@ import RabbitController from './controller/RabbitController';
 import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
 import { playerIdAtom, playersAtom } from '../atoms/PlayerAtoms';
-import ExController from './controller/ExController';
 
 export default function Scene() {
   const players = useAtomValue(playersAtom);
@@ -16,14 +15,17 @@ export default function Scene() {
       <Physics debug>
         <GroundMap />
         {/* 꼬리 렌더링 확인 위해서 true로 임시 설정 */}
-        {players.map((player) => (
-          <RabbitController
-            player={player}
-            key={player.id}
-            // isLocalPlayer={player.id === playerId}
-            isLocalPlayer={true}
-          />
-        ))}
+        {players.map((player) => {
+          // console.log(player.id, playerId);
+
+          return (
+            <RabbitController
+              player={player}
+              key={player.id}
+              isLocalPlayer={player.id === playerId}
+            />
+          );
+        })}
       </Physics>
     </>
   );
