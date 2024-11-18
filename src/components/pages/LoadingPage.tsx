@@ -15,6 +15,7 @@ const LoadingPage = () => {
       if (playerInfo.id) {
         const nickname = await nicknameQuery(playerInfo.id);
         setPlayerInfo({ ...playerInfo, nickname });
+
         setGameScreen(GameScreen.LOGIN);
       }
     };

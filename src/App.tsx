@@ -30,6 +30,7 @@ function App() {
   return (
     <KeyboardControls map={keyboardMap}>
       <QueryClientProvider client={queryClient}>
+        <SocketController />
         {gameScreen === GameScreen.LOADING && <LoadingPage />}
         {gameScreen === GameScreen.LOGIN && <LoginPage />}
         {gameScreen === GameScreen.HOME && <HomePage />}

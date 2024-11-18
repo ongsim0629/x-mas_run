@@ -5,9 +5,10 @@ export class UserService {
   constructor(private readonly httpClient: HttpClient) {}
 
   async getRandomNickname(userId: string): Promise<string> {
-    const response = await this.httpClient.post<
-      ApiResponse<RandomNicknameResponse>
-    >('/user/random-nickname', { userId });
-    return response.data.nickName;
+    const response = await this.httpClient.post<RandomNicknameResponse>(
+      '/user/random-nickname',
+      { userId },
+    );
+    return response.nickName;
   }
 }

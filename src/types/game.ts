@@ -1,7 +1,3 @@
-export interface ApiResponse<T> {
-  data: T;
-  msg?: string;
-}
 export interface RandomNicknameResponse {
   nickName: string;
 }
