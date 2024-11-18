@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { playerIdAtom } from '../../atoms/PlayerAtoms';
+import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 import { gameScreenAtom, nicknameAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
 
 const LoginPage = () => {
-  const playerId = useAtomValue(playerIdAtom);
+  const { id: playerId } = useAtomValue(playerInfoAtom);
   const serverNickname = useAtomValue(nicknameAtom);
   const [customNickname, setCustomNickname] = useState<string>('');
   const setNickname = useSetAtom(nicknameAtom);
@@ -82,7 +82,7 @@ const LoginPage = () => {
                   onChange={(e) => setCustomNickname(e.target.value)}
                   placeholder={
                     serverNickname ? `${serverNickname}` : '닉네임을 입력하세요'
-                  } 
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   disabled={isLoading}
                 />

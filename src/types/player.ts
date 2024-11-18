@@ -21,3 +21,8 @@ export interface PlayerMovement {
   shift: boolean;
   character: Pick<Character, 'id' | 'position' | 'velocity' | 'isOnGround'>;
 }
+
+export interface PlayerInfo {
+  id: string | null;
+  nickname: string;
+}

@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { playerIdAtom, playersAtom } from '../../atoms/PlayerAtoms';
+import { playerInfoAtom, playersAtom } from '../../atoms/PlayerAtoms';
 import { Character, Position } from '../../types/player';
 import { useKeyboardControls } from '@react-three/drei';
 import { SocketContext } from '../context/socketContext';
@@ -10,7 +10,7 @@ const SocketController = ({ children }: { children: React.ReactNode }) => {
   const socketRef = useRef<Socket | null>(null);
   const prevPosition = useRef<Position>({ x: 0, y: 0, z: 0 });
   const [players, setPlayers] = useAtom(playersAtom);
-  const [playerId, setPlayerId] = useAtom(playerIdAtom);
+  const [player, setPlayer] = useAtom(playerInfoAtom);
   const isInitialized = useRef(false);
   const [, get] = useKeyboardControls();
 
@@ -38,7 +38,7 @@ const SocketController = ({ children }: { children: React.ReactNode }) => {
         socket.on('connect', () => {
           if (!isMounted) return;
           if (socket.id) {
-            setPlayerId(socket.id);
+            setPlayer({ ...player, id: socket.id });
           }
         });
 
@@ -70,13 +70,13 @@ const SocketController = ({ children }: { children: React.ReactNode }) => {
         socketRef.current = null;
       }
     };
-  }, [setPlayerId, setPlayers]);
+  }, [setPlayer, setPlayers]);
 
   useEffect(() => {
     const socket = socketRef.current;
-    if (!socket?.connected || !playerId) return;
+    if (!socket?.connected || !player.id) return;
 
-    const currentPlayer = players.find((p) => p.id === playerId);
+    const currentPlayer = players.find((p) => p.id === player.id);
     if (!currentPlayer) return;
 
     if (!isInitialized.current) {
@@ -95,7 +95,7 @@ const SocketController = ({ children }: { children: React.ReactNode }) => {
       });
       prevPosition.current = currentPlayer.position;
     }
-  }, [playerId, players, get]);
+  }, [player.id, players, get]);
 
   const hasSignificantMovement = useCallback(
     (current: Position, prev: Position): boolean =>

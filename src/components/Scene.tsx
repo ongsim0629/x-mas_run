@@ -3,7 +3,7 @@ import GroundMap from './map/Ground';
 import RabbitController from './controller/RabbitController';
 import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
-import { playerIdAtom, playersAtom } from '../atoms/PlayerAtoms';
+import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import { useControls } from 'leva';
 // import Map from './map/Map';
 
@@ -20,7 +20,7 @@ const maps = {
 
 export default function Scene() {
   const players = useAtomValue(playersAtom);
-  const playerId = useAtomValue(playerIdAtom);
+  const { id: playerId } = useAtomValue(playerInfoAtom);
   const { map } = useControls('Map', {
     map: {
       value: 'peach_castle',

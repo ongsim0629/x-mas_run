@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { gameScreenAtom, nicknameAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
-import { playerIdAtom } from '../../atoms/PlayerAtoms';
+import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 
 const LoadingPage = () => {
   const [gameScreen, setGameScreen] = useAtom(gameScreenAtom);
-  const [playerId] = useAtom(playerIdAtom);
+  const { id: playerId } = useAtomValue(playerInfoAtom);
   const [, setNickname] = useAtom(nicknameAtom);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
