@@ -4,8 +4,9 @@ import { io, Socket } from 'socket.io-client';
 import { playerIdAtom, playersAtom } from '../../atoms/PlayerAtoms';
 import { Character, Position } from '../../types/player';
 import { useKeyboardControls } from '@react-three/drei';
+import { SocketContext } from '../context/socketContext';
 
-const SocketController = () => {
+const SocketController = ({ children }: { children: React.ReactNode }) => {
   const socketRef = useRef<Socket | null>(null);
   const prevPosition = useRef<Position>({ x: 0, y: 0, z: 0 });
   const [players, setPlayers] = useAtom(playersAtom);
@@ -69,7 +70,7 @@ const SocketController = () => {
         socketRef.current = null;
       }
     };
-  }, []);
+  }, [setPlayerId, setPlayers]);
 
   useEffect(() => {
     const socket = socketRef.current;
@@ -104,7 +105,11 @@ const SocketController = () => {
     [],
   );
 
-  return null;
+  return (
+    <SocketContext.Provider value={socketRef.current}>
+      {children}
+    </SocketContext.Provider>
+  );
 };
 
 export default SocketController;
