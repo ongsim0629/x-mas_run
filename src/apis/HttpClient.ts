@@ -1,78 +1,68 @@
-export const GET = async ({ path }: { path: string }) => {
-  return fetch(`${import.meta.env.VITE_DEV_SERVER_URL}/${path}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    // credentials: 'include',
-  })
-    .then(async (res) => {
-      if (!res.ok) throw Error(res.status.toString());
-      const result = await res.json();
-      return result;
-    })
-    .catch((error) => {
-      console.log(error);
-      throw error;
-    });
-};
+export default class HttpClient {
+  private baseURL: string;
+  constructor() {
+    this.baseURL = import.meta.env.VITE_DEV_SERVER_URL;
+  }
 
-export const POST = async ({ path, body }: { path: string; body?: any }) => {
-  return fetch(`${import.meta.env.VITE_DEV_SERVER_URL}/${path}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    // credentials: 'include',
-    body: JSON.stringify(body),
-  })
-    .then(async (res) => {
-      if (!res.ok) throw Error(res.status.toString());
-      const result = await res.json();
-      return result;
-    })
-    .catch((error) => {
-      console.log(error);
-      throw error;
+  private async fetchWithErrorHandling<T>(
+    endpoint: string,
+    options: RequestInit,
+  ): Promise<T> {
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        // credentials: 'include',
+      },
     });
-};
 
-export const DELETE = async ({ path, body }: { path: string; body?: any }) => {
-  return fetch(`${import.meta.env.VITE_DEV_SERVER_URL}/${path}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    // credentials: 'include',
-    body: JSON.stringify(body),
-  })
-    .then(async (res) => {
-      if (!res.ok) throw Error(res.status.toString());
-      const result = await res.json();
-      return result;
-    })
-    .catch((error) => {
-      console.log(error);
-      throw error;
-    });
-};
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.msg || '알 수 없는 에러가 발생했습니다.');
+    }
+    return data;
+  }
 
-export const PUT = async ({ path, body }: { path: string; body?: any }) => {
-  return fetch(`${import.meta.env.VITE_DEV_SERVER_URL}/${path}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    // credentials: 'include',
-    body: JSON.stringify(body),
-  })
-    .then(async (res) => {
-      if (!res.ok) throw Error(res.status.toString());
-      const result = await res.json();
-      return result;
-    })
-    .catch((error) => {
-      console.log(error);
-      throw error;
+  async get<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    return this.fetchWithErrorHandling<T>(endpoint, {
+      ...options,
+      method: 'GET',
     });
-};
+  }
+
+  async post<T>(
+    endpoint: string,
+    body: object,
+    options: RequestInit = {},
+  ): Promise<T> {
+    return this.fetchWithErrorHandling(endpoint, {
+      ...options,
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  }
+
+  async put<T>(
+    endpoint: string,
+    body: object,
+    options: RequestInit = {},
+  ): Promise<T> {
+    return this.fetchWithErrorHandling(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+  }
+
+  async delete<T>(
+    endpoint: string,
+    body: object,
+    options: RequestInit = {},
+  ): Promise<T> {
+    return this.fetchWithErrorHandling(endpoint, {
+      ...options,
+      method: 'DELETE',
+      body: JSON.stringify(body),
+    });
+  }
+}
