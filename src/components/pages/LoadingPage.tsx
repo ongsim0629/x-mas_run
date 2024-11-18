@@ -11,48 +11,47 @@ const LoadingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 로딩하는 동안 미리 api로 nickname 받아두기
-  const getRandomNickname = async () => {
-    if (!playerId) {
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      console.log('소켓 아이디 이걸로 랜덤 닉네임 받아올게용 ->', playerId);
-
-      const response = await fetch(
-        `${import.meta.env.VITE_DEV_SERVER_URL}/user/random-nickname`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId: playerId }),
-        },
-      );
-
-      const data = await response.json();
-      console.log('생성된 랜덤 닉네임 ->', data.nickName);
-
-      if (!response.ok) {
-        throw new Error(data.msg || 'Failed to generate nickname.');
-      }
-      // 아톰값으로 랜덤 닉네임 설정!
-      setNickname(data.nickName);
-    } catch (err) {
-      console.error('Error fetching nickname:', err);
-      setError(
-        err instanceof Error ? err.message : 'An unknown error occurred.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const getRandomNickname = async () => {
+      if (!playerId) {
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        console.log('소켓 아이디 이걸로 랜덤 닉네임 받아올게용 ->', playerId);
+
+        const response = await fetch(
+          `${import.meta.env.VITE_DEV_SERVER_URL}/user/random-nickname`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: playerId }),
+          },
+        );
+
+        const data = await response.json();
+        console.log('생성된 랜덤 닉네임 ->', data.nickName);
+
+        if (!response.ok) {
+          throw new Error(data.msg || 'Failed to generate nickname.');
+        }
+        // 아톰값으로 랜덤 닉네임 설정!
+        setNickname(data.nickName);
+      } catch (err) {
+        console.error('Error fetching nickname:', err);
+        setError(
+          err instanceof Error ? err.message : 'An unknown error occurred.',
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (!playerId) return;
     getRandomNickname();
     const timer = setTimeout(() => {
