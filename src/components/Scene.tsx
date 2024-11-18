@@ -5,7 +5,7 @@ import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
 import { playerIdAtom, playersAtom } from '../atoms/PlayerAtoms';
 import { useControls } from 'leva';
-import Map from './map/Map';
+// import Map from './map/Map';
 
 const maps = {
   castle_on_hills: {
@@ -32,11 +32,12 @@ export default function Scene() {
       <Environment preset="sunset" />
       <ambientLight intensity={0.3} />
       <Physics debug>
-        <Map
+        {/* <Map
           scale={maps[map].scale}
           position={maps[map].position}
           model={`models/${map}.glb`}
-        />
+        /> */}
+        <GroundMap />
         {players.map((player) => (
           <RabbitController
             player={player}

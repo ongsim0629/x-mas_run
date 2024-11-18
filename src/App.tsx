@@ -24,22 +24,20 @@ function App() {
 
   return (
     <KeyboardControls map={keyboardMap}>
-      <SocketController>
-        {gameScreen === GameScreen.LOADING && <LoadingPage />}
-        {gameScreen === GameScreen.LOGIN && <LoginPage />}
-        {gameScreen === GameScreen.HOME && <HomePage />}
-        {gameScreen === GameScreen.MATCHING && <MatchingPage />}
-        {gameScreen === GameScreen.GAME && (
-          <Canvas
-            shadows
-            camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
-            style={{ touchAction: 'none' }}
-          >
-            <color attach="background" args={['skyblue']} />
-            <Scene />
-          </Canvas>
-        )}
-      </SocketController>
+      {gameScreen === GameScreen.LOADING && <LoadingPage />}
+      {gameScreen === GameScreen.LOGIN && <LoginPage />}
+      {gameScreen === GameScreen.HOME && <HomePage />}
+      {/* {gameScreen === GameScreen.MATCHING && <MatchingPage />} */}
+      {gameScreen === GameScreen.GAME && (
+        <Canvas
+          shadows
+          camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
+          style={{ touchAction: 'none' }}
+        >
+          <color attach="background" args={['skyblue']} />
+          <Scene />
+        </Canvas>
+      )}
     </KeyboardControls>
   );
 }

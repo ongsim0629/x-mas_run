@@ -105,11 +105,7 @@ const SocketController = ({ children }: { children: React.ReactNode }) => {
     [],
   );
 
-  return (
-    <SocketContext.Provider value={socketRef.current}>
-      {children}
-    </SocketContext.Provider>
-  );
+  return null;
 };
 
 export default SocketController;

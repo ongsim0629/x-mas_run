@@ -5,7 +5,7 @@ import { GameScreen } from '../../types/game';
 import { playerIdAtom } from '../../atoms/PlayerAtoms';
 
 const LoadingPage = () => {
-  const [, setGameScreen] = useAtom(gameScreenAtom);
+  const [gameScreen, setGameScreen] = useAtom(gameScreenAtom);
   const [playerId] = useAtom(playerIdAtom);
   const [, setNickname] = useAtom(nicknameAtom);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +51,8 @@ const LoadingPage = () => {
 
     if (!playerId) return;
     getRandomNickname();
+    console.log(gameScreen);
+
     const timer = setTimeout(() => {
       // 일단 임의로 로딩 페이지
       setGameScreen(GameScreen.LOGIN);
