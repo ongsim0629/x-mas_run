@@ -25,9 +25,8 @@ const RabbitController = ({
   player: { id, hasTail, position, velocity },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
-  const { SPEED, ROTATION_SPEED, MOUSE_SPEED } = useControls(
-    '스피드 컨트롤러🐰',
-    {
+  const { SPEED, ROTATION_SPEED, MOUSE_SPEED, JUMP_FORCE, GRAVITY } =
+    useControls('스피드 컨트롤러🐰', {
       SPEED: { value: 4, min: 0.2, max: 12, step: 0.1 },
       ROTATION_SPEED: {
         value: degToRad(0.5),
@@ -41,8 +40,9 @@ const RabbitController = ({
         max: 0.01,
         step: 0.001,
       },
-    },
-  );
+      JUMP_FORCE: { value: 5, min: 1, max: 10, step: 0.1 },
+      GRAVITY: { value: -9.81, min: -20, max: -1, step: 0.1 },
+    });
   const setPlayers = useSetAtom(playersAtom);
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
@@ -109,6 +109,8 @@ const RabbitController = ({
         const vel = rb.current.linvel();
         const pos = rb.current.translation();
 
+        const isOnGround = Math.abs(vel.y) < 0.1;
+
         const movement = {
           x: 0,
           y: 0,
@@ -119,14 +121,20 @@ const RabbitController = ({
         if (get().backward) movement.z = -1;
         if (get().left) movement.x = 1;
         if (get().right) movement.x = -1;
-        if (get().jump) movement.y = 1;
+
+        if (get().jump && isOnGround) {
+          vel.y = JUMP_FORCE;
+          setAnimation('CharacterArmature|Jump');
+        } else if (!isOnGround) {
+          vel.y += GRAVITY * 0.016; // 0.016은 60fps 시간
+        }
 
         if (movement.x !== 0 && !mouseControlRef.current?.isLocked) {
           // 전체 회전
           rotationTarget.current += ROTATION_SPEED * movement.x;
         }
 
-        if (movement.x !== 0 || movement.z !== 0) {
+        if (movement.x !== 0 || movement.z !== 0 || movement.y !== 0) {
           // 각도를 구해서 캐릭터 회전을 더함
           characterRotationTarget.current = Math.atan2(movement.x, movement.z);
           vel.x =
@@ -135,8 +143,11 @@ const RabbitController = ({
           vel.z =
             Math.cos(rotationTarget.current + characterRotationTarget.current) *
             SPEED;
-          setAnimation('CharacterArmature|Run');
-        } else {
+          // 지면에 있을 때만 달리기 애니메이션
+          if (isOnGround) {
+            setAnimation('CharacterArmature|Run');
+          }
+        } else if (isOnGround) {
           setAnimation('CharacterArmature|Idle');
         }
 
@@ -157,7 +168,7 @@ const RabbitController = ({
                     y: vel.y,
                     z: vel.z,
                   },
-                  isOnGround: Math.abs(vel.y) < 0.1,
+                  isOnGround,
                 }
               : player,
           ),
