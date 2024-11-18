@@ -21,12 +21,6 @@ const LoginPage = () => {
     setIsLoading(true);
     setError(null);
 
-    console.log(
-      '소켓 아이디랑 닉네임 이걸로 접속 시도 해볼게용 ->',
-      playerId,
-      nickname,
-    );
-
     try {
       const response = await fetch(
         `${import.meta.env.VITE_DEV_SERVER_URL}/user/enter`,
@@ -43,7 +37,6 @@ const LoginPage = () => {
       );
 
       const data = await response.json();
-      console.log('결과:', data);
 
       if (!response.ok) {
         throw new Error(data.msg || '게임 입장에 실패했습니다.');

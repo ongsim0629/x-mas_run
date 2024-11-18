@@ -21,8 +21,6 @@ const LoadingPage = () => {
       setError(null);
 
       try {
-        console.log('소켓 아이디 이걸로 랜덤 닉네임 받아올게용 ->', playerId);
-
         const response = await fetch(
           `${import.meta.env.VITE_DEV_SERVER_URL}/user/random-nickname`,
           {
@@ -35,7 +33,6 @@ const LoadingPage = () => {
         );
 
         const data = await response.json();
-        console.log('생성된 랜덤 닉네임 ->', data.nickName);
 
         if (!response.ok) {
           throw new Error(data.msg || 'Failed to generate nickname.');
