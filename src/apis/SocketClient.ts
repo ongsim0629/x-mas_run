@@ -11,10 +11,6 @@ export default class SocketClient {
     });
   }
 
-  connect() {
-    return this.socket;
-  }
-
   disconnect() {
     this.socket.removeAllListeners();
     this.socket.disconnect();
