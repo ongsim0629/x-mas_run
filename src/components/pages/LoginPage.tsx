@@ -14,13 +14,13 @@ const LoginPage = () => {
     const response = await registerPlayerQuery(player);
     setGameScreen(GameScreen.MATCHING);
     return response;
-  }, []);
+  }, [player, registerPlayerQuery, setGameScreen]);
 
   const handleNicknameChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setPlayer({ ...player, nickname: e.target.value });
     },
-    [],
+    [player, setPlayer],
   );
 
   return (

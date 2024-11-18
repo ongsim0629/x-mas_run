@@ -8,3 +8,7 @@ export enum GameScreen {
   MATCHING = 'matching',
   GAME = 'game',
 }
+
+export interface RoomInfo {
+  playerCnt: number;
+}
