@@ -22,7 +22,7 @@ const SocketController = () => {
     });
     const unsubscribeCharacters = socket.onCharactersUpdate(
       ({ characters: updatedPlayers }) => {
-        // console.log(updatedPlayers);
+        console.log(updatedPlayers);
 
         setPlayers(updatedPlayers);
       },
