@@ -10,13 +10,9 @@ const MatchingPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const { nickname } = useAtomValue(playerInfoAtom);
   const socket = useSocket();
-  const effectExecutionRef = useRef(false);
 
   useEffect(() => {
-    if (effectExecutionRef.current) return;
     if (!socket) return;
-    console.log('Effect 실행 - socket ID:', socket.id);
-    effectExecutionRef.current = true;
     socket.enterRoom();
     const unsubscribeRoomSate = socket.onRoomStateChange((roomInfo) => {
       setPlayerCount(roomInfo.playerCnt);
@@ -26,8 +22,6 @@ const MatchingPage = () => {
     });
 
     return () => {
-      console.log('Effect 정리 - socket ID:', socket.id);
-      effectExecutionRef.current = false;
       unsubscribeRoomSate();
       unsubscribeGameStart();
     };

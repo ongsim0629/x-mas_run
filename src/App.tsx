@@ -10,6 +10,7 @@ import LoginPage from './components/pages/LoginPage';
 import HomePage from './components/pages/HomePage';
 import MatchingPage from './components/pages/MatchingPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GameTimer } from './components/pages/GameTimer';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -36,14 +37,18 @@ function App() {
         {gameScreen === GameScreen.HOME && <HomePage />}
         {gameScreen === GameScreen.MATCHING && <MatchingPage />}
         {gameScreen === GameScreen.GAME && (
-          <Canvas
-            shadows
-            camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
-            style={{ touchAction: 'none' }}
-          >
-            <color attach="background" args={['skyblue']} />
-            <Scene />
-          </Canvas>
+          <div className="relative w-screen h-screen">
+            <GameTimer />
+            <Canvas
+              shadows
+              camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
+              style={{ touchAction: 'none' }}
+              className="w-full h-full"
+            >
+              <color attach="background" args={['skyblue']} />
+              <Scene />
+            </Canvas>
+          </div>
         )}
       </QueryClientProvider>
     </KeyboardControls>
