@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
@@ -10,10 +10,13 @@ const MatchingPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const { nickname } = useAtomValue(playerInfoAtom);
   const socket = useSocket();
+  const effectExecutionRef = useRef(false);
 
   useEffect(() => {
+    if (effectExecutionRef.current) return;
     if (!socket) return;
-
+    console.log('Effect 실행 - socket ID:', socket.id);
+    effectExecutionRef.current = true;
     socket.enterRoom();
     const unsubscribeRoomSate = socket.onRoomStateChange((roomInfo) => {
       setPlayerCount(roomInfo.playerCnt);
@@ -23,6 +26,8 @@ const MatchingPage = () => {
     });
 
     return () => {
+      console.log('Effect 정리 - socket ID:', socket.id);
+      effectExecutionRef.current = false;
       unsubscribeRoomSate();
       unsubscribeGameStart();
     };

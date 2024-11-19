@@ -11,8 +11,6 @@ const LoadingPage = () => {
   const { nicknameQuery } = useUser();
 
   useEffect(() => {
-    console.log('hi', playerInfo);
-
     const fetchRandomNickname = async () => {
       if (playerInfo.id) {
         const nickname = await nicknameQuery(playerInfo.id);

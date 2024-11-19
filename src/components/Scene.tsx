@@ -27,6 +27,8 @@ export default function Scene() {
       options: Object.keys(maps),
     },
   });
+  // console.log(players);
+
   return (
     <>
       <Environment preset="sunset" />

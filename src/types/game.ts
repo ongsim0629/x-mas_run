@@ -1,3 +1,5 @@
+import { Character } from './player';
+
 export interface RandomNicknameResponse {
   nickName: string;
 }
@@ -11,4 +13,9 @@ export enum GameScreen {
 
 export interface RoomInfo {
   playerCnt: number;
+}
+
+export interface GameData {
+  remainRunningTime: number;
+  characters: Character[];
 }

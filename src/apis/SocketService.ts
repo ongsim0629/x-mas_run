@@ -1,9 +1,10 @@
 import { io, Socket } from 'socket.io-client';
-import { RoomInfo } from '../types/game';
+import { GameData, RoomInfo } from '../types/game';
 import { Character, PlayerMovement } from '../types/player';
 
 export class SocketService {
   private socket: Socket;
+  private isInRoom = false;
   constructor() {
     this.socket = io(import.meta.env.VITE_DEV_SERVER_URL, {
       transports: ['websocket'],
@@ -28,12 +29,11 @@ export class SocketService {
 
   // Room 관련
   enterRoom() {
-    if (!this.connected) {
-      console.warn('Socket is not connected');
-      return;
-    }
-    console.log('Entering room with socket id:', this.id);
+    if (!this.connected) return;
+    if (this.isInRoom) return;
+
     this.socket.emit('room.enter');
+    this.isInRoom = true;
   }
 
   leaveRoom() {
@@ -59,9 +59,9 @@ export class SocketService {
     }
   }
 
-  onCharactersUpdate(handler: (characters: Character[]) => void) {
-    this.socket.on('characters', handler);
-    return () => this.socket.off('characters');
+  onCharactersUpdate(handler: (gameData: GameData) => void) {
+    this.socket.on('game.state', handler);
+    return () => this.socket.off('game.state');
   }
 
   // Connection 관련

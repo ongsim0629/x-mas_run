@@ -21,7 +21,7 @@ const SocketController = () => {
       if (socket.id) setPlayer((prev) => ({ ...prev, id: socket.id }));
     });
     const unsubscribeCharacters = socket.onCharactersUpdate(
-      (updatedPlayers) => {
+      ({ characters: updatedPlayers }) => {
         setPlayers(updatedPlayers);
       },
     );
