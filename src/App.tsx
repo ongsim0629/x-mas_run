@@ -11,6 +11,7 @@ import HomePage from './components/pages/HomePage';
 import MatchingPage from './components/pages/MatchingPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GameTimer } from './components/pages/GameTimer';
+import GameOverPage from './components/pages/GameOverPage';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -50,6 +51,7 @@ function App() {
             </Canvas>
           </div>
         )}
+        {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
       </QueryClientProvider>
     </KeyboardControls>
   );

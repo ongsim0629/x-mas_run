@@ -1,14 +1,19 @@
 import React, { useEffect } from 'react';
-import { atom, useAtom } from 'jotai';
+import { atom, useAtom, useSetAtom } from 'jotai';
+import { gameScreenAtom } from '../../atoms/GameAtoms';
+import { GameScreen } from '../../types/game';
 
 // 게임 시간을 위한 atom
 export const gameTimeAtom = atom(10); // 3분
 
 export const GameTimer = () => {
   const [timeLeft, setTimeLeft] = useAtom(gameTimeAtom);
+  const setGameScreen = useSetAtom(gameScreenAtom);
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (timeLeft <= 0) {
+      setGameScreen(GameScreen.GAME_OVER);
+    }
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
