@@ -13,7 +13,7 @@ import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
 import { Tail } from '../models/Tail';
 import TailEffect from '../effect/TailEffect';
 import { Character } from '../../types/player';
-import { useAtom, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { playersAtom } from '../../atoms/PlayerAtoms';
 
 interface RabbitControllerProps {
@@ -201,15 +201,15 @@ const RabbitController = ({
     } else {
       if (rb.current) {
         currentPosition.current = {
-          x: MathUtils.lerp(currentPosition.current.x, position.x, 0.2),
-          y: MathUtils.lerp(currentPosition.current.y, position.y, 0.2),
-          z: MathUtils.lerp(currentPosition.current.z, position.z, 0.2),
+          x: MathUtils.lerp(currentPosition.current.x, position.x, 0.15),
+          y: MathUtils.lerp(currentPosition.current.y, position.y, 0.15),
+          z: MathUtils.lerp(currentPosition.current.z, position.z, 0.15),
         };
 
         currentVelocity.current = {
-          x: MathUtils.lerp(currentVelocity.current.x, velocity.x, 0.2),
-          y: MathUtils.lerp(currentVelocity.current.y, velocity.y, 0.2),
-          z: MathUtils.lerp(currentVelocity.current.z, velocity.z, 0.2),
+          x: MathUtils.lerp(currentVelocity.current.x, velocity.x, 0.15),
+          y: MathUtils.lerp(currentVelocity.current.y, velocity.y, 0.15),
+          z: MathUtils.lerp(currentVelocity.current.z, velocity.z, 0.15),
         };
 
         // 서버에서 받은 위치로 업데이트

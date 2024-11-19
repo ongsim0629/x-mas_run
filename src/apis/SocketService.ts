@@ -5,8 +5,11 @@ import { Character, PlayerMovement } from '../types/player';
 export class SocketService {
   private socket: Socket;
   private isInRoom = false;
-  constructor() {
+  constructor(private readonly userId: string) {
     this.socket = io(import.meta.env.VITE_DEV_SERVER_URL, {
+      auth: {
+        clientId: this.userId,
+      },
       transports: ['websocket'],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -22,6 +25,10 @@ export class SocketService {
     return this.socket.connected;
   }
 
+  get getSocket() {
+    return this.socket;
+  }
+
   disconnect() {
     this.socket.removeAllListeners();
     this.socket.disconnect();
@@ -29,8 +36,13 @@ export class SocketService {
 
   // Room 관련
   enterRoom() {
+    console.log(this.socket);
+
     if (!this.connected) return;
+    console.log('들어감?1');
+
     if (this.isInRoom) return;
+    console.log('들어감?2');
 
     this.socket.emit('room.enter');
     this.isInRoom = true;

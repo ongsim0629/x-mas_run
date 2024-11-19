@@ -7,19 +7,15 @@ import useUser from '../../hooks/useUser';
 
 const LoadingPage = () => {
   const setGameScreen = useSetAtom(gameScreenAtom);
-  const [playerInfo, setPlayerInfo] = useAtom(playerInfoAtom);
+  const setPlayer = useSetAtom(playerInfoAtom);
   const { nicknameQuery } = useUser();
 
   useEffect(() => {
-    const fetchRandomNickname = async () => {
-      if (playerInfo.id) {
-        const nickname = await nicknameQuery(playerInfo.id);
-        setPlayerInfo({ ...playerInfo, nickname });
-        setGameScreen(GameScreen.LOGIN);
-      }
-    };
-    fetchRandomNickname();
-  }, [playerInfo.id]);
+    if (nicknameQuery) {
+      setPlayer((prev) => ({ ...prev, nickname: nicknameQuery }));
+      setGameScreen(GameScreen.LOGIN);
+    }
+  }, [nicknameQuery]);
 
   return (
     <div className="fixed inset-0 bg-gradient-to-b from-purple-600 to-blue-600 flex items-center justify-center">

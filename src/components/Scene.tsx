@@ -20,7 +20,7 @@ const maps = {
 
 export default function Scene() {
   const players = useAtomValue(playersAtom);
-  const { id: playerId } = useAtomValue(playerInfoAtom);
+  const { id } = useAtomValue(playerInfoAtom);
   const { map } = useControls('Map', {
     map: {
       value: 'peach_castle',
@@ -43,7 +43,7 @@ export default function Scene() {
           <RabbitController
             player={player}
             key={player.id}
-            isLocalPlayer={player.id === playerId}
+            isLocalPlayer={player.id === id}
           />
         ))}
       </Physics>

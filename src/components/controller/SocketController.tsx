@@ -16,26 +16,23 @@ const SocketController = () => {
   // 소켓 이벤트 구독
   useEffect(() => {
     if (!socket) return;
-
     const unsubscribeConnect = socket.onConnect(() => {
-      if (socket.id) setPlayer((prev) => ({ ...prev, id: socket.id }));
+      console.log('Hello~');
     });
     const unsubscribeCharacters = socket.onCharactersUpdate(
       ({ characters: updatedPlayers }) => {
-        console.log(updatedPlayers);
-
         setPlayers(updatedPlayers);
       },
     );
-    const unsubscribeDisconnect = socket.onDisconnect(
-      () => (isInitialized.current = false),
-    );
+    const unsubscribeDisconnect = socket.onDisconnect(() => {
+      isInitialized.current = false;
+    });
     return () => {
       unsubscribeConnect();
       unsubscribeCharacters();
       unsubscribeDisconnect();
     };
-  }, [socket, setPlayer, setPlayers]);
+  }, [socket?.connected, setPlayer, setPlayers]);
 
   // 플레이어 움직임 처리
   useEffect(() => {

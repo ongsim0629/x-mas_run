@@ -13,8 +13,15 @@ const MatchingPage = () => {
 
   useEffect(() => {
     if (!socket) return;
-    socket.enterRoom();
+
+    const onConnect = () => {
+      socket.enterRoom();
+    };
+
+    socket.getSocket.on('connect', onConnect);
     const unsubscribeRoomSate = socket.onRoomStateChange((roomInfo) => {
+      console.log(roomInfo);
+
       setPlayerCount(roomInfo.playerCnt);
     });
     const unsubscribeGameStart = socket.onGameStart(() => {
@@ -25,7 +32,7 @@ const MatchingPage = () => {
       unsubscribeRoomSate();
       unsubscribeGameStart();
     };
-  }, [socket, setGameScreen]);
+  }, [socket, setGameScreen, setPlayerCount]);
 
   const handleLeave = useCallback(() => {
     if (!socket) return;

@@ -1,13 +1,12 @@
-import { ApiResponse, RandomNicknameResponse } from '../types/game';
+import { RandomNicknameResponse } from '../types/game';
 import HttpClient from './HttpClient';
 
 export class UserService {
   constructor(private readonly httpClient: HttpClient) {}
 
-  async getRandomNickname(userId: string): Promise<string> {
-    const response = await this.httpClient.post<RandomNicknameResponse>(
+  async getRandomNickname(): Promise<string> {
+    const response = await this.httpClient.get<RandomNicknameResponse>(
       '/user/random-nickname',
-      { userId },
     );
     return response.nickName;
   }

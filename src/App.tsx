@@ -32,26 +32,28 @@ function App() {
   return (
     <KeyboardControls map={keyboardMap}>
       <QueryClientProvider client={queryClient}>
-        <SocketController />
         {gameScreen === GameScreen.LOADING && <LoadingPage />}
         {gameScreen === GameScreen.LOGIN && <LoginPage />}
         {gameScreen === GameScreen.HOME && <HomePage />}
-        {gameScreen === GameScreen.MATCHING && <MatchingPage />}
-        {gameScreen === GameScreen.GAME && (
-          <div className="relative w-screen h-screen">
-            <GameTimer />
-            <Canvas
-              shadows
-              camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
-              style={{ touchAction: 'none' }}
-              className="w-full h-full"
-            >
-              <color attach="background" args={['skyblue']} />
-              <Scene />
-            </Canvas>
-          </div>
-        )}
-        {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
+        <>
+          <SocketController />
+          {gameScreen === GameScreen.MATCHING && <MatchingPage />}
+          {gameScreen === GameScreen.GAME && (
+            <div className="relative w-screen h-screen">
+              <GameTimer />
+              <Canvas
+                shadows
+                camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
+                style={{ touchAction: 'none' }}
+                className="w-full h-full"
+              >
+                <color attach="background" args={['skyblue']} />
+                <Scene />
+              </Canvas>
+            </div>
+          )}
+          {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
+        </>
       </QueryClientProvider>
     </KeyboardControls>
   );

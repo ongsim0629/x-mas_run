@@ -11,14 +11,14 @@ const LoginPage = () => {
   const { registerPlayerQuery } = useGame();
 
   const handleRegisterPlayer = useCallback(async () => {
-    const response = await registerPlayerQuery(player);
+    const userId = await registerPlayerQuery(player);
     setGameScreen(GameScreen.MATCHING);
-    return response;
+    setPlayer((prev) => ({ ...prev, id: userId }));
   }, [player, registerPlayerQuery, setGameScreen]);
 
   const handleNicknameChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setPlayer({ ...player, nickname: e.target.value });
+      setPlayer((prev) => ({ ...prev, nickname: e.target.value }));
     },
     [player, setPlayer],
   );
@@ -30,9 +30,6 @@ const LoginPage = () => {
         <div className="space-y-4">
           <div className="text-gray-600">
             <p>Socket ID:</p>
-            <p className="font-mono bg-gray-100 p-2 rounded break-all">
-              {player.id || '연결 중...'}
-            </p>
             <p className="font-mono bg-gray-100 p-2 rounded break-all">
               {player.nickname || '연결 중...'}
             </p>
