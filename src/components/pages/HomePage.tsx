@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAtomValue, useAtom } from 'jotai';
-import { gameScreenAtom, nicknameAtom } from '../../atoms/GameAtoms';
+import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
+import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 
 const HomePage = () => {
-  const nickname = useAtomValue(nicknameAtom);
+  const { nickname } = useAtomValue(playerInfoAtom);
   const [, setGameScreen] = useAtom(gameScreenAtom);
 
   const handleGameStart = () => {

@@ -1,17 +1,45 @@
+import { io, Socket } from 'socket.io-client';
 import { RoomInfo } from '../types/game';
 import { Character, PlayerMovement } from '../types/player';
-import SocketClient from './SocketClient';
 
 export class SocketService {
-  constructor(private readonly socket: SocketClient) {}
+  private socket: Socket;
+  constructor() {
+    this.socket = io(import.meta.env.VITE_DEV_SERVER_URL, {
+      transports: ['websocket'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 3,
+    });
+  }
+
+  get id() {
+    return this.socket.id;
+  }
+
+  get connected() {
+    return this.socket.connected;
+  }
+
+  disconnect() {
+    this.socket.removeAllListeners();
+    this.socket.disconnect();
+  }
 
   // Room 관련
   enterRoom() {
+    if (!this.connected) {
+      console.warn('Socket is not connected');
+      return;
+    }
+    console.log('Entering room with socket id:', this.id);
     this.socket.emit('room.enter');
   }
 
   leaveRoom() {
-    this.socket.emit('room.leave');
+    if (this.connected) {
+      this.socket.emit('room.leave');
+    }
   }
 
   onRoomStateChange(handler: (state: RoomInfo) => void) {
@@ -26,7 +54,9 @@ export class SocketService {
 
   // Character 관련
   updateMovement(movement: PlayerMovement) {
-    this.socket.emit('move', movement);
+    if (this.connected) {
+      this.socket.emit('move', movement);
+    }
   }
 
   onCharactersUpdate(handler: (characters: Character[]) => void) {

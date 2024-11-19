@@ -1,79 +1,43 @@
 import { useAtom } from 'jotai';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
 import { playerInfoAtom, playersAtom } from '../../atoms/PlayerAtoms';
-import { Character, Position } from '../../types/player';
+import { Position } from '../../types/player';
 import { useKeyboardControls } from '@react-three/drei';
+import useSocket from '../../hooks/useSocket';
 
 const SocketController = () => {
-  const socketRef = useRef<Socket | null>(null);
+  const socket = useSocket();
   const prevPosition = useRef<Position>({ x: 0, y: 0, z: 0 });
   const [players, setPlayers] = useAtom(playersAtom);
   const [player, setPlayer] = useAtom(playerInfoAtom);
   const isInitialized = useRef(false);
   const [, get] = useKeyboardControls();
 
-  // 소켓 연결 설정
+  // 소켓 이벤트 구독
   useEffect(() => {
-    let isMounted = true;
+    if (!socket) return;
 
-    const initializeSocket = () => {
-      try {
-        // 기존 소켓이 있다면 정리
-        if (socketRef.current) {
-          socketRef.current.removeAllListeners();
-          socketRef.current.disconnect();
-          socketRef.current = null;
-        }
-
-        // 새로운 소켓 연결
-        const socket = io(import.meta.env.VITE_DEV_SERVER_URL, {
-          transports: ['websocket'],
-          reconnection: true,
-          reconnectionDelay: 1000,
-          reconnectionAttempts: 3,
-        });
-
-        socket.on('connect', () => {
-          if (!isMounted) return;
-          if (socket.id) {
-            setPlayer({ ...player, id: socket.id });
-          }
-        });
-
-        socket.on('characters', (updatedPlayers: Character[]) => {
-          if (!isMounted) return;
-          setPlayers(updatedPlayers);
-        });
-
-        socket.on('disconnect', () => {
-          if (!isMounted) return;
-          console.log('Bye~👻');
-          isInitialized.current = false;
-        });
-
-        socketRef.current = socket;
-      } catch (error) {
-        console.error('Socket initialization error:', error);
-      }
-    };
-
-    initializeSocket();
-
+    const unsubscribeConnect = socket.onConnect(() => {
+      if (socket.id) setPlayer((prev) => ({ ...prev, id: socket.id }));
+    });
+    const unsubscribeCharacters = socket.onCharactersUpdate(
+      (updatedPlayers) => {
+        setPlayers(updatedPlayers);
+      },
+    );
+    const unsubscribeDisconnect = socket.onDisconnect(
+      () => (isInitialized.current = false),
+    );
     return () => {
-      isMounted = false;
-      if (socketRef.current) {
-        console.log('Cleaning up socket connection');
-        socketRef.current.removeAllListeners();
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      unsubscribeConnect();
+      unsubscribeCharacters();
+      unsubscribeDisconnect();
     };
-  }, [setPlayer, setPlayers]);
+  }, [socket, setPlayer, setPlayers]);
 
+  // 플레이어 움직임 처리
   useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket?.connected || !player.id) return;
+    if (!socket || !player.id) return;
 
     const currentPlayer = players.find((p) => p.id === player.id);
     if (!currentPlayer) return;
@@ -84,11 +48,12 @@ const SocketController = () => {
       return;
     }
 
-    if (
+    const shouldUpdatePosition =
       hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
-      get().catch
-    ) {
-      socket.emit('move', {
+      get().catch;
+
+    if (shouldUpdatePosition) {
+      socket.updateMovement({
         character: currentPlayer,
         shift: get().catch,
       });

@@ -23,6 +23,6 @@ export interface PlayerMovement {
 }
 
 export interface PlayerInfo {
-  id: string | null;
+  id: string | null | undefined;
   nickname: string;
 }

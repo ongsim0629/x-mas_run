@@ -34,7 +34,7 @@ function App() {
         {gameScreen === GameScreen.LOADING && <LoadingPage />}
         {gameScreen === GameScreen.LOGIN && <LoginPage />}
         {gameScreen === GameScreen.HOME && <HomePage />}
-        {/* {gameScreen === GameScreen.MATCHING && <MatchingPage />} */}
+        {gameScreen === GameScreen.MATCHING && <MatchingPage />}
         {gameScreen === GameScreen.GAME && (
           <Canvas
             shadows

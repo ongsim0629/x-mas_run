@@ -7,7 +7,7 @@ export default class GameService {
   async registerPlayer(playerInfo: PlayerInfo): Promise<string> {
     const response = await this.httpClient.post<RandomNicknameResponse>(
       '/user/enter',
-      playerInfo,
+      { userId: playerInfo.id, nickName: playerInfo.nickname },
     );
     return response.nickName;
   }

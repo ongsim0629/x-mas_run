@@ -1,6 +1,5 @@
 import React from 'react';
 import HttpClient from '../apis/HttpClient';
-import { UserService } from '../apis/UserService';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import GameService from '../apis/GameService';
 import { PlayerInfo } from '../types/player';

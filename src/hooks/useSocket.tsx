@@ -1,22 +1,23 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { SocketService } from '../apis/SocketService';
-import SocketClient from '../apis/SocketClient';
+import { useAtom } from 'jotai';
+import { socketServiceAtom } from '../atoms/GameAtoms';
 
 const useSocket = () => {
-  const socketRef = useRef<SocketService | null>(null);
+  const [socket, setSocket] = useAtom(socketServiceAtom);
+
   useEffect(() => {
-    if (!socketRef.current) {
-      const socketClient = new SocketClient();
-      socketRef.current = new SocketService(socketClient);
-    }
-    return () => {
-      if (socketRef.current) {
-        const socket = (socketRef.current as any).socket;
-        socket.disconnect();
-      }
-    };
+    if (socket) return;
+
+    const socketService = new SocketService();
+
+    socketService.onConnect(() => {
+      console.log('usSocket에서 연결된 생태: ', socketService.id);
+    });
+    setSocket(socketService);
   }, []);
-  return socketRef;
+
+  return socket;
 };
 
 export default useSocket;
