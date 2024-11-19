@@ -4,7 +4,7 @@ import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
 
 // 게임 시간을 위한 atom
-export const gameTimeAtom = atom(10); // 3분
+export const gameTimeAtom = atom(1800); // 3분
 
 export const GameTimer = () => {
   const [timeLeft, setTimeLeft] = useAtom(gameTimeAtom);
