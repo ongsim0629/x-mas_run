@@ -8,7 +8,7 @@ export const GameTimer = () => {
   const setGameScreen = useSetAtom(gameScreenAtom);
 
   useEffect(() => {
-    if (timeLeft !== null && timeLeft <= 0) {
+    if (timeLeft !== null && timeLeft <= 1) {
       setGameScreen(GameScreen.GAME_OVER);
     }
   }, [timeLeft]);

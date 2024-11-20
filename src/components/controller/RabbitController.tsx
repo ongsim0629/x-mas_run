@@ -12,9 +12,10 @@ import { useFrame } from '@react-three/fiber';
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
 import { Tail } from '../models/Tail';
 import TailEffect from '../effect/TailEffect';
-import { Character } from '../../types/player';
+import { Character, Position } from '../../types/player';
 import { useSetAtom } from 'jotai';
 import { playersAtom } from '../../atoms/PlayerAtoms';
+import { isMovingSignificantly, lerpAngle } from '../../utils/movementCalc';
 
 interface RabbitControllerProps {
   player: Character;
@@ -59,6 +60,7 @@ const RabbitController = ({
   const rb = useRef<RapierRigidBody>();
   const container = useRef<Group>();
   const character = useRef<Group>();
+  const isInitialized = useRef(false);
 
   const mouseControlRef = useRef<any>();
   const characterRotationTarget = useRef(0);
@@ -74,6 +76,23 @@ const RabbitController = ({
   const currentVelocity = useRef(velocity);
 
   const [, get] = useKeyboardControls();
+
+  const updateAnimation = useCallback(
+    (vel: Position, isOnGround: boolean) => {
+      if (!isOnGround) return;
+      const velocityMagnitude = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
+      const isMoving = velocityMagnitude > 0.5;
+      if (
+        (isMoving && animation === 'CharacterArmature|Run') ||
+        (!isMoving && animation === 'CharacterArmature|Idle')
+      )
+        return;
+      setAnimation(
+        isMoving ? 'CharacterArmature|Run' : 'CharacterArmature|Idle',
+      );
+    },
+    [animation],
+  );
 
   // Mouse Control 부분
   useEffect(() => {
@@ -94,24 +113,7 @@ const RabbitController = ({
     return () => document.removeEventListener('mousemove', onMouseMove);
   }, [MOUSE_SPEED]);
 
-  // Keyboard Control 부분
-  const normalizeAngle = useCallback((angle: any) => {
-    while (angle > Math.PI) angle -= 2 * Math.PI;
-    while (angle < -Math.PI) angle += 2 * Math.PI;
-    return angle;
-  }, []);
-  const lerpAngle = useCallback((start: any, end: any, t: any) => {
-    start = normalizeAngle(start);
-    end = normalizeAngle(end);
-
-    if (Math.abs(end - start) > Math.PI) {
-      if (end > start) start += 2 * Math.PI;
-      else end += 2 * Math.PI;
-    }
-    return normalizeAngle(start + (end - start) * t);
-  }, []);
-
-  useFrame(({ camera }) => {
+  useFrame(({ camera }, delta) => {
     if (isLocalPlayer) {
       if (rb.current) {
         // 직선 운동 속도
@@ -209,31 +211,39 @@ const RabbitController = ({
       camera.lookAt(cameraLookAt.current);
     } else {
       if (rb.current) {
-        currentPosition.current = {
-          x: MathUtils.lerp(currentPosition.current.x, position.x, 0.15),
-          y: MathUtils.lerp(currentPosition.current.y, position.y, 0.15),
-          z: MathUtils.lerp(currentPosition.current.z, position.z, 0.15),
-        };
+        // 거리 보정
+        const distanceToTarget = Math.sqrt(
+          Math.pow(currentPosition.current.x - position.x, 2) +
+            Math.pow(currentPosition.current.z - position.z, 2),
+        );
+        if (distanceToTarget > import.meta.env.VITE_DISTANCE_THRESHOLD) {
+          currentPosition.current = { ...position };
+          currentVelocity.current = { ...velocity };
+          rb.current.setTranslation(position, true);
+          rb.current.setLinvel(velocity, true);
+        } else {
+          currentPosition.current = {
+            x: MathUtils.lerp(currentPosition.current.x, position.x, 0.1),
+            y: MathUtils.lerp(currentPosition.current.y, position.y, 0.1),
+            z: MathUtils.lerp(currentPosition.current.z, position.z, 0.1),
+          };
 
-        currentVelocity.current = {
-          x: MathUtils.lerp(currentVelocity.current.x, velocity.x, 0.15),
-          y: MathUtils.lerp(currentVelocity.current.y, velocity.y, 0.15),
-          z: MathUtils.lerp(currentVelocity.current.z, velocity.z, 0.15),
-        };
+          currentVelocity.current = {
+            x: MathUtils.lerp(currentVelocity.current.x, velocity.x, 0.1),
+            y: MathUtils.lerp(currentVelocity.current.y, velocity.y, 0.1),
+            z: MathUtils.lerp(currentVelocity.current.z, velocity.z, 0.1),
+          };
 
-        // 서버에서 받은 위치로 업데이트
-        rb.current.setTranslation(currentPosition.current, true);
-        rb.current.setLinvel(currentVelocity.current, true);
+          // 서버에서 받은 위치로 업데이트
+          rb.current.setTranslation(currentPosition.current, true);
+          rb.current.setLinvel(currentVelocity.current, true);
+        }
 
         // 애니메이션 설정
-        const isMoving =
-          Math.abs(velocity.x) > 0.1 || Math.abs(velocity.z) > 0.1;
-        setAnimation(
-          isMoving ? 'CharacterArmature|Run' : 'CharacterArmature|Idle',
-        );
+        updateAnimation(velocity, Math.abs(velocity.y) < 0.1);
 
         // 캐릭터 회전
-        if (character.current && isMoving) {
+        if (character.current && isMovingSignificantly(velocity)) {
           const targetAngle = Math.atan2(velocity.x, velocity.z);
           character.current.rotation.y = lerpAngle(
             character.current.rotation.y,
@@ -247,11 +257,12 @@ const RabbitController = ({
 
   // 초기 위치 설정
   useEffect(() => {
-    if (!isLocalPlayer && rb.current) {
+    if (!isInitialized.current && rb.current) {
       currentPosition.current = position;
       currentVelocity.current = velocity;
       rb.current.setTranslation(position, true);
       rb.current.setLinvel(velocity, true);
+      isInitialized.current = true;
     }
   }, []);
 

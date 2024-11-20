@@ -3,8 +3,6 @@ import React, { useEffect, useRef } from 'react';
 import { useFrame, useGraph } from '@react-three/fiber';
 import { useGLTF, useAnimations, Text } from '@react-three/drei';
 import { GLTF, SkeletonUtils } from 'three-stdlib';
-import { useAtomValue } from 'jotai';
-import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 
 export type RabbitActionName =
   | 'CharacterArmature|Death'
