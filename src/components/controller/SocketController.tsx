@@ -17,7 +17,7 @@ const SocketController = () => {
   useEffect(() => {
     if (!socket) return;
     const unsubscribeConnect = socket.onConnect(() => {
-      console.log('Hello~');
+      console.log('Hello');
     });
     const unsubscribeCharacters = socket.onCharactersUpdate(
       ({ characters: updatedPlayers }) => {

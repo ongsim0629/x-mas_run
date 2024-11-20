@@ -13,7 +13,10 @@ export enum GameScreen {
 }
 
 export interface RoomInfo {
+  roomId: string;
   playerCnt: number;
+  state: string;
+  maxPlayerCnt: number;
 }
 
 export interface GameData {

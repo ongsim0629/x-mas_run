@@ -20,8 +20,6 @@ const MatchingPage = () => {
 
     socket.getSocket.on('connect', onConnect);
     const unsubscribeRoomSate = socket.onRoomStateChange((roomInfo) => {
-      console.log(roomInfo);
-
       setPlayerCount(roomInfo.playerCnt);
     });
     const unsubscribeGameStart = socket.onGameStart(() => {

@@ -14,6 +14,7 @@ const useSocket = () => {
     const socketService = new SocketService(id);
 
     socketService.onConnect(() => {
+      // 이건 소켓 디버깅이 완료되면 추후에 빼겠습니다!
       console.log('usSocket에서 연결된 생태: ', socketService.id);
     });
     setSocket(socketService);
