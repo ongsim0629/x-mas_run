@@ -22,7 +22,16 @@ interface RabbitControllerProps {
 }
 
 const RabbitController = ({
-  player: { id, hasTail, position, velocity },
+  player: {
+    id,
+    hasTail,
+    position,
+    velocity,
+    nickName,
+    bellyColor,
+    hairColor,
+    bodyColor,
+  },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
   const { SPEED, ROTATION_SPEED, MOUSE_SPEED, JUMP_FORCE, GRAVITY } =
@@ -260,10 +269,11 @@ const RabbitController = ({
         <group ref={character}>
           <AnimatedRabbit
             // scale={0.18}
+            nickName={nickName}
             animation={animation}
-            bodyColor={'gold'}
-            bellyColor={'white'}
-            hairColor={'black'}
+            bodyColor={bodyColor}
+            bellyColor={bellyColor}
+            hairColor={hairColor}
           />
           {hasTail && (
             <group position={[0, 0.3, -0.2]}>
