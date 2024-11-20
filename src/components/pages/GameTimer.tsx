@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { gameScreenAtom, gameTimeAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';

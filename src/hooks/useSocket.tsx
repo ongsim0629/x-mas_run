@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { SocketService } from '../apis/SocketService';
 import { useAtom, useAtomValue } from 'jotai';
 import { socketServiceAtom } from '../atoms/GameAtoms';

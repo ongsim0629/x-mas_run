@@ -1,4 +1,3 @@
-import React from 'react';
 import HttpClient from '../apis/HttpClient';
 import { UserService } from '../apis/UserService';
 import { useQuery } from '@tanstack/react-query';
