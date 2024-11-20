@@ -133,7 +133,7 @@ const RabbitController = ({
         if (get().left) movement.x = 1;
         if (get().right) movement.x = -1;
 
-        if (get().jump && isOnGround) {
+        if (get().jump) {
           vel.y = JUMP_FORCE;
           setAnimation('CharacterArmature|Jump');
         } else if (!isOnGround) {
