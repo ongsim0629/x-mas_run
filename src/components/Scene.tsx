@@ -5,17 +5,20 @@ import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import { useControls } from 'leva';
-// import Map from './map/Map';
+import Map from './map/Map';
 
 const maps = {
-  castle_on_hills: {
-    scale: 3,
-    position: [0, -10, 0],
-  },
-  peach_castle: {
-    scale: 0.5,
+  train_town: {
+    scale: 0.1,
     position: [0, 0, 0],
+    model: 'map.glb',
   },
+  // 다른 맵 후보
+  // peach_castle: {
+  //   scale: 0.1,
+  //   position: [0, 0, 0],
+  //   model: 'map.glb',
+  // },
 };
 
 export default function Scene() {
@@ -23,22 +26,24 @@ export default function Scene() {
   const { id } = useAtomValue(playerInfoAtom);
   const { map } = useControls('Map', {
     map: {
-      value: 'peach_castle',
+      value: 'train_town',
       options: Object.keys(maps),
     },
   });
+
+  const selectedMap = maps[map];
 
   return (
     <>
       <Environment preset="sunset" />
       <ambientLight intensity={0.3} />
       <Physics debug>
-        {/* <Map
-          scale={maps[map].scale}
-          position={maps[map].position}
-          model={`models/${map}.glb`}
-        /> */}
-        <GroundMap />
+        <Map
+          scale={selectedMap.scale}
+          position={selectedMap.position}
+          model={`/maps/${selectedMap.model}`} 
+        />
+        {/* <GroundMap /> */}
         {players.map((player) => (
           <RabbitController
             player={player}
