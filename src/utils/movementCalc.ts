@@ -1,4 +1,4 @@
-import { MathUtils, Vector3Like } from 'three';
+import { MathUtils } from 'three';
 
 export const normalizeAngle = (angle: any) => {
   while (angle > Math.PI) angle -= 2 * Math.PI;

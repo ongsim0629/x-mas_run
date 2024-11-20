@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAtomValue, useAtom } from 'jotai';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';

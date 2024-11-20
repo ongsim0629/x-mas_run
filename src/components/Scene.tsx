@@ -1,24 +1,29 @@
 import { Environment } from '@react-three/drei';
-import GroundMap from './map/Ground';
 import RabbitController from './controller/RabbitController';
 import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import { useControls } from 'leva';
 import Map from './map/Map';
+import { Vector3 } from 'three';
 
-const maps = {
+type MapConfig = {
+  scale: number;
+  position: Vector3 | [number, number, number] | undefined;
+  model: string;
+};
+
+// maps 객체의 타입을 정의합니다
+type Maps = {
+  [key: string]: MapConfig;
+};
+
+const maps: Maps = {
   train_town: {
     scale: 0.1,
     position: [0, 0, 0],
     model: 'map.glb',
   },
-  // 다른 맵 후보
-  // peach_castle: {
-  //   scale: 0.1,
-  //   position: [0, 0, 0],
-  //   model: 'map.glb',
-  // },
 };
 
 export default function Scene() {
@@ -41,7 +46,7 @@ export default function Scene() {
         <Map
           scale={selectedMap.scale}
           position={selectedMap.position}
-          model={`/maps/${selectedMap.model}`} 
+          model={`/maps/${selectedMap.model}`}
         />
         {/* <GroundMap /> */}
         {players.map((player) => (

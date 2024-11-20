@@ -3,7 +3,7 @@ import {
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
 import { useControls } from 'leva';
 import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
@@ -57,16 +57,16 @@ const RabbitController = ({
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
-  const rb = useRef<RapierRigidBody>();
-  const container = useRef<Group>();
-  const character = useRef<Group>();
+  const rb = useRef<RapierRigidBody>(null);
+  const container = useRef<Group>(null);
+  const character = useRef<Group>(null);
   const isInitialized = useRef(false);
 
-  const mouseControlRef = useRef<any>();
+  const mouseControlRef = useRef<any>(null);
   const characterRotationTarget = useRef(0);
   const rotationTarget = useRef(0);
-  const cameraTarget = useRef<Group>();
-  const cameraPosition = useRef<Group>(); // 그룹 내에서의 상대적 위치
+  const cameraTarget = useRef<Group>(null);
+  const cameraPosition = useRef<Group>(null); // 그룹 내에서의 상대적 위치
   const cameraLookAtWorldPosition = useRef(new Vector3()); // cameraTarget의 절대 위치
   const cameraWorldPosition = useRef(new Vector3()); // cameraPosition의 절대 위치
   const cameraLookAt = useRef(new Vector3()); // 부드럽게 해당 위치로 회전하기 위한 Ref
@@ -113,7 +113,7 @@ const RabbitController = ({
     return () => document.removeEventListener('mousemove', onMouseMove);
   }, [MOUSE_SPEED]);
 
-  useFrame(({ camera }, delta) => {
+  useFrame(({ camera }) => {
     if (isLocalPlayer) {
       if (rb.current) {
         // 직선 운동 속도

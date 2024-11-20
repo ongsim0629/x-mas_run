@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import {
   audioEnabledAtom,
   bgAudioAtom,

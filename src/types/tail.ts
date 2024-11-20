@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 export interface EffectConfig {
   COUNT: number;
   RADIUS: number;

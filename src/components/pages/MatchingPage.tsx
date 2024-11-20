@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';

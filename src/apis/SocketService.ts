@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { GameData, RoomInfo } from '../types/game';
-import { Character, PlayerMovement } from '../types/player';
+import { PlayerMovement } from '../types/player';
 
 export class SocketService {
   private socket: Socket;

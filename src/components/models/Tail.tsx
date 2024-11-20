@@ -20,7 +20,7 @@ type GLTFResult = GLTF & {
 };
 
 export function Tail(props: JSX.IntrinsicElements['group']) {
-  const group = React.useRef<THREE.Group>();
+  const group = React.useRef<THREE.Group>(null);
   const { nodes, materials, animations } = useGLTF(
     '/models/Tail.glb',
   ) as GLTFResult;
