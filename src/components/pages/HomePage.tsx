@@ -21,7 +21,7 @@ const HomePage = () => {
           onClick={handleGameStart}
           className="px-8 py-4 bg-green-500 text-white text-xl rounded-lg hover:bg-green-600 transition-colors"
         >
-          게임 시작
+          빠른 시작
         </button>
       </div>
     </div>
