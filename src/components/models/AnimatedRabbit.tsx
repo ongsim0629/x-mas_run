@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import React, { useEffect } from 'react';
-import { useGraph } from '@react-three/fiber';
-import { useGLTF, useAnimations } from '@react-three/drei';
+import React, { useEffect, useRef } from 'react';
+import { useFrame, useGraph } from '@react-three/fiber';
+import { useGLTF, useAnimations, Text } from '@react-three/drei';
 import { GLTF, SkeletonUtils } from 'three-stdlib';
 
 export type RabbitActionName =
@@ -59,6 +59,7 @@ type AnimatedRabbitProps = {
   bodyColor: string;
   bellyColor: string;
   hairColor: string;
+  nickName: string;
 } & JSX.IntrinsicElements['group'];
 
 export function AnimatedRabbit({
@@ -66,6 +67,7 @@ export function AnimatedRabbit({
   bodyColor = 'gold',
   bellyColor = 'white',
   hairColor = 'black',
+  nickName = 'ONGSIM',
   ...props
 }: AnimatedRabbitProps) {
   const group = React.useRef<THREE.Group>(null);
@@ -73,6 +75,7 @@ export function AnimatedRabbit({
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
+  const nicknameRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
     actions[animation]?.reset().fadeIn(0.5).play();
@@ -80,9 +83,40 @@ export function AnimatedRabbit({
       actions[animation]?.fadeOut(0.5);
     };
   }, [animation]);
+  useFrame(({ camera }) => {
+    if (nicknameRef.current) {
+      nicknameRef.current.lookAt(camera.position);
+    }
+  });
 
   return (
     <group ref={group} {...props} dispose={null}>
+      {nickName && (
+        <group ref={nicknameRef}>
+          <Text
+            position-y={4}
+            fontSize={0.4}
+            anchorX="center"
+            anchorY="middle"
+            font="fonts/PaytoneOne-Regular.ttf"
+          >
+            {nickName}
+            <meshBasicMaterial color="white" />
+          </Text>
+          <Text
+            position-y={3.98}
+            position-x={0.02}
+            position-z={-0.02}
+            fontSize={0.4}
+            anchorX="center"
+            anchorY="middle"
+            font="fonts/PaytoneOne-Regular.ttf"
+          >
+            {nickName}
+            <meshBasicMaterial color="black" />
+          </Text>
+        </group>
+      )}
       <group name="Root_Scene">
         <group name="RootNode">
           <group
@@ -140,7 +174,9 @@ export function AnimatedRabbit({
               geometry={nodes.Head_3.geometry}
               material={materials.Main_Light}
               skeleton={nodes.Head_3.skeleton}
-            />
+            >
+              <meshStandardMaterial color={'#FFBE98'} />
+            </skinnedMesh>
             <skinnedMesh
               name="Head_4"
               geometry={nodes.Head_4.geometry}
@@ -174,7 +210,9 @@ export function AnimatedRabbit({
               geometry={nodes.Arms_2.geometry}
               material={materials.Main_Light}
               skeleton={nodes.Arms_2.skeleton}
-            />
+            >
+              <meshStandardMaterial color={'#FFBE98'} />
+            </skinnedMesh>
           </group>
         </group>
       </group>

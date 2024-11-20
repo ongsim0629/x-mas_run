@@ -1,15 +1,17 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { playerInfoAtom, playersAtom } from '../../atoms/PlayerAtoms';
 import { Position } from '../../types/player';
 import { useKeyboardControls } from '@react-three/drei';
 import useSocket from '../../hooks/useSocket';
+import { gameTimeAtom } from '../../atoms/GameAtoms';
 
 const SocketController = () => {
   const socket = useSocket();
   const prevPosition = useRef<Position>({ x: 0, y: 0, z: 0 });
   const [players, setPlayers] = useAtom(playersAtom);
-  const [player, setPlayer] = useAtom(playerInfoAtom);
+  const player = useAtomValue(playerInfoAtom);
+  const setTimer = useSetAtom(gameTimeAtom);
   const isInitialized = useRef(false);
   const [, get] = useKeyboardControls();
 
@@ -20,7 +22,8 @@ const SocketController = () => {
       console.log('Hello');
     });
     const unsubscribeCharacters = socket.onCharactersUpdate(
-      ({ characters: updatedPlayers }) => {
+      ({ characters: updatedPlayers, remainRunningTime }) => {
+        setTimer(remainRunningTime);
         setPlayers(updatedPlayers);
       },
     );
@@ -32,7 +35,7 @@ const SocketController = () => {
       unsubscribeCharacters();
       unsubscribeDisconnect();
     };
-  }, [socket?.connected, setPlayer, setPlayers]);
+  }, [socket?.connected, setPlayers]);
 
   // 플레이어 움직임 처리
   useEffect(() => {

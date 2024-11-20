@@ -1,26 +1,21 @@
 import React, { useEffect } from 'react';
-import { atom, useAtom, useSetAtom } from 'jotai';
-import { gameScreenAtom } from '../../atoms/GameAtoms';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { gameScreenAtom, gameTimeAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
-
-// 게임 시간을 위한 atom
-export const gameTimeAtom = atom(1800); // 3분
+import useAudio from '../../hooks/useAudio';
 
 export const GameTimer = () => {
-  const [timeLeft, setTimeLeft] = useAtom(gameTimeAtom);
+  const { setAudioEnabled } = useAudio();
+  const timeLeft = useAtomValue(gameTimeAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
 
   useEffect(() => {
-    if (timeLeft <= 0) {
+    setAudioEnabled(true);
+    if (timeLeft !== null && timeLeft <= 1) {
       setGameScreen(GameScreen.GAME_OVER);
+      setAudioEnabled(false);
     }
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [timeLeft, setAudioEnabled]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -31,9 +26,11 @@ export const GameTimer = () => {
   return (
     <div className="absolute top-4 pl-10 z-50">
       <div className="bg-black/50 backdrop-blur-sm rounded-lg px-6 py-2">
-        <div className="text-white font-bold text-2xl">
-          {formatTime(timeLeft)}
-        </div>
+        {timeLeft && (
+          <div className="text-white font-bold text-2xl">
+            {formatTime(timeLeft)}
+          </div>
+        )}
       </div>
     </div>
   );
