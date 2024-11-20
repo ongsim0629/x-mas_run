@@ -2,16 +2,20 @@ import React, { useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { gameScreenAtom, gameTimeAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
+import useAudio from '../../hooks/useAudio';
 
 export const GameTimer = () => {
+  const { setAudioEnabled } = useAudio();
   const timeLeft = useAtomValue(gameTimeAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
 
   useEffect(() => {
+    setAudioEnabled(true);
     if (timeLeft !== null && timeLeft <= 1) {
       setGameScreen(GameScreen.GAME_OVER);
+      setAudioEnabled(false);
     }
-  }, [timeLeft]);
+  }, [timeLeft, setAudioEnabled]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
