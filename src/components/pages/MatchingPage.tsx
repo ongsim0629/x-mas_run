@@ -1,40 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
-import { gameScreenAtom, nicknameAtom } from '../../atoms/GameAtoms';
+import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
-import { useSocket } from '../context/socketContext';
+import useSocket from '../../hooks/useSocket';
+import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 
 const MatchingPage = () => {
   const [playerCount, setPlayerCount] = useState(1);
   const [, setGameScreen] = useAtom(gameScreenAtom);
-  const nickname = useAtomValue(nicknameAtom);
+  const { nickname } = useAtomValue(playerInfoAtom);
   const socket = useSocket();
 
   useEffect(() => {
-    // 대기실 입장
-    socket.emit('room.enter');
+    if (!socket) return;
 
-    // 대기실 상태 변경 수신
-    socket.on('room.changeState', (data: { playerCnt: number }) => {
-      setPlayerCount(data.playerCnt);
+    const onConnect = () => {
+      socket.enterRoom();
+    };
+
+    socket.getSocket.on('connect', onConnect);
+    const unsubscribeRoomSate = socket.onRoomStateChange((roomInfo) => {
+      setPlayerCount(roomInfo.playerCnt);
     });
-
-    // 게임 시작 신호 수신
-    socket.on('game.start', () => {
+    const unsubscribeGameStart = socket.onGameStart(() => {
       setGameScreen(GameScreen.GAME);
     });
 
     return () => {
-      socket.emit('room.leave');
-      socket.off('room.changeState');
-      socket.off('game.start');
+      unsubscribeRoomSate();
+      unsubscribeGameStart();
     };
-  }, [socket, setGameScreen]);
+  }, [socket, setGameScreen, setPlayerCount]);
 
-  const handleLeave = () => {
-    socket.emit('room.leave');
+  const handleLeave = useCallback(() => {
+    if (!socket) return;
+    socket.leaveRoom();
     setGameScreen(GameScreen.HOME);
-  };
+  }, [socket, setGameScreen]);
 
   return (
     <div className="fixed inset-0 bg-gradient-to-b from-purple-600 to-blue-600 flex items-center justify-center">

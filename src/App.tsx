@@ -9,6 +9,9 @@ import LoadingPage from './components/pages/LoadingPage';
 import LoginPage from './components/pages/LoginPage';
 import HomePage from './components/pages/HomePage';
 import MatchingPage from './components/pages/MatchingPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GameTimer } from './components/pages/GameTimer';
+import GameOverPage from './components/pages/GameOverPage';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -20,26 +23,38 @@ const keyboardMap = [
 ];
 
 function App() {
+  // 추후 아래 defaultOptions에서 error 처리 설정
+  const queryClient = new QueryClient({
+    defaultOptions: {},
+  });
   const [gameScreen] = useAtom(gameScreenAtom);
 
   return (
     <KeyboardControls map={keyboardMap}>
-      <SocketController>
+      <QueryClientProvider client={queryClient}>
         {gameScreen === GameScreen.LOADING && <LoadingPage />}
         {gameScreen === GameScreen.LOGIN && <LoginPage />}
         {gameScreen === GameScreen.HOME && <HomePage />}
-        {gameScreen === GameScreen.MATCHING && <MatchingPage />}
-        {gameScreen === GameScreen.GAME && (
-          <Canvas
-            shadows
-            camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
-            style={{ touchAction: 'none' }}
-          >
-            <color attach="background" args={['skyblue']} />
-            <Scene />
-          </Canvas>
-        )}
-      </SocketController>
+        <>
+          <SocketController />
+          {gameScreen === GameScreen.MATCHING && <MatchingPage />}
+          {gameScreen === GameScreen.GAME && (
+            <div className="relative w-screen h-screen">
+              <GameTimer />
+              <Canvas
+                shadows
+                camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
+                style={{ touchAction: 'none' }}
+                className="w-full h-full"
+              >
+                <color attach="background" args={['skyblue']} />
+                <Scene />
+              </Canvas>
+            </div>
+          )}
+          {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
+        </>
+      </QueryClientProvider>
     </KeyboardControls>
   );
 }

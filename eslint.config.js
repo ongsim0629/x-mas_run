@@ -24,6 +24,7 @@ export default [
     },
     rules: {
       ...airbnbConfig.rules,
+      'react-hooks/exhaustive-deps': 'warn',
       // Airbnb 스타일의 일부 규칙을 프로젝트에 맞게 수정
       'react/react-in-jsx-scope': 'off', // React 17+ 에서는 불필요
       'react/jsx-filename-extension': [

@@ -1,82 +1,44 @@
 import { useAtom } from 'jotai';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { playerIdAtom, playersAtom } from '../../atoms/PlayerAtoms';
-import { Character, Position } from '../../types/player';
+import { playerInfoAtom, playersAtom } from '../../atoms/PlayerAtoms';
+import { Position } from '../../types/player';
 import { useKeyboardControls } from '@react-three/drei';
-import { SocketContext } from '../context/socketContext';
+import useSocket from '../../hooks/useSocket';
 
-const SocketController = ({ children }: { children: React.ReactNode }) => {
-  const socketRef = useRef<Socket | null>(null);
+const SocketController = () => {
+  const socket = useSocket();
   const prevPosition = useRef<Position>({ x: 0, y: 0, z: 0 });
   const [players, setPlayers] = useAtom(playersAtom);
-  const [playerId, setPlayerId] = useAtom(playerIdAtom);
+  const [player, setPlayer] = useAtom(playerInfoAtom);
   const isInitialized = useRef(false);
   const [, get] = useKeyboardControls();
 
-  // 소켓 연결 설정
+  // 소켓 이벤트 구독
   useEffect(() => {
-    let isMounted = true;
-
-    const initializeSocket = () => {
-      try {
-        // 기존 소켓이 있다면 정리
-        if (socketRef.current) {
-          socketRef.current.removeAllListeners();
-          socketRef.current.disconnect();
-          socketRef.current = null;
-        }
-
-        // 새로운 소켓 연결
-        const socket = io(import.meta.env.VITE_DEV_SERVER_URL, {
-          transports: ['websocket'],
-          reconnection: true,
-          reconnectionDelay: 1000,
-          reconnectionAttempts: 3,
-        });
-
-        socket.on('connect', () => {
-          if (!isMounted) return;
-          if (socket.id) {
-            setPlayerId(socket.id);
-          }
-        });
-
-        socket.on('characters', (updatedPlayers: Character[]) => {
-          if (!isMounted) return;
-          setPlayers(updatedPlayers);
-        });
-
-        socket.on('disconnect', () => {
-          if (!isMounted) return;
-          console.log('Bye~👻');
-          isInitialized.current = false;
-        });
-
-        socketRef.current = socket;
-      } catch (error) {
-        console.error('Socket initialization error:', error);
-      }
-    };
-
-    initializeSocket();
-
+    if (!socket) return;
+    const unsubscribeConnect = socket.onConnect(() => {
+      console.log('Hello');
+    });
+    const unsubscribeCharacters = socket.onCharactersUpdate(
+      ({ characters: updatedPlayers }) => {
+        setPlayers(updatedPlayers);
+      },
+    );
+    const unsubscribeDisconnect = socket.onDisconnect(() => {
+      isInitialized.current = false;
+    });
     return () => {
-      isMounted = false;
-      if (socketRef.current) {
-        console.log('Cleaning up socket connection');
-        socketRef.current.removeAllListeners();
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
+      unsubscribeConnect();
+      unsubscribeCharacters();
+      unsubscribeDisconnect();
     };
-  }, [setPlayerId, setPlayers]);
+  }, [socket?.connected, setPlayer, setPlayers]);
 
+  // 플레이어 움직임 처리
   useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket?.connected || !playerId) return;
+    if (!socket || !player.id) return;
 
-    const currentPlayer = players.find((p) => p.id === playerId);
+    const currentPlayer = players.find((p) => p.id === player.id);
     if (!currentPlayer) return;
 
     if (!isInitialized.current) {
@@ -85,15 +47,18 @@ const SocketController = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    if (hasSignificantMovement(currentPlayer.position, prevPosition.current)) {
-      socket.emit('move', {
+    const shouldUpdatePosition =
+      hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
+      get().catch;
+
+    if (shouldUpdatePosition) {
+      socket.updateMovement({
         character: currentPlayer,
         shift: get().catch,
-        timestamp: Date.now(),
       });
       prevPosition.current = currentPlayer.position;
     }
-  }, [playerId, players, get]);
+  }, [player.id, players, get]);
 
   const hasSignificantMovement = useCallback(
     (current: Position, prev: Position): boolean =>
@@ -103,11 +68,7 @@ const SocketController = ({ children }: { children: React.ReactNode }) => {
     [],
   );
 
-  return (
-    <SocketContext.Provider value={socketRef.current}>
-      {children}
-    </SocketContext.Provider>
-  );
+  return null;
 };
 
 export default SocketController;
