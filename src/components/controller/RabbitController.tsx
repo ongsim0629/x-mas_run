@@ -45,7 +45,7 @@ const RabbitController = ({
         step: degToRad(0.1),
       },
       MOUSE_SPEED: {
-        value: 0.002,
+        value: 0.003,
         min: 0.001,
         max: 0.01,
         step: 0.001,
