@@ -29,12 +29,12 @@ export const audioInstanceAtom = atom<Record<BGMAudioType, AudioInstance>>({
 });
 
 export const playBGMAudioAtom = atom(null, (get, _, type: BGMAudioType) => {
-  if (!get(audioEnabledAtom)) return;
   const instances = get(audioInstanceAtom);
   Object.values(instances).forEach(({ audio }) => {
     audio.pause();
     audio.currentTime = 0;
   });
+  if (!get(audioEnabledAtom)) return;
 
   const selectedAudio = instances[type];
   if (selectedAudio) {
