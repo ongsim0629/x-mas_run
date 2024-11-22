@@ -1,16 +1,24 @@
 import { useEffect } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { gameScreenAtom, gameTimeAtom } from '../../atoms/GameAtoms';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import {
+  gameScreenAtom,
+  gameTimeAtom,
+  playAudioAtom,
+} from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
 import useAudio from '../../hooks/useAudio';
 
 export const GameTimer = () => {
   const { setAudioEnabled } = useAudio();
+  const [, playAudio] = useAtom(playAudioAtom);
   const timeLeft = useAtomValue(gameTimeAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
 
   useEffect(() => {
     setAudioEnabled(true);
+    if (timeLeft !== null && timeLeft <= 10) {
+      playAudio('beep2');
+    }
     if (timeLeft !== null && timeLeft <= 1) {
       setGameScreen(GameScreen.GAME_OVER);
     }

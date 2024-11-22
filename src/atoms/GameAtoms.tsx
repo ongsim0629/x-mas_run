@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { GameScreen } from '../types/game';
+import { AudioInstance, BGMAudioType, GameScreen } from '../types/game';
 import { SocketService } from '../apis/SocketService';
 
 export const gameScreenAtom = atom<GameScreen>(GameScreen.LOADING);
@@ -13,11 +13,35 @@ export const socketStatusAtom = atom<
 
 export const gameTimeAtom = atom<number | null>(null);
 
-export const audioEnabledAtom = atom(false);
+// Audio
+const createAudio = (file: string, loop: boolean = false): AudioInstance => ({
+  audio: new Audio(`/audio/${file}.mp3`),
+  loop,
+});
 
+export const audioEnabledAtom = atom(false);
 export const lastAudioPlayedAtom = atom(new Date().getTime());
 
-export const bgAudioAtom = atom(new Audio('/audio/bgm.mp3'));
+export const audioInstanceAtom = atom<Record<BGMAudioType, AudioInstance>>({
+  bgm: createAudio('bgm', true),
+  lobby: createAudio('lobby', true),
+  gameover: createAudio('gameover', true),
+});
+
+export const playBGMAudioAtom = atom(null, (get, set, type: BGMAudioType) => {
+  if (!get(audioEnabledAtom)) return;
+  const instances = get(audioInstanceAtom);
+  Object.values(instances).forEach(({ audio }) => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
+
+  const selectedAudio = instances[type];
+  if (selectedAudio) {
+    selectedAudio.audio.loop = selectedAudio.loop;
+    selectedAudio.audio.play();
+  }
+});
 
 export const playAudioAtom = atom(
   null,

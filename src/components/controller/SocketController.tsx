@@ -7,7 +7,7 @@ import useSocket from '../../hooks/useSocket';
 import { gameTimeAtom } from '../../atoms/GameAtoms';
 
 const SocketController = () => {
-  const { socket, connected } = useSocket();
+  const { socket } = useSocket();
   const prevPosition = useRef<Position>({ x: 0, y: 0, z: 0 });
   const [players, setPlayers] = useAtom(playersAtom);
   const player = useAtomValue(playerInfoAtom);
@@ -21,8 +21,6 @@ const SocketController = () => {
 
   // 소켓 이벤트 구독
   useEffect(() => {
-    console.log(socket);
-
     if (!socket) return;
     const unsubscribeConnect = socket.onConnect(() => {
       console.log('Hello');

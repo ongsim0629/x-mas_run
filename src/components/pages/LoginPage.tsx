@@ -1,14 +1,19 @@
-import { ChangeEvent, useCallback } from 'react';
+import { ChangeEvent, useCallback, useEffect } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
 import useGame from '../../hooks/useGame';
+import useAudio from '../../hooks/useAudio';
 
 const LoginPage = () => {
   const [player, setPlayer] = useAtom(playerInfoAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
   const { registerPlayerQuery } = useGame();
+  const { setAudioEnabled } = useAudio();
+  const handleAudioClick = () => {
+    setAudioEnabled((prev) => !prev);
+  };
 
   const handleRegisterPlayer = useCallback(async () => {
     const userId = await registerPlayerQuery(player);
@@ -25,6 +30,7 @@ const LoginPage = () => {
 
   return (
     <div className="fixed inset-0 bg-gradient-to-b from-purple-600 to-blue-600 flex items-center justify-center">
+      <button onClick={handleAudioClick}>소리 켜기</button>
       <div className="bg-white p-8 rounded-lg shadow-xl w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">게임 참가</h2>
         <div className="space-y-4">

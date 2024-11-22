@@ -4,14 +4,17 @@ import { GameScreen } from '../../types/game';
 import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 import useAudio from '../../hooks/useAudio';
 import { useEffect } from 'react';
+import useSocket from '../../hooks/useSocket';
 
 const GameOverPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const { nickname } = useAtomValue(playerInfoAtom);
   const { setAudioEnabled } = useAudio();
+  const { socket } = useSocket();
 
   useEffect(() => {
     setAudioEnabled(false);
+    socket?.leaveRoom();
   }, []);
 
   const handlePlayAgain = () => {

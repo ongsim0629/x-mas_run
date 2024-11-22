@@ -13,9 +13,11 @@ import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
 import { Tail } from '../models/Tail';
 import TailEffect from '../effect/TailEffect';
 import { Character, Position } from '../../types/player';
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { playersAtom } from '../../atoms/PlayerAtoms';
 import { isMovingSignificantly, lerpAngle } from '../../utils/movementCalc';
+import useAudio from '../../hooks/useAudio';
+import { playAudioAtom } from '../../atoms/GameAtoms';
 
 interface RabbitControllerProps {
   player: Character;
@@ -57,6 +59,7 @@ const RabbitController = ({
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
+  const [, playAudio] = useAtom(playAudioAtom);
   const rb = useRef<RapierRigidBody>(null);
   const container = useRef<Group>(null);
   const character = useRef<Group>(null);
@@ -138,6 +141,7 @@ const RabbitController = ({
         if (get().right) movement.x = -1;
 
         if (get().jump) {
+          playAudio('jump');
           vel.y = JUMP_FORCE;
           setAnimation('CharacterArmature|Jump');
         } else if (!isOnGround) {
@@ -161,6 +165,7 @@ const RabbitController = ({
         }
 
         if (get().catch && !isPunching.current) {
+          playAudio('punch');
           isPunching.current = true;
           setAnimation('CharacterArmature|Punch');
           punchAnimationTimer.current = setTimeout(
