@@ -1,25 +1,30 @@
-import { ChangeEvent, useCallback } from 'react';
+import { ChangeEvent, FormEvent, useCallback } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
 import useGame from '../../hooks/useGame';
 import useAudio from '../../hooks/useAudio';
+import { FaBell, FaBellSlash } from 'react-icons/fa';
 
 const LoginPage = () => {
   const [player, setPlayer] = useAtom(playerInfoAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
   const { registerPlayerQuery } = useGame();
-  const { setAudioEnabled } = useAudio();
+  const { audioEnabled, setAudioEnabled } = useAudio();
   const handleAudioClick = () => {
     setAudioEnabled((prev) => !prev);
   };
 
-  const handleRegisterPlayer = useCallback(async () => {
-    const userId = await registerPlayerQuery(player);
-    setGameScreen(GameScreen.HOME);
-    setPlayer((prev) => ({ ...prev, id: userId }));
-  }, [player, registerPlayerQuery, setGameScreen]);
+  const handleRegisterPlayer = useCallback(
+    async (e: FormEvent<HTMLElement>) => {
+      e.preventDefault();
+      const userId = await registerPlayerQuery(player);
+      setGameScreen(GameScreen.HOME);
+      setPlayer((prev) => ({ ...prev, id: userId }));
+    },
+    [player, registerPlayerQuery, setGameScreen],
+  );
 
   const handleNicknameChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,46 +40,48 @@ const LoginPage = () => {
         loop
         muted
         className="absolute w-full h-full object-cover"
+        aria-label="xmas-background-video"
       >
-        <source
-          src="https://res.cloudinary.com/dkjk8h8zd/video/upload/v1732280817/loginBg_o3yehd.mp4"
-          type="video/mp4"
-        />
+        <source src={import.meta.env.VITE_VIDEO_URL} type="video/mp4" />
       </video>
       {/**#FC504D */}
       <div className="relative z-10 flex flex-col">
-        <button className="text-right" onClick={handleAudioClick}>
-          소리 켜기
+        <button
+          className="flex justify-end"
+          onClick={handleAudioClick}
+          type="button"
+          aria-label="sound-button"
+        >
+          {audioEnabled ? (
+            <FaBell className="w-10 h-10 cursor-pointer text-white my-2 hover:scale-110" />
+          ) : (
+            <FaBellSlash className="w-10 h-10 cursor-pointer text-white my-2 hover:scale-110" />
+          )}
         </button>
-        <div className="flex flex-col items-center justify-center bg-white p-8 rounded-lg shadow-xl w-96">
-          <div className="text-gray-600">
-            <p>Socket ID:</p>
-            <p className="font-mono bg-gray-100 p-2 rounded break-all">
-              {player.nickname || '연결 중...'}
-            </p>
-          </div>
-          <>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                닉네임
-              </label>
+        <div>
+          <form
+            onSubmit={handleRegisterPlayer}
+            className="flex flex-col justify-center gap-6 bg-white p-8 rounded-lg shadow-xl min-w-96"
+            aria-label="signIn-form"
+          >
+            <div className="flex flex-col gap-2">
+              <label className="text-lg font-semibold">닉네임</label>
               <input
                 aria-label="nickname-input"
                 type="text"
                 onChange={handleNicknameChange}
                 placeholder={player.nickname || '닉네임을 입력하세요'}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full text-lg p-3 border border-gray-300 rounded focus:outline-none"
               />
+              <small className="ml-1">게스트모드로 바로 입장가능해요🧑‍🎄</small>
             </div>
-            <div className="space-y-2 mt-6">
-              <button
-                onClick={handleRegisterPlayer}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                입장하기
-              </button>
-            </div>
-          </>
+            <button
+              type="submit"
+              className="w-full bg-0-accentColor text-white py-3 rounded hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+            >
+              입장하기
+            </button>
+          </form>
         </div>
       </div>
     </div>
