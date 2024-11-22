@@ -9,16 +9,12 @@ const MatchingPage = () => {
   const [playerCount, setPlayerCount] = useState(1);
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const { nickname } = useAtomValue(playerInfoAtom);
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   useEffect(() => {
     if (!socket) return;
 
-    const onConnect = () => {
-      socket.enterRoom();
-    };
-
-    socket.getSocket.on('connect', onConnect);
+    socket.enterRoom();
     const unsubscribeRoomSate = socket.onRoomStateChange((roomInfo) => {
       setPlayerCount(roomInfo.playerCnt);
     });

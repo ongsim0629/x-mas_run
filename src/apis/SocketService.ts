@@ -5,6 +5,7 @@ import { PlayerMovement } from '../types/player';
 export class SocketService {
   private socket: Socket;
   private isInRoom = false;
+  private static instance: SocketService | null = null;
   constructor(private readonly userId: string) {
     this.socket = io(import.meta.env.VITE_DEV_SERVER_URL, {
       auth: {
@@ -17,16 +18,17 @@ export class SocketService {
     });
   }
 
+  public static getInstance(userId: string): SocketService {
+    if (!this.instance) this.instance = new SocketService(userId);
+    return this.instance;
+  }
+
   get id() {
     return this.socket.id;
   }
 
   get connected() {
     return this.socket.connected;
-  }
-
-  get getSocket() {
-    return this.socket;
   }
 
   disconnect() {

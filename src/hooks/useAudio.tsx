@@ -1,29 +1,30 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect } from 'react';
 import {
   audioEnabledAtom,
-  bgAudioAtom,
-  playAudioAtom,
+  gameScreenAtom,
+  playBGMAudioAtom,
 } from '../atoms/GameAtoms';
+import { GameScreen } from '../types/game';
 
 const useAudio = () => {
   const [audioEnabled, setAudioEnabled] = useAtom(audioEnabledAtom);
-  const [, playAudio] = useAtom(playAudioAtom);
-  const [bgAudio] = useAtom(bgAudioAtom);
+  const [, playBGMAudio] = useAtom(playBGMAudioAtom);
+  const gameScreen = useAtomValue(gameScreenAtom);
 
   useEffect(() => {
-    if (audioEnabled) {
-      bgAudio.play();
-      bgAudio.loop = true;
-    } else {
-      bgAudio.pause();
+    if (!audioEnabled) {
+      playBGMAudio('bgm');
+      return;
     }
-  }, [audioEnabled, bgAudio]);
+    if (gameScreen === GameScreen.GAME) playBGMAudio('bgm');
+    else if (gameScreen === GameScreen.GAME_OVER) playBGMAudio('gameover');
+    else playBGMAudio('lobby');
+  }, [audioEnabled, gameScreen, playBGMAudio]);
 
   return {
     audioEnabled,
     setAudioEnabled,
-    playAudio,
   };
 };
 

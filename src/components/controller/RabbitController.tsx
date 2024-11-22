@@ -13,9 +13,11 @@ import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
 import { Tail } from '../models/Tail';
 import TailEffect from '../effect/TailEffect';
 import { Character, Position } from '../../types/player';
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { playersAtom } from '../../atoms/PlayerAtoms';
 import { isMovingSignificantly, lerpAngle } from '../../utils/movementCalc';
+import useAudio from '../../hooks/useAudio';
+import { playAudioAtom } from '../../atoms/GameAtoms';
 
 interface RabbitControllerProps {
   player: Character;
@@ -37,7 +39,7 @@ const RabbitController = ({
 }: RabbitControllerProps): JSX.Element => {
   const { SPEED, ROTATION_SPEED, MOUSE_SPEED, JUMP_FORCE, GRAVITY } =
     useControls('스피드 컨트롤러🐰', {
-      SPEED: { value: 4, min: 0.2, max: 12, step: 0.1 },
+      SPEED: { value: 6, min: 0.2, max: 12, step: 0.1 },
       ROTATION_SPEED: {
         value: degToRad(0.5),
         min: degToRad(0.1),
@@ -45,7 +47,7 @@ const RabbitController = ({
         step: degToRad(0.1),
       },
       MOUSE_SPEED: {
-        value: 0.002,
+        value: 0.003,
         min: 0.001,
         max: 0.01,
         step: 0.001,
@@ -57,10 +59,15 @@ const RabbitController = ({
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
+  const [, playAudio] = useAtom(playAudioAtom);
   const rb = useRef<RapierRigidBody>(null);
   const container = useRef<Group>(null);
   const character = useRef<Group>(null);
+  // 위치 초기화
   const isInitialized = useRef(false);
+  // 뺏는 액션 시간 제한
+  const punchAnimationTimer = useRef<NodeJS.Timeout | null>(null);
+  const isPunching = useRef(false);
 
   const mouseControlRef = useRef<any>(null);
   const characterRotationTarget = useRef(0);
@@ -113,7 +120,7 @@ const RabbitController = ({
     return () => document.removeEventListener('mousemove', onMouseMove);
   }, [MOUSE_SPEED]);
 
-  useFrame(({ camera }) => {
+  useFrame(({ camera }, delta) => {
     if (isLocalPlayer) {
       if (rb.current) {
         // 직선 운동 속도
@@ -134,6 +141,7 @@ const RabbitController = ({
         if (get().right) movement.x = -1;
 
         if (get().jump) {
+          playAudio('jump');
           vel.y = JUMP_FORCE;
           setAnimation('CharacterArmature|Jump');
         } else if (!isOnGround) {
@@ -154,12 +162,20 @@ const RabbitController = ({
           vel.z =
             Math.cos(rotationTarget.current + characterRotationTarget.current) *
             SPEED;
-          // 지면에 있을 때만 달리기 애니메이션
-          if (isOnGround) {
+        }
+
+        if (get().catch && !isPunching.current) {
+          playAudio('punch');
+          isPunching.current = true;
+          setAnimation('CharacterArmature|Punch');
+          punchAnimationTimer.current = setTimeout(
+            () => (isPunching.current = false),
+            500,
+          );
+        } else if (!isPunching.current && isOnGround) {
+          if (movement.x !== 0 || movement.z !== 0)
             setAnimation('CharacterArmature|Run');
-          }
-        } else if (isOnGround) {
-          setAnimation('CharacterArmature|Idle');
+          else setAnimation('CharacterArmature|Idle');
         }
 
         rb.current.setLinvel(vel, true);
@@ -222,10 +238,16 @@ const RabbitController = ({
           rb.current.setTranslation(position, true);
           rb.current.setLinvel(velocity, true);
         } else {
+          const predictPosition = {
+            x: currentPosition.current.x + currentVelocity.current.x * delta,
+            y: currentPosition.current.y + currentVelocity.current.y * delta,
+            z: currentPosition.current.z + currentVelocity.current.z * delta,
+          };
+
           currentPosition.current = {
-            x: MathUtils.lerp(currentPosition.current.x, position.x, 0.1),
-            y: MathUtils.lerp(currentPosition.current.y, position.y, 0.1),
-            z: MathUtils.lerp(currentPosition.current.z, position.z, 0.1),
+            x: MathUtils.lerp(predictPosition.x, position.x, 0.1),
+            y: MathUtils.lerp(predictPosition.y, position.y, 0.1),
+            z: MathUtils.lerp(predictPosition.z, position.z, 0.1),
           };
 
           currentVelocity.current = {
@@ -264,6 +286,13 @@ const RabbitController = ({
       rb.current.setLinvel(velocity, true);
       isInitialized.current = true;
     }
+  }, []);
+  useEffect(() => {
+    return () => {
+      if (punchAnimationTimer.current) {
+        clearTimeout(punchAnimationTimer.current);
+      }
+    };
   }, []);
 
   return (

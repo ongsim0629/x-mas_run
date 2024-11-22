@@ -23,3 +23,9 @@ export interface GameData {
   remainRunningTime: number;
   characters: Character[];
 }
+
+export type BGMAudioType = 'bgm' | 'lobby' | 'gameover';
+export interface AudioInstance {
+  audio: HTMLAudioElement;
+  loop: boolean;
+}
