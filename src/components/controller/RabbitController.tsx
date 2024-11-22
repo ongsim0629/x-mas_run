@@ -72,6 +72,7 @@ const RabbitController = ({
   const mouseControlRef = useRef<any>(null);
   const characterRotationTarget = useRef(0);
   const rotationTarget = useRef(0);
+  const rotationTargetY = useRef(0);
   const cameraTarget = useRef<Group>(null);
   const cameraPosition = useRef<Group>(null); // 그룹 내에서의 상대적 위치
   const cameraLookAtWorldPosition = useRef(new Vector3()); // cameraTarget의 절대 위치
@@ -113,8 +114,16 @@ const RabbitController = ({
 
   useEffect(() => {
     const onMouseMove = (event: MouseEvent) => {
-      if (mouseControlRef.current?.isLocked)
+      if (mouseControlRef.current?.isLocked) {
+        // x축 회전
         rotationTarget.current -= event.movementX * MOUSE_SPEED;
+        // y축 회전 (최대, 최소 제한)
+        rotationTargetY.current = MathUtils.clamp(
+          rotationTargetY.current - event.movementY * MOUSE_SPEED,
+          -0.5,
+          0.3,
+        );
+      }
     };
     document.addEventListener('mousemove', onMouseMove);
     return () => document.removeEventListener('mousemove', onMouseMove);
@@ -214,6 +223,18 @@ const RabbitController = ({
           container.current.rotation.y,
           rotationTarget.current,
           0.1,
+        );
+      }
+
+      if (cameraPosition.current && cameraTarget.current) {
+        // 카메라 수직 회전 적용
+        const verticalOffset = Math.sin(rotationTargetY.current) * 15;
+        const horizontalDistance = Math.cos(rotationTargetY.current) * 15;
+
+        cameraPosition.current.position.set(
+          0,
+          10 + verticalOffset,
+          -horizontalDistance,
         );
       }
 
