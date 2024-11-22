@@ -16,7 +16,6 @@ import { Character, Position } from '../../types/player';
 import { useAtom, useSetAtom } from 'jotai';
 import { playersAtom } from '../../atoms/PlayerAtoms';
 import { isMovingSignificantly, lerpAngle } from '../../utils/movementCalc';
-import useAudio from '../../hooks/useAudio';
 import { playAudioAtom } from '../../atoms/GameAtoms';
 
 interface RabbitControllerProps {
