@@ -29,11 +29,24 @@ const LoginPage = () => {
   );
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-b from-purple-600 to-blue-600 flex items-center justify-center">
-      <button onClick={handleAudioClick}>소리 켜기</button>
-      <div className="bg-white p-8 rounded-lg shadow-xl w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">게임 참가</h2>
-        <div className="space-y-4">
+    <div className="fixed inset-0 flex items-center justify-center">
+      <video
+        autoPlay
+        loop
+        muted
+        className="absolute w-full h-full object-cover"
+      >
+        <source
+          src="https://res.cloudinary.com/dkjk8h8zd/video/upload/v1732280817/loginBg_o3yehd.mp4"
+          type="video/mp4"
+        />
+      </video>
+      {/**#FC504D */}
+      <div className="relative z-10 flex flex-col">
+        <button className="text-right" onClick={handleAudioClick}>
+          소리 켜기
+        </button>
+        <div className="flex flex-col items-center justify-center bg-white p-8 rounded-lg shadow-xl w-96">
           <div className="text-gray-600">
             <p>Socket ID:</p>
             <p className="font-mono bg-gray-100 p-2 rounded break-all">
