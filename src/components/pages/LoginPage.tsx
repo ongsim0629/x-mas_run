@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect } from 'react';
+import { ChangeEvent, useCallback } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
