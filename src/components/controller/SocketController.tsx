@@ -15,6 +15,10 @@ const SocketController = () => {
   const isInitialized = useRef(false);
   const [, get] = useKeyboardControls();
 
+  // shift 쿨타임 관리 ref 추가
+  const shiftCooldown = useRef(false);
+  const shiftCooldownTimer = useRef<NodeJS.Timeout | null>(null);
+
   // 소켓 이벤트 구독
   useEffect(() => {
     if (!socket) return;
@@ -37,6 +41,12 @@ const SocketController = () => {
     };
   }, [socket?.connected, setPlayers]);
 
+  useEffect(() => {
+    return () => {
+      if (shiftCooldownTimer.current) clearTimeout(shiftCooldownTimer.current);
+    };
+  }, []);
+
   // 플레이어 움직임 처리
   useEffect(() => {
     if (!socket || !player.id) return;
@@ -57,8 +67,16 @@ const SocketController = () => {
     if (shouldUpdatePosition) {
       socket.updateMovement({
         character: currentPlayer,
-        shift: get().catch,
+        shift: get().catch && !shiftCooldown.current, // 쿨다운 중이면 false전송
       });
+
+      if (get().catch && !shiftCooldown.current) {
+        shiftCooldown.current = true;
+        shiftCooldownTimer.current = setTimeout(() => {
+          shiftCooldown.current = false;
+        }, 500);
+      }
+
       prevPosition.current = currentPlayer.position;
     }
   }, [player.id, players, get]);
