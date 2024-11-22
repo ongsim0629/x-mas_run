@@ -37,7 +37,7 @@ const RabbitController = ({
 }: RabbitControllerProps): JSX.Element => {
   const { SPEED, ROTATION_SPEED, MOUSE_SPEED, JUMP_FORCE, GRAVITY } =
     useControls('스피드 컨트롤러🐰', {
-      SPEED: { value: 4, min: 0.2, max: 12, step: 0.1 },
+      SPEED: { value: 6, min: 0.2, max: 12, step: 0.1 },
       ROTATION_SPEED: {
         value: degToRad(0.5),
         min: degToRad(0.1),
@@ -60,7 +60,11 @@ const RabbitController = ({
   const rb = useRef<RapierRigidBody>(null);
   const container = useRef<Group>(null);
   const character = useRef<Group>(null);
+  // 위치 초기화
   const isInitialized = useRef(false);
+  // 뺏는 액션 시간 제한
+  const punchAnimationTimer = useRef<NodeJS.Timeout | null>(null);
+  const isPunching = useRef(false);
 
   const mouseControlRef = useRef<any>(null);
   const characterRotationTarget = useRef(0);
@@ -113,7 +117,7 @@ const RabbitController = ({
     return () => document.removeEventListener('mousemove', onMouseMove);
   }, [MOUSE_SPEED]);
 
-  useFrame(({ camera }) => {
+  useFrame(({ camera }, delta) => {
     if (isLocalPlayer) {
       if (rb.current) {
         // 직선 운동 속도
@@ -154,12 +158,19 @@ const RabbitController = ({
           vel.z =
             Math.cos(rotationTarget.current + characterRotationTarget.current) *
             SPEED;
-          // 지면에 있을 때만 달리기 애니메이션
-          if (isOnGround) {
+        }
+
+        if (get().catch && !isPunching.current) {
+          isPunching.current = true;
+          setAnimation('CharacterArmature|Punch');
+          punchAnimationTimer.current = setTimeout(
+            () => (isPunching.current = false),
+            500,
+          );
+        } else if (!isPunching.current && isOnGround) {
+          if (movement.x !== 0 || movement.z !== 0)
             setAnimation('CharacterArmature|Run');
-          }
-        } else if (isOnGround) {
-          setAnimation('CharacterArmature|Idle');
+          else setAnimation('CharacterArmature|Idle');
         }
 
         rb.current.setLinvel(vel, true);
@@ -264,6 +275,13 @@ const RabbitController = ({
       rb.current.setLinvel(velocity, true);
       isInitialized.current = true;
     }
+  }, []);
+  useEffect(() => {
+    return () => {
+      if (punchAnimationTimer.current) {
+        clearTimeout(punchAnimationTimer.current);
+      }
+    };
   }, []);
 
   return (
