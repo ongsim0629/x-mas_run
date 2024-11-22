@@ -12,7 +12,6 @@ export const GameTimer = () => {
   useEffect(() => {
     setAudioEnabled(true);
     if (timeLeft !== null && timeLeft <= 1) {
-      setAudioEnabled(false);
       setGameScreen(GameScreen.GAME_OVER);
     }
   }, [timeLeft, setAudioEnabled]);

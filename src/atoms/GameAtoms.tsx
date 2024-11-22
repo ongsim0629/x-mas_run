@@ -5,7 +5,12 @@ import { SocketService } from '../apis/SocketService';
 export const gameScreenAtom = atom<GameScreen>(GameScreen.LOADING);
 export const nicknameAtom = atom<string>('');
 
+// Socket
 export const socketServiceAtom = atom<SocketService | null>(null);
+export const socketStatusAtom = atom<
+  'connected' | 'disconnected' | 'connecting'
+>('disconnected');
+
 export const gameTimeAtom = atom<number | null>(null);
 
 export const audioEnabledAtom = atom(false);

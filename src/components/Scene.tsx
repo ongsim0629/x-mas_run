@@ -35,7 +35,6 @@ export default function Scene() {
       options: Object.keys(maps),
     },
   });
-
   const selectedMap = maps[map];
 
   return (

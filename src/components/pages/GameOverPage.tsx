@@ -2,10 +2,17 @@ import { useAtom, useAtomValue } from 'jotai';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
 import { playerInfoAtom } from '../../atoms/PlayerAtoms';
+import useAudio from '../../hooks/useAudio';
+import { useEffect } from 'react';
 
 const GameOverPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const { nickname } = useAtomValue(playerInfoAtom);
+  const { setAudioEnabled } = useAudio();
+
+  useEffect(() => {
+    setAudioEnabled(false);
+  }, []);
 
   const handlePlayAgain = () => {
     setGameScreen(GameScreen.MATCHING);
