@@ -17,7 +17,7 @@ export const GameTimer = () => {
   useEffect(() => {
     setAudioEnabled(true);
     if (timeLeft !== null && timeLeft <= 10) {
-      playAudio('beep2');
+      playAudio('beep1');
     }
     if (timeLeft !== null && timeLeft <= 1) {
       setGameScreen(GameScreen.GAME_OVER);

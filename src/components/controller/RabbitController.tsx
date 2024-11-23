@@ -5,7 +5,6 @@ import {
 } from '@react-three/rapier';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
-import { useControls } from 'leva';
 import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
 import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
@@ -36,24 +35,6 @@ const RabbitController = ({
   },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
-  const { SPEED, ROTATION_SPEED, MOUSE_SPEED, JUMP_FORCE, GRAVITY } =
-    useControls('스피드 컨트롤러🐰', {
-      SPEED: { value: 6, min: 0.2, max: 12, step: 0.1 },
-      ROTATION_SPEED: {
-        value: degToRad(0.5),
-        min: degToRad(0.1),
-        max: degToRad(5),
-        step: degToRad(0.1),
-      },
-      MOUSE_SPEED: {
-        value: 0.003,
-        min: 0.001,
-        max: 0.01,
-        step: 0.001,
-      },
-      JUMP_FORCE: { value: 5, min: 1, max: 10, step: 0.1 },
-      GRAVITY: { value: -9.81, min: -20, max: -1, step: 0.1 },
-    });
   const setPlayers = useSetAtom(playersAtom);
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
@@ -115,10 +96,12 @@ const RabbitController = ({
     const onMouseMove = (event: MouseEvent) => {
       if (mouseControlRef.current?.isLocked) {
         // x축 회전
-        rotationTarget.current -= event.movementX * MOUSE_SPEED;
+        rotationTarget.current -=
+          event.movementX * import.meta.env.VITE_INGAME_MOUSE_SPEED;
         // y축 회전 (최대, 최소 제한)
         rotationTargetY.current = MathUtils.clamp(
-          rotationTargetY.current - event.movementY * MOUSE_SPEED,
+          rotationTargetY.current -
+            event.movementY * import.meta.env.VITE_INGAME_MOUSE_SPEED,
           -0.5,
           0.3,
         );
@@ -126,7 +109,7 @@ const RabbitController = ({
     };
     document.addEventListener('mousemove', onMouseMove);
     return () => document.removeEventListener('mousemove', onMouseMove);
-  }, [MOUSE_SPEED]);
+  }, [import.meta.env.VITE_INGAME_MOUSE_SPEED]);
 
   useFrame(({ camera }) => {
     if (isLocalPlayer) {
@@ -150,15 +133,16 @@ const RabbitController = ({
 
         if (get().jump) {
           playAudio('jump');
-          vel.y = JUMP_FORCE;
+          vel.y = import.meta.env.VITE_INGAME_JUMP_FORCE;
           setAnimation('CharacterArmature|Jump');
         } else if (!isOnGround) {
-          vel.y += GRAVITY * 0.016; // 0.016은 60fps 시간
+          vel.y += import.meta.env.VITE_INGAME_GRAVITY * 0.016; // 0.016은 60fps 시간
         }
 
         if (movement.x !== 0 && !mouseControlRef.current?.isLocked) {
           // 전체 회전
-          rotationTarget.current += ROTATION_SPEED * movement.x;
+          rotationTarget.current +=
+            degToRad(import.meta.env.VITE_INGAME_ROTATION_SPEED) * movement.x;
         }
 
         if (movement.x !== 0 || movement.z !== 0 || movement.y !== 0) {
@@ -166,10 +150,10 @@ const RabbitController = ({
           characterRotationTarget.current = Math.atan2(movement.x, movement.z);
           vel.x =
             Math.sin(rotationTarget.current + characterRotationTarget.current) *
-            SPEED;
+            import.meta.env.VITE_INGAME_SPEED;
           vel.z =
             Math.cos(rotationTarget.current + characterRotationTarget.current) *
-            SPEED;
+            import.meta.env.VITE_INGAME_SPEED;
         }
 
         if (get().catch && !isPunching.current) {
