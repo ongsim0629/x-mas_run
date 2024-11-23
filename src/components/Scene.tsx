@@ -24,6 +24,11 @@ const maps: Maps = {
     position: [0, 0, 0],
     model: 'map.glb',
   },
+  test: {
+    scale: 0.1,
+    position: [0, 0, 0],
+    model: 'map1.glb',
+  },
 };
 
 export default function Scene() {
@@ -31,7 +36,7 @@ export default function Scene() {
   const { id } = useAtomValue(playerInfoAtom);
   const { map } = useControls('Map', {
     map: {
-      value: 'train_town',
+      value: 'test',
       options: Object.keys(maps),
     },
   });

@@ -103,12 +103,28 @@ const RabbitController = ({
 
   // Mouse Control 부분
   useEffect(() => {
+    const handlePointerLockChange = () => {
+      if (document.pointerLockElement) {
+      } else {
+        rotationTargetY.current = 0;
+      }
+    };
+
     const handleClick = () => {
       if (mouseControlRef.current && !mouseControlRef.current.isLocked)
         mouseControlRef.current.lock();
     };
+
+    document.addEventListener('pointerlockchange', handlePointerLockChange);
     document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
+
+    return () => {
+      document.removeEventListener(
+        'pointerlockchange',
+        handlePointerLockChange,
+      );
+      document.removeEventListener('click', handleClick);
+    };
   }, []);
 
   useEffect(() => {
@@ -150,10 +166,19 @@ const RabbitController = ({
 
         if (get().jump) {
           playAudio('jump');
-          vel.y = JUMP_FORCE;
-          setAnimation('CharacterArmature|Jump');
+
+          if (character.current) {
+            const position = character.current.getWorldPosition(new Vector3());
+
+            if (position.y >= 30) {
+              vel.y += GRAVITY * 0.016 * 1.25;
+            } else {
+              vel.y = JUMP_FORCE;
+            }
+            setAnimation('CharacterArmature|Jump');
+          }
         } else if (!isOnGround) {
-          vel.y += GRAVITY * 0.016; // 0.016은 60fps 시간
+          vel.y += GRAVITY * 0.016 * 1.25; // 0.016은 60fps 시간
         }
 
         if (movement.x !== 0 && !mouseControlRef.current?.isLocked) {
