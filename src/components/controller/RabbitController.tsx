@@ -149,10 +149,18 @@ const RabbitController = ({
 
         if (get().jump) {
           playAudio('jump');
-          vel.y = import.meta.env.VITE_INGAME_JUMP_FORCE;
+          if (position.y >= 30)
+            vel.y +=
+              import.meta.env.VITE_INGAME_GRAVITY *
+              0.016 *
+              import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
+          else vel.y = import.meta.env.VITE_INGAME_JUMP_FORCE;
           setAnimation('CharacterArmature|Jump');
         } else if (!isOnGround) {
-          vel.y += import.meta.env.VITE_INGAME_GRAVITY * 0.016 * 1.25; // 0.016은 60fps 시간
+          vel.y +=
+            import.meta.env.VITE_INGAME_GRAVITY *
+            0.016 *
+            import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
         }
 
         if (movement.x !== 0 && !mouseControlRef.current?.isLocked) {
