@@ -4,7 +4,7 @@ import { gameScreenAtom, playAudioAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
 import useSocket from '../../hooks/useSocket';
 import { playerInfoAtom } from '../../atoms/PlayerAtoms';
-import Star, { generateStars } from './\bStar';
+import Star, { generateStars } from './Star';
 import KeyboardGuide from './KeyboardGuide';
 
 interface RoomInfo {
