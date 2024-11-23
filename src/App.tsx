@@ -19,7 +19,18 @@ const keyboardMap = [
   { name: 'left', keys: ['ArrowLeft', 'KeyA'] },
   { name: 'right', keys: ['ArrowRight', 'KeyD'] },
   { name: 'jump', keys: ['Space'] },
-  { name: 'catch', keys: ['Shift', 'KeyE', 'mousedown'] },
+  { name: 'catch', keys: ['ShiftLeft', 'KeyE'] },
+  { name: 'KeyW', keys: ['KeyW'] },
+  { name: 'KeyA', keys: ['KeyA'] },
+  { name: 'KeyS', keys: ['KeyS'] },
+  { name: 'KeyD', keys: ['KeyD'] },
+  { name: 'ArrowUp', keys: ['ArrowUp'] },
+  { name: 'ArrowDown', keys: ['ArrowDown'] },
+  { name: 'ArrowLeft', keys: ['ArrowLeft'] },
+  { name: 'ArrowRight', keys: ['ArrowRight'] },
+  { name: 'Space', keys: ['Space'] },
+  { name: 'ShiftLeft', keys: ['ShiftLeft'] },
+  { name: 'KeyE', keys: ['KeyE'] },
 ];
 
 function App() {

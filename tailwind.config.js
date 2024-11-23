@@ -12,6 +12,45 @@ export default {
         { 'purple-deep': '#583C87' },
         { 'pinkish-ivory': '#FFF4E6' },
       ],
+      keyframes: {
+        twinkle: {
+          '0%, 100%': {
+            opacity: '1',
+            transform: 'scale(1)',
+          },
+          '50%': {
+            opacity: '0.3',
+            transform: 'scale(0.7)',
+          },
+        },
+        'shooting-star': {
+          '0%': {
+            transform: 'translate(0, 0) rotate(-45deg)',
+            opacity: '1',
+          },
+          '100%': {
+            transform: 'translate(300px, 300px) rotate(-45deg)',
+            opacity: '0',
+          },
+        },
+        'key-shine': {
+          '0%, 100%': {
+            opacity: '0.8',
+            transform: 'scale(1)',
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+          },
+          '50%': {
+            opacity: '1',
+            transform: 'scale(1.05)',
+            borderColor: 'rgba(255, 255, 255, 0.4)',
+          },
+        },
+      },
+      animation: {
+        twinkle: 'twinkle linear infinite',
+        'shooting-star': 'shooting-star 2s linear forwards',
+        'key-shine': 'key-shine 2s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

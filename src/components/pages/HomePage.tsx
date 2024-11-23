@@ -59,6 +59,9 @@ const HomePage = () => {
           </button>
         </div>
       </div>
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-opacity-50 text-sm">
+        캐릭터를 선택해주세요 🐰🎅🏻🧌
+      </div>
     </div>
   );
 };
