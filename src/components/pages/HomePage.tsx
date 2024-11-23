@@ -4,7 +4,7 @@ import { GameScreen } from '../../types/game';
 import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 import { Canvas } from '@react-three/fiber';
 import { AnimatedRabbit } from '../models/AnimatedRabbit';
-import { OrbitControls, Text } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 
 const HomePage = () => {
   const { nickname } = useAtomValue(playerInfoAtom);
@@ -22,13 +22,13 @@ const HomePage = () => {
         className="absolute w-full h-full object-cover"
       />
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-around">
-        <div className="flex items-center gap-2 m-2">
-          <img src={import.meta.env.VITE_SOCKS_IMAGE_URL} className="w-32" />
-          <span className="flex flex-col justify-center items-center w-64 h-20 rounded-xl text-white border-white border-4 bg-gradient-to-b from-purple-500 to-blue-500">
+        <div className="flex items-center gap-2 m-4">
+          <span className="flex flex-col justify-center items-center w-64 h-20 rounded-xl text-white border-6-pinkish-ivory border-4 bg-4-purple-light">
             <p className="text-lg font-semibold">{nickname}</p>
             <small>메리 크리스마스🎅🏻</small>
           </span>
         </div>
+        {/* <img src={import.meta.env.VITE_SOCKS_IMAGE_URL} className="w-32" /> */}
         {/* <span className="flex justify-center fixed right-1/2 translate-x-1/2 top-1/4 text-2xl text-white">
           토끼🐰와 함께?!
         </span> */}
@@ -39,9 +39,9 @@ const HomePage = () => {
             scale={0.8}
             animation="CharacterArmature|Yes"
             position={[0, -2, 0]}
-            bodyColor="#fc504d"
-            bellyColor="#fc504d"
-            hairColor="#fc504d"
+            bodyColor="#D64045"
+            bellyColor="white"
+            hairColor="#D64045"
             nickName={' '}
           />
           <OrbitControls
@@ -53,7 +53,7 @@ const HomePage = () => {
         <div className="flex justify-end m-10">
           <button
             onClick={handleGameStart}
-            className="bg-gradient-to-b from-purple-500 to-yellow-500 text-white text-3xl font-bold rounded-xl transition-colors min-w-56 min-h-16 p-4 border-white border-4 hover:scale-110"
+            className="bg-3-xmas-gold text-white text-3xl font-bold rounded-xl transition-colors min-w-56 min-h-16 p-4 border-6-pinkish-ivory border-4 hover:scale-110"
           >
             플레이!
           </button>

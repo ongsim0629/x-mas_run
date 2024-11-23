@@ -61,7 +61,7 @@ const LoginPage = () => {
         <div>
           <form
             onSubmit={handleRegisterPlayer}
-            className="flex flex-col justify-center gap-6 bg-white p-8 rounded-lg shadow-xl min-w-96"
+            className="flex flex-col justify-center gap-6 bg-white p-8 rounded-lg shadow-xl min-w-[28rem]"
             aria-label="signIn-form"
           >
             <div className="flex flex-col gap-2">
@@ -77,7 +77,7 @@ const LoginPage = () => {
             </div>
             <button
               type="submit"
-              className="w-full bg-0-accentColor text-white py-3 rounded hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+              className="w-full bg-2-xmas-red text-white py-3 rounded hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
             >
               입장하기
             </button>
