@@ -108,9 +108,12 @@ const MatchingPage = () => {
 
       <div className="relative z-10 flex flex-col gap-10 text-white justify-center items-center w-full h-full">
         <KeyboardGuide />
-        <div className="flex items-end">
-          <span className="font-semibold text-2xl">{playerCount}</span>
-          <span className="ml-2">명 접속중...🐰</span>
+        <div className="flex items-center">
+          <span className="font-semibold text-3xl rounded-full bg-white w-12 h-12 flex items-center justify-center text-black">
+            {playerCount}
+          </span>
+          <span className="ml-2 text-3xl">명 접속중🐰</span>
+          {/* <span className="animate-pulse text-3xl">곧 게임이 시작돼요👻</span> */}
         </div>
       </div>
       <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-opacity-50 text-sm">
