@@ -47,7 +47,7 @@ function App() {
                 style={{ touchAction: 'none' }}
                 className="w-full h-full"
               >
-                <color attach="background" args={['skyblue']} />
+                <color attach="background" args={['#0D1B2A']} />
                 <Scene />
               </Canvas>
             </div>

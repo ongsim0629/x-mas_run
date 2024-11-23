@@ -8,7 +8,6 @@ import Map from './map/Map';
 export default function Scene() {
   const players = useAtomValue(playersAtom);
   const { id } = useAtomValue(playerInfoAtom);
-
   return (
     <>
       <Environment preset="sunset" />
