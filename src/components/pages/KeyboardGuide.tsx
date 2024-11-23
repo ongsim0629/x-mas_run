@@ -1,31 +1,39 @@
-import { useKeyboardControls } from '@react-three/drei';
 import { useEffect, useState } from 'react';
 
 const KeyboardGuide = () => {
-  const [sub, get] = useKeyboardControls();
-  const [keys, setKeys] = useState(get());
+  const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [isMouseDown, setIsMouseDown] = useState(false);
 
   useEffect(() => {
-    const unsubKeys = sub(
-      (state) => state,
-      (pressed) => {
-        setKeys(pressed);
-      },
-    );
-    // useKeyboardControls에서 마우스 지원안됨
+    // 키보드 이벤트 리스너
+    const handleKeyDown = (e: KeyboardEvent) => {
+      setPressedKeys((prev) => new Set(prev).add(e.code));
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      setPressedKeys((prev) => {
+        const next = new Set(prev);
+        next.delete(e.code);
+        return next;
+      });
+    };
+
+    // 마우스 이벤트 리스너
     const handleMouseDown = () => setIsMouseDown(true);
     const handleMouseUp = () => setIsMouseDown(false);
 
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
 
     return () => {
-      unsubKeys();
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [sub]);
+  }, []);
 
   const getKeyClass = (key: string) => {
     const baseClass =
@@ -34,7 +42,8 @@ const KeyboardGuide = () => {
     if (key === 'Mouse') {
       return `${baseClass} ${isMouseDown ? 'bg-3-xmas-gold/30' : ''}`;
     }
-    return `${baseClass} ${keys[key] ? 'bg-3-xmas-gold/30' : ''}`;
+
+    return `${baseClass} ${pressedKeys.has(key) ? 'bg-3-xmas-gold/30' : ''}`;
   };
 
   return (

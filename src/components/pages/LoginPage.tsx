@@ -56,7 +56,6 @@ const LoginPage = () => {
       >
         <source src={import.meta.env.VITE_VIDEO_URL} type="video/mp4" />
       </video>
-      {/**#FC504D */}
       <div className="relative z-10 flex flex-col gap-10">
         <h1 className="text-center font-bold text-white text-6xl border-separate">
           X-MAS RUN🎅🏻
