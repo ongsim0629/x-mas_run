@@ -19,6 +19,26 @@ const SocketController = () => {
   const shiftCooldown = useRef(false);
   const shiftCooldownTimer = useRef<NodeJS.Timeout | null>(null);
 
+  // 마우스 이벤트 리스너 추가
+  const isMouseDown = useRef(false);
+
+  useEffect(() => {
+    const handleMouseDown = () => {
+      isMouseDown.current = true;
+    };
+    const handleMouseUp = () => {
+      isMouseDown.current = false;
+    };
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
   // 소켓 이벤트 구독
   useEffect(() => {
     if (!socket) return;
@@ -62,15 +82,16 @@ const SocketController = () => {
 
     const shouldUpdatePosition =
       hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
-      get().catch;
+      get().catch ||
+      isMouseDown.current;
 
     if (shouldUpdatePosition) {
       socket.updateMovement({
         character: currentPlayer,
-        shift: get().catch && !shiftCooldown.current, // 쿨다운 중이면 false전송
+        shift: (get().catch || isMouseDown.current) && !shiftCooldown.current, // 쿨다운 중이면 false전송
       });
 
-      if (get().catch && !shiftCooldown.current) {
+      if ((get().catch || isMouseDown.current) && !shiftCooldown.current) {
         shiftCooldown.current = true;
         shiftCooldownTimer.current = setTimeout(() => {
           shiftCooldown.current = false;

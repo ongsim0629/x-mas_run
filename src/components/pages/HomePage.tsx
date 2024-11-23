@@ -28,10 +28,6 @@ const HomePage = () => {
             <small>메리 크리스마스🎅🏻</small>
           </span>
         </div>
-        {/* <img src={import.meta.env.VITE_SOCKS_IMAGE_URL} className="w-32" /> */}
-        {/* <span className="flex justify-center fixed right-1/2 translate-x-1/2 top-1/4 text-2xl text-white">
-          토끼🐰와 함께?!
-        </span> */}
         <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[0, 5, 6]} intensity={1} />

@@ -114,7 +114,7 @@ const MatchingPage = () => {
         </div>
       </div>
       <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-opacity-50 text-sm">
-        클릭해서 별똥별을 만들어보세요 ✨
+        {nickname}님 클릭해서 별똥별을 만들어보세요 ✨
       </div>
     </div>
   );
