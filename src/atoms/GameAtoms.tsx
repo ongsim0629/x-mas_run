@@ -28,7 +28,7 @@ export const audioInstanceAtom = atom<Record<BGMAudioType, AudioInstance>>({
   gameover: createAudio('gameover', true),
 });
 
-export const playBGMAudioAtom = atom(null, (get, set, type: BGMAudioType) => {
+export const playBGMAudioAtom = atom(null, (get, _, type: BGMAudioType) => {
   if (!get(audioEnabledAtom)) return;
   const instances = get(audioInstanceAtom);
   Object.values(instances).forEach(({ audio }) => {
