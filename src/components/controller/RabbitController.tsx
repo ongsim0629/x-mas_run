@@ -103,12 +103,39 @@ const RabbitController = ({
 
   // Mouse Control 부분
   useEffect(() => {
+    // 원래 향하고 있던 카메라 수직 회전 방향으로 카메라 이동
+    const resetCameraRotation = () => {
+      const targetRotationY = character.current?.rotation.y || 0;
+
+      rotationTarget.current = targetRotationY;
+      rotationTargetY.current = 0;
+    };
+
+    // esc로 락 해제 시 엉덩이 줌 인 방지
+    const handleKeyDownESC = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && mouseControlRef.current?.isLocked) {
+        event.preventDefault();
+        resetCameraRotation();
+        setTimeout(() => {
+          if (mouseControlRef.current) {
+            mouseControlRef.current.unlock();
+          }
+        }, 500);
+      }
+    };
+
     const handleClick = () => {
       if (mouseControlRef.current && !mouseControlRef.current.isLocked)
         mouseControlRef.current.lock();
     };
+
+    document.addEventListener('keydown', handleKeyDownESC);
     document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDownESC);
+      document.removeEventListener('click', handleClick);
+    };
   }, []);
 
   useEffect(() => {
