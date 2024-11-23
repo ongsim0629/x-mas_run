@@ -15,26 +15,25 @@ export const gameTimeAtom = atom<number | null>(null);
 
 // Audio
 const createAudio = (file: string, loop: boolean = false): AudioInstance => ({
-  audio: new Audio(`/audio/${file}.mp3`),
+  audio: new Audio(`${import.meta.env.VITE_MUSIC_URL}/${file}.mp3`),
   loop,
 });
-
 export const audioEnabledAtom = atom(false);
 export const lastAudioPlayedAtom = atom(new Date().getTime());
 
 export const audioInstanceAtom = atom<Record<BGMAudioType, AudioInstance>>({
-  bgm: createAudio('bgm', true),
-  lobby: createAudio('lobby', true),
-  gameover: createAudio('gameover', true),
+  bgm: createAudio(import.meta.env.VITE_INGAME_MUSIC_NAME, true),
+  lobby: createAudio(import.meta.env.VITE_LOBBY_MUSIC_NAME, true),
+  gameover: createAudio(import.meta.env.VITE_GAMEOVER_MUSIC_NAME, true),
 });
 
 export const playBGMAudioAtom = atom(null, (get, _, type: BGMAudioType) => {
-  if (!get(audioEnabledAtom)) return;
   const instances = get(audioInstanceAtom);
   Object.values(instances).forEach(({ audio }) => {
     audio.pause();
     audio.currentTime = 0;
   });
+  if (!get(audioEnabledAtom)) return;
 
   const selectedAudio = instances[type];
   if (selectedAudio) {
