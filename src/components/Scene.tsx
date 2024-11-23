@@ -12,7 +12,7 @@ export default function Scene() {
     <>
       <Environment preset="sunset" />
       <ambientLight intensity={0.3} />
-      <Physics debug>
+      <Physics>
         <Map scale={0.1} position={[0, 0, 0]} model={`/maps/map.glb`} />
         {/* <GroundMap /> */}
         {players.map((player) => (
