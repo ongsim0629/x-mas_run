@@ -7,6 +7,7 @@ const KeyboardGuide = () => {
   useEffect(() => {
     // 키보드 이벤트 리스너
     const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
       setPressedKeys((prev) => new Set(prev).add(e.code));
     };
 

@@ -32,7 +32,6 @@ export const playBGMAudioAtom = atom(
   async (get, _, type: BGMAudioType) => {
     const instances = get(audioInstanceAtom);
 
-    // 모든 오디오 정지를 Promise.all로 처리
     await Promise.all(
       Object.values(instances).map(async ({ audio }) => {
         try {
@@ -52,7 +51,7 @@ export const playBGMAudioAtom = atom(
         selectedAudio.audio.loop = selectedAudio.loop;
         await selectedAudio.audio.play();
       } catch (error) {
-        console.warn('BGM 재생 실패:', error);
+        console.warn('BGM :', error);
       }
     }
   },

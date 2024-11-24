@@ -12,6 +12,7 @@ import MatchingPage from './components/pages/MatchingPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GameTimer } from './components/pages/GameTimer';
 import GameOverPage from './components/pages/GameOverPage';
+import SoundControlHeader from './components/SoundControlHeader';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -32,13 +33,14 @@ function App() {
   return (
     <KeyboardControls map={keyboardMap}>
       <QueryClientProvider client={queryClient}>
+        <SoundControlHeader />
         {gameScreen === GameScreen.LOADING && <LoadingPage />}
         {gameScreen === GameScreen.LOGIN && <LoginPage />}
         {gameScreen === GameScreen.HOME && <HomePage />}
         <>
           <SocketController />
           {gameScreen === GameScreen.MATCHING && <MatchingPage />}
-          {gameScreen === GameScreen.GAME_OVER && (
+          {gameScreen === GameScreen.GAME && (
             <div className="relative w-screen h-screen">
               <GameTimer />
               <Canvas
@@ -52,7 +54,7 @@ function App() {
               </Canvas>
             </div>
           )}
-          {gameScreen === GameScreen.GAME && <GameOverPage />}
+          {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
         </>
       </QueryClientProvider>
     </KeyboardControls>
