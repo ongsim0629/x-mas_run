@@ -19,7 +19,7 @@ const HomePage = () => {
       <img
         src={import.meta.env.VITE_HOME_IMAGE_URL}
         alt="background"
-        className="absolute w-full h-full object-cover"
+        className="absolute w-full h-full object-cover blur-sm"
       />
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-around">
         <div className="flex items-center gap-2 m-4">
