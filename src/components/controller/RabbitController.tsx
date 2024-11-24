@@ -114,18 +114,20 @@ const RabbitController = ({
         // x축 회전
         rotationTarget.current -=
           event.movementX * import.meta.env.VITE_INGAME_MOUSE_SPEED;
-        // y축 회전 (최대, 최소 제한)
+        const isOnGround = Math.abs(velocity.y) < 0.1;
+        const minY = isOnGround ? -0.5 : -0.8;
+        // y축 회전 (최대, 최소 제한) +  공중이면 엉덩이 볼 수 있게
         rotationTargetY.current = MathUtils.clamp(
           rotationTargetY.current -
             event.movementY * import.meta.env.VITE_INGAME_MOUSE_SPEED,
-          -0.5,
+          minY,
           0.3,
         );
       }
     };
     document.addEventListener('mousemove', onMouseMove);
     return () => document.removeEventListener('mousemove', onMouseMove);
-  }, [import.meta.env.VITE_INGAME_MOUSE_SPEED]);
+  }, [import.meta.env.VITE_INGAME_MOUSE_SPEED, velocity.y]);
 
   useFrame(({ camera }) => {
     if (isLocalPlayer) {
@@ -234,14 +236,31 @@ const RabbitController = ({
       }
 
       if (cameraPosition.current && cameraTarget.current) {
+        const isOnGround = Math.abs(velocity.y || 0) < 0.1;
         // 카메라 수직 회전 적용
         const verticalOffset = Math.sin(rotationTargetY.current) * 15;
         const horizontalDistance = Math.cos(rotationTargetY.current) * 15;
 
+        // 공중에 있고 아래를 보고 있을 때 카메라 높이 추가
+        const extraHeight =
+          !isOnGround && rotationTargetY.current < -0.2 ? 5 : 0;
+        const extraDistance =
+          !isOnGround && rotationTargetY.current < -0.2 ? 10 : 0;
+
         cameraPosition.current.position.set(
           0,
-          10 + verticalOffset,
-          -horizontalDistance,
+          10 + verticalOffset + extraHeight,
+          -(horizontalDistance + extraDistance),
+        );
+
+        const targetExtraHeight =
+          !isOnGround && rotationTargetY.current < -0.2 ? 15 : 0;
+        const targetForwardOffset =
+          !isOnGround && rotationTargetY.current < -0.2 ? 15 : 6;
+        cameraTarget.current.position.set(
+          0,
+          targetExtraHeight,
+          targetForwardOffset,
         );
       }
 
