@@ -9,7 +9,6 @@ import { OrbitControls } from '@react-three/drei';
 const HomePage = () => {
   const { nickname } = useAtomValue(playerInfoAtom);
   const [, setGameScreen] = useAtom(gameScreenAtom);
-
   const handleGameStart = () => {
     setGameScreen(GameScreen.MATCHING);
   };

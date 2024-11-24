@@ -38,7 +38,7 @@ function App() {
         <>
           <SocketController />
           {gameScreen === GameScreen.MATCHING && <MatchingPage />}
-          {gameScreen === GameScreen.GAME && (
+          {gameScreen === GameScreen.GAME_OVER && (
             <div className="relative w-screen h-screen">
               <GameTimer />
               <Canvas
@@ -52,7 +52,7 @@ function App() {
               </Canvas>
             </div>
           )}
-          {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
+          {gameScreen === GameScreen.GAME && <GameOverPage />}
         </>
       </QueryClientProvider>
     </KeyboardControls>

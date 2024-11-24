@@ -3,8 +3,37 @@ import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
 import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 import useAudio from '../../hooks/useAudio';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import useSocket from '../../hooks/useSocket';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { AnimatedRabbit } from '../models/AnimatedRabbit';
+import { Group } from 'three';
+
+const RotatingRabbit = () => {
+  const groupRef = useRef<Group>(null);
+
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.5;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <ambientLight intensity={1} />
+      <directionalLight position={[0, 5, 30]} intensity={1} />
+      <AnimatedRabbit
+        scale={0.8}
+        animation="CharacterArmature|Wave"
+        position={[0, -2, 0]}
+        bodyColor="pink"
+        bellyColor="white"
+        hairColor="pink"
+        nickName={' '}
+      />
+    </group>
+  );
+};
 
 const GameOverPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
@@ -17,40 +46,38 @@ const GameOverPage = () => {
     socket?.leaveRoom();
   }, []);
 
-  const handlePlayAgain = () => {
-    setGameScreen(GameScreen.MATCHING);
-  };
-
   const handleGoHome = () => {
     setGameScreen(GameScreen.HOME);
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-b from-purple-600 to-blue-600 flex items-center justify-center">
-      <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 max-w-md w-full text-center">
-        <h1 className="text-5xl font-bold text-white mb-6">게임 오버</h1>
-
-        <div className="space-y-4 mb-8">
-          <p className="text-xl text-white/90">{nickname}님 한 판 더?!</p>
-
-          <div className="bg-white/20 rounded-lg p-4">
-            <p className="text-lg text-white font-semibold">점수: 100 점</p>
-          </div>
+    <div className="fixed inset-0 flex items-center justify-center">
+      <img
+        src={import.meta.env.VITE_GAME_OVE_IMAGE_URL}
+        alt="background"
+        className="absolute w-full h-full object-cover"
+      />
+      <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-around">
+        <div className="flex flex-col items-center gap-2 mt-10">
+          <span className="w-full flex flex-col justify-center items-center text-white text-xl font-bold">
+            {nickname}
+          </span>
+          <span className="w-full flex flex-col justify-center items-center text-white text-8xl font-bold">
+            우승❕
+          </span>
         </div>
-
-        <div className="flex flex-col gap-4">
-          <button
-            onClick={handlePlayAgain}
-            className="w-full px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-bold text-lg"
-          >
-            다시 하기
+        <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
+          <RotatingRabbit />
+        </Canvas>
+        <div className="flex justify-between">
+          <button className="bg-white text-xl font-semibold rounded-tr-xl transition-colors min-w-56 min-h-16 p-4 hover:scale-110">
+            한판 더?
           </button>
-
           <button
             onClick={handleGoHome}
-            className="w-full px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors font-bold text-lg"
+            className="bg-black text-white text-xl font-semibold rounded-tl-xl transition-colors min-w-56 min-h-16 p-4 hover:scale-110"
           >
-            홈으로
+            돌아가기
           </button>
         </div>
       </div>
