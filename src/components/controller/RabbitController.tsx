@@ -58,6 +58,10 @@ const RabbitController = ({
   const cameraLookAtWorldPosition = useRef(new Vector3()); // cameraTarget의 절대 위치
   const cameraWorldPosition = useRef(new Vector3()); // cameraPosition의 절대 위치
   const cameraLookAt = useRef(new Vector3()); // 부드럽게 해당 위치로 회전하기 위한 Ref
+  const currentExtraHeight = useRef(0);
+  const currentExtraDistance = useRef(0);
+  const currentCameraHeight = useRef(0);
+  const currentForwardDistance = useRef(6);
 
   // 다른 플레이어들의 부드러운 움직임을 위한 ref
   const currentPosition = useRef(position);
@@ -121,7 +125,7 @@ const RabbitController = ({
           rotationTargetY.current -
             event.movementY * import.meta.env.VITE_INGAME_MOUSE_SPEED,
           minY,
-          0.3,
+          0.5,
         );
       }
     };
@@ -241,26 +245,50 @@ const RabbitController = ({
         const verticalOffset = Math.sin(rotationTargetY.current) * 15;
         const horizontalDistance = Math.cos(rotationTargetY.current) * 15;
 
-        // 공중에 있고 아래를 보고 있을 때 카메라 높이 추가
-        const extraHeight =
+        // 현재 상태에 따른 목표 값 계산
+        const targetExtraHeight =
           !isOnGround && rotationTargetY.current < -0.2 ? 5 : 0;
-        const extraDistance =
+        const targetExtraDistance =
           !isOnGround && rotationTargetY.current < -0.2 ? 10 : 0;
+        const targetCameraHeight =
+          !isOnGround && rotationTargetY.current < -0.2 ? 10 : 0;
+        const targetForwardDistance =
+          !isOnGround && rotationTargetY.current < -0.2 ? 15 : 6;
+
+        currentExtraHeight.current = MathUtils.lerp(
+          currentExtraHeight.current,
+          targetExtraHeight,
+          0.05,
+        );
+
+        currentExtraDistance.current = MathUtils.lerp(
+          currentExtraDistance.current,
+          targetExtraDistance,
+          0.05,
+        );
+
+        currentCameraHeight.current = MathUtils.lerp(
+          currentCameraHeight.current,
+          targetCameraHeight,
+          0.05,
+        );
+
+        currentForwardDistance.current = MathUtils.lerp(
+          currentForwardDistance.current,
+          targetForwardDistance,
+          0.05,
+        );
 
         cameraPosition.current.position.set(
           0,
-          10 + verticalOffset + extraHeight,
-          -(horizontalDistance + extraDistance),
+          10 + verticalOffset + currentExtraHeight.current,
+          -(horizontalDistance + currentExtraDistance.current),
         );
 
-        const targetExtraHeight =
-          !isOnGround && rotationTargetY.current < -0.2 ? 15 : 0;
-        const targetForwardOffset =
-          !isOnGround && rotationTargetY.current < -0.2 ? 15 : 6;
         cameraTarget.current.position.set(
           0,
-          targetExtraHeight,
-          targetForwardOffset,
+          currentCameraHeight.current,
+          currentForwardDistance.current,
         );
       }
 
