@@ -15,18 +15,14 @@ import { playerInfoAtom } from '../atoms/PlayerAtoms';
 const AuthRouter = () => {
   const [gameScreen] = useAtom(gameScreenAtom);
   const { id } = useAtomValue(playerInfoAtom);
-  console.log(gameScreen);
 
   return (
     <>
+      {gameScreen === GameScreen.LOADING && <LoadingPage />}
       {id === null ? (
-        <>
-          {gameScreen === GameScreen.LOADING && <LoadingPage />}
-          {gameScreen === GameScreen.LOGIN && <LoginPage />}
-        </>
+        <>{gameScreen === GameScreen.LOGIN && <LoginPage />}</>
       ) : (
         <>
-          {gameScreen === GameScreen.LOADING && <LoadingPage />}
           {gameScreen === GameScreen.HOME && <HomePage />}
           <SocketController />
           {gameScreen === GameScreen.MATCHING && <MatchingPage />}

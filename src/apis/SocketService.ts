@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { GameData, RoomInfo } from '../types/game';
+import { GameData, RoomInfo, WinnerData } from '../types/game';
 import { PlayerMovement } from '../types/player';
 
 export class SocketService {
@@ -48,6 +48,7 @@ export class SocketService {
   leaveRoom() {
     if (this.connected) {
       this.socket.emit('room.leave');
+      this.isInRoom = false;
     }
   }
 
@@ -56,9 +57,20 @@ export class SocketService {
     return () => this.socket.off('room.changeState');
   }
 
+  onGameStartSoon(handler: () => void) {
+    this.socket.on('game.ready', handler);
+    return () => this.socket.off('game.ready');
+  }
+
   onGameStart(handler: () => void) {
     this.socket.on('game.start', handler);
     return () => this.socket.off('game.start');
+  }
+
+  onGameOver(handler: (winnerData: WinnerData) => void) {
+    this.socket.on('game.over', handler);
+    // this.isInRoom = false;
+    return () => this.socket.off('game.over');
   }
 
   // Character 관련

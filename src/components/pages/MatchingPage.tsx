@@ -20,13 +20,17 @@ interface Meteor {
 const MatchingPage = () => {
   const [playerCount, setPlayerCount] = useState<number>(1);
   const [meteors, setMeteors] = useState<Meteor[]>([]);
+  const [isStarting, setIsStarting] = useState(false);
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const { nickname } = useAtomValue(playerInfoAtom);
   const [, playAudio] = useAtom(playAudioAtom);
   const { socket } = useSocket();
 
   useEffect(() => {
+    console.log(socket, '요기는 이펙트');
+
     if (!socket) return;
+    // socket.leaveRoom();
 
     socket.enterRoom();
     const unsubscribeRoomState = socket.onRoomStateChange(
@@ -34,13 +38,17 @@ const MatchingPage = () => {
         setPlayerCount(roomInfo.playerCnt);
       },
     );
-    const unsubscribeGameStart = socket.onGameStart(() => {
-      setGameScreen(GameScreen.GAME);
+    const unsubscribeGameState = socket.onGameStartSoon(() => {
+      setIsStarting(true);
     });
+    // const unsubscribeGameStart = socket.onGameStart(() => {
+    //   setGameScreen(GameScreen.GAME);
+    // });
 
     return () => {
       unsubscribeRoomState();
-      unsubscribeGameStart();
+      unsubscribeGameState();
+      // unsubscribeGameStart();
     };
   }, [socket, setGameScreen, setPlayerCount]);
 
@@ -110,11 +118,16 @@ const MatchingPage = () => {
       <div className="relative z-10 flex flex-col gap-10 text-white justify-center items-center w-full h-full">
         <KeyboardGuide />
         <div className="flex items-center">
-          <span className="font-semibold text-3xl rounded-full bg-white w-12 h-12 flex items-center justify-center text-black">
-            {playerCount}
-          </span>
-          <span className="ml-2 text-3xl">명 접속중🐰</span>
-          {/* <span className="animate-pulse text-3xl">곧 게임이 시작돼요👻</span> */}
+          {isStarting ? (
+            <span className="animate-pulse text-3xl">곧 게임이 시작돼요👻</span>
+          ) : (
+            <>
+              <span className="font-semibold text-3xl rounded-full bg-white w-12 h-12 flex items-center justify-center text-black">
+                {playerCount}
+              </span>
+              <span className="ml-2 text-3xl">명 접속중🐰</span>
+            </>
+          )}
         </div>
       </div>
       <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-opacity-50 text-sm">

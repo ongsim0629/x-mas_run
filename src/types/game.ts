@@ -24,6 +24,10 @@ export interface GameData {
   characters: Character[];
 }
 
+export interface WinnerData {
+  winner: { nickName: string };
+}
+
 export type BGMAudioType = 'bgm' | 'lobby' | 'gameover';
 export interface AudioInstance {
   audio: HTMLAudioElement;

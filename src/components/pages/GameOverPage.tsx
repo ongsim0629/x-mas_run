@@ -1,9 +1,8 @@
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
-import { GameScreen } from '../../types/game';
-import { playerInfoAtom } from '../../atoms/PlayerAtoms';
+import { GameScreen, WinnerData } from '../../types/game';
 import useAudio from '../../hooks/useAudio';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useSocket from '../../hooks/useSocket';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { AnimatedRabbit } from '../models/AnimatedRabbit';
@@ -37,13 +36,18 @@ const RotatingRabbit = () => {
 
 const GameOverPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
-  const { nickname } = useAtomValue(playerInfoAtom);
+  const [winner, setWinner] = useState('');
   const { setAudioEnabled } = useAudio();
   const { socket } = useSocket();
 
   useEffect(() => {
     setAudioEnabled(false);
-    socket?.leaveRoom();
+    if (socket) {
+      socket.leaveRoom();
+      socket.onGameOver((winnerData: WinnerData) =>
+        setWinner(winnerData.winner.nickName),
+      );
+    }
   }, []);
 
   const handleGoHome = () => {
@@ -60,7 +64,7 @@ const GameOverPage = () => {
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-around">
         <div className="flex flex-col items-center gap-2 mt-10">
           <span className="w-full flex flex-col justify-center items-center text-white text-xl font-bold">
-            {nickname}
+            {winner}
           </span>
           <span className="w-full flex flex-col justify-center items-center text-white text-8xl font-bold">
             우승❕
