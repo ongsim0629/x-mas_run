@@ -48,6 +48,7 @@ export const playBGMAudioAtom = atom(
     const selectedAudio = instances[type];
     if (selectedAudio) {
       try {
+        selectedAudio.audio.volume = 0.5;
         selectedAudio.audio.loop = selectedAudio.loop;
         await selectedAudio.audio.play();
       } catch (error) {
