@@ -15,6 +15,9 @@ import SoundControlHeader from './components/SoundControlHeader';
 import { Flip, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactQueryClientProvider from './components/ReactQueryClientProvider';
+import { ErrorBoundary } from 'react-error-boundary';
+import RenderErrorPage from './components/pages/RenderErrorPage';
+import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -26,16 +29,17 @@ const keyboardMap = [
 ];
 
 function App() {
+  const { reset } = useQueryErrorResetBoundary();
   const [gameScreen] = useAtom(gameScreenAtom);
 
   return (
     <KeyboardControls map={keyboardMap}>
       <ReactQueryClientProvider>
-        <SoundControlHeader />
-        {gameScreen === GameScreen.LOADING && <LoadingPage />}
-        {gameScreen === GameScreen.LOGIN && <LoginPage />}
-        {gameScreen === GameScreen.HOME && <HomePage />}
-        <>
+        <ErrorBoundary FallbackComponent={RenderErrorPage} onReset={reset}>
+          <SoundControlHeader />
+          {gameScreen === GameScreen.LOADING && <LoadingPage />}
+          {gameScreen === GameScreen.LOGIN && <LoginPage />}
+          {gameScreen === GameScreen.HOME && <HomePage />}
           <SocketController />
           {gameScreen === GameScreen.MATCHING && <MatchingPage />}
           {gameScreen === GameScreen.GAME && (
@@ -53,7 +57,7 @@ function App() {
             </div>
           )}
           {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
-        </>
+        </ErrorBoundary>
       </ReactQueryClientProvider>
       <ToastContainer
         position="top-center"
