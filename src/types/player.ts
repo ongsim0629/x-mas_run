@@ -15,7 +15,7 @@ export interface Character {
   bellyColor: string;
   velocity: Position;
   isOnGround: boolean;
-  hasTail: boolean;
+  giftCnt: number;
 }
 
 export interface PlayerMovement {

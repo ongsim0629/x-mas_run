@@ -20,7 +20,7 @@ export const playersAtom = atom<Character[]>([
     bodyColor: 'gold',
     hairColor: 'black',
     bellyColor: 'white',
-    hasTail: true,
+    giftCnt: 0,
   },
 ]);
 
