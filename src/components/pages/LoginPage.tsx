@@ -12,6 +12,7 @@ const LoginPage = () => {
   const setGameScreen = useSetAtom(gameScreenAtom);
   const { registerPlayerQuery } = useGame();
   const { audioEnabled, setAudioEnabled } = useAudio();
+
   const handleAudioClick = () => {
     setAudioEnabled((prev) => !prev);
   };

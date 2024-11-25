@@ -1,3 +1,5 @@
+import ApiError from './ApiError';
+
 export default class HttpClient {
   private baseURL: string;
   constructor() {
@@ -18,7 +20,10 @@ export default class HttpClient {
 
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.msg || '알 수 없는 에러가 발생했습니다.');
+      throw new ApiError(
+        response.status,
+        data.msg || '알 수 없는 에러가 발생했습니다.',
+      );
     }
     return data;
   }

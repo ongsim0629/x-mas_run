@@ -9,10 +9,12 @@ import LoadingPage from './components/pages/LoadingPage';
 import LoginPage from './components/pages/LoginPage';
 import HomePage from './components/pages/HomePage';
 import MatchingPage from './components/pages/MatchingPage';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GameTimer } from './components/pages/GameTimer';
 import GameOverPage from './components/pages/GameOverPage';
 import SoundControlHeader from './components/SoundControlHeader';
+import { Flip, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ReactQueryClientProvider from './components/ReactQueryClientProvider';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -24,15 +26,11 @@ const keyboardMap = [
 ];
 
 function App() {
-  // 추후 아래 defaultOptions에서 error 처리 설정
-  const queryClient = new QueryClient({
-    defaultOptions: {},
-  });
   const [gameScreen] = useAtom(gameScreenAtom);
 
   return (
     <KeyboardControls map={keyboardMap}>
-      <QueryClientProvider client={queryClient}>
+      <ReactQueryClientProvider>
         <SoundControlHeader />
         {gameScreen === GameScreen.LOADING && <LoadingPage />}
         {gameScreen === GameScreen.LOGIN && <LoginPage />}
@@ -56,7 +54,15 @@ function App() {
           )}
           {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
         </>
-      </QueryClientProvider>
+      </ReactQueryClientProvider>
+      <ToastContainer
+        position="top-center"
+        autoClose={1500}
+        hideProgressBar={true}
+        closeOnClick
+        theme="light"
+        transition={Flip}
+      />
     </KeyboardControls>
   );
 }
