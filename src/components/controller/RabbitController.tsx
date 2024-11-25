@@ -115,12 +115,12 @@ const RabbitController = ({
         rotationTarget.current -=
           event.movementX * import.meta.env.VITE_INGAME_MOUSE_SPEED;
         // y축 회전 (최대, 최소 제한)
-        // rotationTargetY.current = MathUtils.clamp(
-        //   rotationTargetY.current -
-        //     event.movementY * import.meta.env.VITE_INGAME_MOUSE_SPEED,
-        //   -0.5,
-        //   0.3,
-        // );
+        rotationTargetY.current = MathUtils.clamp(
+          rotationTargetY.current -
+            event.movementY * import.meta.env.VITE_INGAME_MOUSE_SPEED,
+          -0.5,
+          0.3,
+        );
       }
     };
     document.addEventListener('mousemove', onMouseMove);
@@ -233,17 +233,17 @@ const RabbitController = ({
         );
       }
 
-      // if (cameraPosition.current && cameraTarget.current) {
-      //   // 카메라 수직 회전 적용
-      //   const verticalOffset = Math.sin(rotationTargetY.current) * 15;
-      //   const horizontalDistance = Math.cos(rotationTargetY.current) * 15;
+      if (cameraPosition.current && cameraTarget.current) {
+        // 카메라 수직 회전 적용
+        const verticalOffset = Math.sin(rotationTargetY.current) * 15;
+        const horizontalDistance = Math.cos(rotationTargetY.current) * 15;
 
-      //   cameraPosition.current.position.set(
-      //     0,
-      //     10 + verticalOffset,
-      //     -horizontalDistance,
-      //   );
-      // }
+        cameraPosition.current.position.set(
+          0,
+          10 + verticalOffset,
+          -horizontalDistance,
+        );
+      }
 
       // Vector3 실행을 반복하지 않기 위해 나눠서 진행
       cameraPosition.current?.getWorldPosition(cameraWorldPosition.current);
