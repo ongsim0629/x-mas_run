@@ -1,10 +1,7 @@
 import { useAtom, useAtomValue } from 'jotai';
-import { gameScreenAtom } from '../../atoms/GameAtoms';
+import { gameScreenAtom, winnerAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
-import { playerInfoAtom } from '../../atoms/PlayerAtoms';
-import useAudio from '../../hooks/useAudio';
-import { useEffect, useRef } from 'react';
-import useSocket from '../../hooks/useSocket';
+import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { AnimatedRabbit } from '../models/AnimatedRabbit';
 import { Group } from 'three';
@@ -37,17 +34,14 @@ const RotatingRabbit = () => {
 
 const GameOverPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
-  const { nickname } = useAtomValue(playerInfoAtom);
-  const { setAudioEnabled } = useAudio();
-  const { socket } = useSocket();
-
-  useEffect(() => {
-    setAudioEnabled(false);
-    socket?.leaveRoom();
-  }, []);
+  const winner = useAtomValue(winnerAtom);
 
   const handleGoHome = () => {
     setGameScreen(GameScreen.HOME);
+  };
+
+  const handlePlayAgain = () => {
+    setGameScreen(GameScreen.MATCHING);
   };
 
   return (
@@ -60,7 +54,7 @@ const GameOverPage = () => {
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-around">
         <div className="flex flex-col items-center gap-2 mt-10">
           <span className="w-full flex flex-col justify-center items-center text-white text-xl font-bold">
-            {nickname}
+            {winner}
           </span>
           <span className="w-full flex flex-col justify-center items-center text-white text-8xl font-bold">
             우승❕
@@ -70,12 +64,19 @@ const GameOverPage = () => {
           <RotatingRabbit />
         </Canvas>
         <div className="flex justify-between">
-          <button className="bg-white text-xl font-semibold rounded-tr-xl transition-colors min-w-56 min-h-16 p-4 hover:scale-110">
+          <button
+            onClick={handlePlayAgain}
+            className="bg-white text-xl font-semibold rounded-tr-xl transition-colors min-w-56 min-h-16 p-4 hover:scale-110"
+            type="button"
+            aria-label="play-agin"
+          >
             한판 더?
           </button>
           <button
             onClick={handleGoHome}
             className="bg-black text-white text-xl font-semibold rounded-tl-xl transition-colors min-w-56 min-h-16 p-4 hover:scale-110"
+            type="button"
+            aria-label="goback-home"
           >
             돌아가기
           </button>
