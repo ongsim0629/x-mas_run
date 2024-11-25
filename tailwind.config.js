@@ -45,11 +45,20 @@ export default {
             borderColor: 'rgba(255, 255, 255, 0.4)',
           },
         },
+        'timer-scale': {
+          '0%, 100%': {
+            transform: 'translate(-50%) scale(1)',
+          },
+          '50%': {
+            transform: 'translate(-50%) scale(1.5)',
+          },
+        },
       },
       animation: {
         twinkle: 'twinkle linear infinite',
         'shooting-star': 'shooting-star 2s linear forwards',
         'key-shine': 'key-shine 2s ease-in-out infinite',
+        'timer-scale': 'timer-scale 1s ease-in-out infinite',
       },
     },
   },

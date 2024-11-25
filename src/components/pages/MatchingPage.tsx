@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { gameScreenAtom, playAudioAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
@@ -44,11 +44,12 @@ const MatchingPage = () => {
     };
   }, [socket, setGameScreen, setPlayerCount]);
 
-  const handleLeave = useCallback(() => {
-    if (!socket) return;
-    socket.leaveRoom();
-    setGameScreen(GameScreen.HOME);
-  }, [socket, setGameScreen]);
+  // 추후 필요한지 다시 확인
+  // const handleLeave = useCallback(() => {
+  //   if (!socket) return;
+  //   socket.leaveRoom();
+  //   setGameScreen(GameScreen.HOME);
+  // }, [socket, setGameScreen]);
 
   const createMeteor = (e: React.MouseEvent<HTMLDivElement>) => {
     playAudio('twinkle');

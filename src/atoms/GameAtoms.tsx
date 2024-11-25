@@ -27,20 +27,36 @@ export const audioInstanceAtom = atom<Record<BGMAudioType, AudioInstance>>({
   gameover: createAudio(import.meta.env.VITE_GAMEOVER_MUSIC_NAME, true),
 });
 
-export const playBGMAudioAtom = atom(null, (get, _, type: BGMAudioType) => {
-  const instances = get(audioInstanceAtom);
-  Object.values(instances).forEach(({ audio }) => {
-    audio.pause();
-    audio.currentTime = 0;
-  });
-  if (!get(audioEnabledAtom)) return;
+export const playBGMAudioAtom = atom(
+  null,
+  async (get, _, type: BGMAudioType) => {
+    const instances = get(audioInstanceAtom);
 
-  const selectedAudio = instances[type];
-  if (selectedAudio) {
-    selectedAudio.audio.loop = selectedAudio.loop;
-    selectedAudio.audio.play();
-  }
-});
+    await Promise.all(
+      Object.values(instances).map(async ({ audio }) => {
+        try {
+          await audio.pause();
+          audio.currentTime = 0;
+        } catch (error) {
+          console.warn('BGM 정지 실패', error);
+        }
+      }),
+    );
+
+    if (!get(audioEnabledAtom)) return;
+
+    const selectedAudio = instances[type];
+    if (selectedAudio) {
+      try {
+        selectedAudio.audio.volume = 0.5;
+        selectedAudio.audio.loop = selectedAudio.loop;
+        await selectedAudio.audio.play();
+      } catch (error) {
+        console.warn('BGM :', error);
+      }
+    }
+  },
+);
 
 export const playAudioAtom = atom(
   null,
