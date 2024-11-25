@@ -16,6 +16,9 @@ export interface Character {
   velocity: Position;
   isOnGround: boolean;
   giftCnt: number;
+  shift: boolean;
+  isBeingStolen: boolean;
+  isSteal: boolean;
 }
 
 export interface PlayerMovement {
