@@ -1,7 +1,6 @@
 import { useAtom } from 'jotai';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen, WinnerData } from '../../types/game';
-import useAudio from '../../hooks/useAudio';
 import { useEffect, useRef, useState } from 'react';
 import useSocket from '../../hooks/useSocket';
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -37,21 +36,24 @@ const RotatingRabbit = () => {
 const GameOverPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const [winner, setWinner] = useState('');
-  const { setAudioEnabled } = useAudio();
   const { socket } = useSocket();
 
   useEffect(() => {
-    setAudioEnabled(false);
     if (socket) {
       socket.leaveRoom();
-      socket.onGameOver((winnerData: WinnerData) =>
-        setWinner(winnerData.winner.nickName),
-      );
+      socket.onGameOver((winnerData: WinnerData) => {
+        console.log(winnerData, '우승자정보');
+        setWinner(winnerData.winner.nickName);
+      });
     }
   }, []);
 
   const handleGoHome = () => {
     setGameScreen(GameScreen.HOME);
+  };
+
+  const handlePlayAgain = () => {
+    setGameScreen(GameScreen.MATCHING);
   };
 
   return (
@@ -74,12 +76,19 @@ const GameOverPage = () => {
           <RotatingRabbit />
         </Canvas>
         <div className="flex justify-between">
-          <button className="bg-white text-xl font-semibold rounded-tr-xl transition-colors min-w-56 min-h-16 p-4 hover:scale-110">
+          <button
+            onClick={handlePlayAgain}
+            className="bg-white text-xl font-semibold rounded-tr-xl transition-colors min-w-56 min-h-16 p-4 hover:scale-110"
+            type="button"
+            aria-label="play-agin"
+          >
             한판 더?
           </button>
           <button
             onClick={handleGoHome}
             className="bg-black text-white text-xl font-semibold rounded-tl-xl transition-colors min-w-56 min-h-16 p-4 hover:scale-110"
+            type="button"
+            aria-label="goback-home"
           >
             돌아가기
           </button>

@@ -41,14 +41,14 @@ const MatchingPage = () => {
     const unsubscribeGameState = socket.onGameStartSoon(() => {
       setIsStarting(true);
     });
-    // const unsubscribeGameStart = socket.onGameStart(() => {
-    //   setGameScreen(GameScreen.GAME);
-    // });
+    const unsubscribeGameStart = socket.onGameStart(() => {
+      setGameScreen(GameScreen.GAME);
+    });
 
     return () => {
       unsubscribeRoomState();
       unsubscribeGameState();
-      // unsubscribeGameStart();
+      unsubscribeGameStart();
     };
   }, [socket, setGameScreen, setPlayerCount]);
 
