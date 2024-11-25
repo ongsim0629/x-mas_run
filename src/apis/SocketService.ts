@@ -48,7 +48,6 @@ export class SocketService {
   leaveRoom() {
     if (this.connected) {
       this.socket.emit('room.leave');
-      this.isInRoom = false;
     }
   }
 
@@ -69,7 +68,7 @@ export class SocketService {
 
   onGameOver(handler: (winnerData: WinnerData) => void) {
     this.socket.on('game.over', handler);
-    // this.isInRoom = false;
+    this.isInRoom = false;
     return () => this.socket.off('game.over');
   }
 

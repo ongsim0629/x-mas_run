@@ -27,11 +27,7 @@ const MatchingPage = () => {
   const { socket } = useSocket();
 
   useEffect(() => {
-    console.log(socket, '요기는 이펙트');
-
     if (!socket) return;
-    // socket.leaveRoom();
-
     socket.enterRoom();
     const unsubscribeRoomState = socket.onRoomStateChange(
       (roomInfo: RoomInfo) => {

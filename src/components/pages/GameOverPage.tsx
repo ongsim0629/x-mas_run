@@ -1,8 +1,7 @@
-import { useAtom } from 'jotai';
-import { gameScreenAtom } from '../../atoms/GameAtoms';
-import { GameScreen, WinnerData } from '../../types/game';
-import { useEffect, useRef, useState } from 'react';
-import useSocket from '../../hooks/useSocket';
+import { useAtom, useAtomValue } from 'jotai';
+import { gameScreenAtom, winnerAtom } from '../../atoms/GameAtoms';
+import { GameScreen } from '../../types/game';
+import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { AnimatedRabbit } from '../models/AnimatedRabbit';
 import { Group } from 'three';
@@ -35,18 +34,7 @@ const RotatingRabbit = () => {
 
 const GameOverPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
-  const [winner, setWinner] = useState('');
-  const { socket } = useSocket();
-
-  useEffect(() => {
-    if (socket) {
-      socket.leaveRoom();
-      socket.onGameOver((winnerData: WinnerData) => {
-        console.log(winnerData, '우승자정보');
-        setWinner(winnerData.winner.nickName);
-      });
-    }
-  }, []);
+  const winner = useAtomValue(winnerAtom);
 
   const handleGoHome = () => {
     setGameScreen(GameScreen.HOME);
