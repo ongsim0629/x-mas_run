@@ -4,25 +4,35 @@ import {
   gameScreenAtom,
   gameTimeAtom,
   playAudioAtom,
+  winnerAtom,
 } from '../../atoms/GameAtoms';
-import { GameScreen } from '../../types/game';
-import useAudio from '../../hooks/useAudio';
+import { GameScreen, WinnerData } from '../../types/game';
+import useSocket from '../../hooks/useSocket';
 
 export const GameTimer = () => {
-  const { setAudioEnabled } = useAudio();
   const [, playAudio] = useAtom(playAudioAtom);
   const timeLeft = useAtomValue(gameTimeAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
+  const { socket } = useSocket();
+  const setWinner = useSetAtom(winnerAtom);
 
   useEffect(() => {
-    setAudioEnabled(true);
     if (timeLeft !== null && timeLeft <= 10) {
       playAudio('beep1');
     }
-    if (timeLeft !== null && timeLeft <= 1) {
-      setGameScreen(GameScreen.GAME_OVER);
+  }, [timeLeft, playAudio]);
+
+  useEffect(() => {
+    if (socket) {
+      const unsubscribe = socket.onGameOver((winnerData: WinnerData) => {
+        setWinner(winnerData.winner.nickName);
+        setGameScreen(GameScreen.GAME_OVER);
+      });
+      return () => {
+        unsubscribe();
+      };
     }
-  }, [timeLeft, setAudioEnabled]);
+  }, [socket, setWinner, setGameScreen]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);

@@ -1,5 +1,6 @@
 import { atom } from 'jotai';
 import { Character, PlayerInfo, PlayerMovement } from '../types/player';
+import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
 export const playerMovementAtom = atom<PlayerMovement>({
   shift: false,
@@ -24,4 +25,8 @@ export const playersAtom = atom<Character[]>([
   },
 ]);
 
-export const playerInfoAtom = atom<PlayerInfo>({ id: null, nickname: '' });
+export const playerInfoAtom = atomWithStorage<PlayerInfo>(
+  'player',
+  { id: null, nickname: '' },
+  createJSONStorage(() => sessionStorage),
+);
