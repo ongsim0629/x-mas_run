@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from 'jotai';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   audioEnabledAtom,
   gameScreenAtom,
@@ -12,14 +12,31 @@ const useAudio = () => {
   const [, playBGMAudio] = useAtom(playBGMAudioAtom);
   const gameScreen = useAtomValue(gameScreenAtom);
 
+  const lastPlayedBGM = useRef<'bgm' | 'gameover' | 'lobby'>('lobby');
+
   useEffect(() => {
     if (!audioEnabled) {
-      playBGMAudio('bgm');
+      if (lastPlayedBGM.current !== 'bgm') {
+        playBGMAudio('bgm');
+        lastPlayedBGM.current = 'bgm';
+      }
       return;
     }
-    if (gameScreen === GameScreen.GAME) playBGMAudio('bgm');
-    else if (gameScreen === GameScreen.GAME_OVER) playBGMAudio('gameover');
-    else playBGMAudio('lobby');
+
+    let targetBGM: 'bgm' | 'gameover' | 'lobby' = 'lobby';
+
+    if (gameScreen === GameScreen.GAME) {
+      targetBGM = 'bgm';
+    } else if (gameScreen === GameScreen.GAME_OVER) {
+      targetBGM = 'gameover';
+    } else {
+      targetBGM = 'lobby';
+    }
+
+    if (lastPlayedBGM.current !== targetBGM) {
+      playBGMAudio(targetBGM);
+      lastPlayedBGM.current = targetBGM;
+    }
   }, [audioEnabled, gameScreen, playBGMAudio]);
 
   return {
