@@ -1,11 +1,44 @@
 import { GLTF } from 'three-stdlib';
 import * as THREE from 'three';
 
-export type GiftColor = {
-  main: string;
-};
+export interface EffectConfig {
+  COUNT: number;
+  RADIUS: number;
+  HEIGHT: number;
+  COLOR: string;
+  SCALE: {
+    START: number;
+    END: number;
+  };
+  DURATION: {
+    MIN: number;
+    MAX: number;
+  };
+  LOOPS: number;
+}
 
-export const GIFT_COLORS: GiftColor[] = [
+export interface CreateSpriteProps {
+  texture: THREE.Texture;
+  color?: string;
+  opacity?: number;
+  blending?: THREE.Blending;
+}
+
+export interface AnimateSpriteProps {
+  sprite: THREE.Sprite;
+  startPosition: THREE.Vector3;
+  endPosition: THREE.Vector3;
+  startScale: number;
+  endScale: number;
+  duration: number;
+  delay?: number;
+}
+
+export interface GiftColor {
+  main: string;
+}
+
+export const GIFT_COLORS: readonly GiftColor[] = [
   { main: 'red' },
   { main: 'green' },
   { main: 'orange' },
@@ -14,9 +47,6 @@ export const GIFT_COLORS: GiftColor[] = [
   { main: 'brown' },
   { main: 'purple' },
 ] as const;
-
-
-export type GiftColors = readonly GiftColor[];
 
 export type GLTFGiftResult = GLTF & {
   nodes: {

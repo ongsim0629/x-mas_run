@@ -9,13 +9,14 @@ import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
 import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
-import { Tail } from '../models/Tail';
-import TailEffect from '../effect/TailEffect';
+import { Gift } from '../models/Gift';
+import GiftEffect from '../effect/GiftEffect';
 import { Character, Position } from '../../types/player';
 import { useAtom, useSetAtom } from 'jotai';
 import { playersAtom } from '../../atoms/PlayerAtoms';
 import { isMovingSignificantly, lerpAngle } from '../../utils/movementCalc';
 import { playAudioAtom } from '../../atoms/GameAtoms';
+import { GIFT_COLORS } from '../../types/gift';
 
 interface RabbitControllerProps {
   player: Character;
@@ -25,7 +26,7 @@ interface RabbitControllerProps {
 const RabbitController = ({
   player: {
     id,
-    hasTail,
+    giftCnt,
     position,
     velocity,
     nickName,
@@ -74,13 +75,26 @@ const RabbitController = ({
       if (!isOnGround) return;
       const velocityMagnitude = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
       const isMoving = velocityMagnitude > 0.5;
+      const hasGift = giftCnt > 0;
       if (
-        (isMoving && animation === 'CharacterArmature|Run') ||
-        (!isMoving && animation === 'CharacterArmature|Idle')
+        (isMoving &&
+          animation ===
+            (hasGift
+              ? 'CharacterArmature|Run_Gun'
+              : 'CharacterArmature|Run')) ||
+        (!isMoving &&
+          animation ===
+            (hasGift ? 'CharacterArmature|Idle_Gun' : 'CharacterArmature|Idle'))
       )
         return;
       setAnimation(
-        isMoving ? 'CharacterArmature|Run' : 'CharacterArmature|Idle',
+        isMoving
+          ? hasGift
+            ? 'CharacterArmature|Run_Gun'
+            : 'CharacterArmature|Run'
+          : hasGift
+            ? 'CharacterArmature|Idle_Gun'
+            : 'CharacterArmature|Idle',
       );
     },
     [animation],
@@ -119,7 +133,7 @@ const RabbitController = ({
         rotationTarget.current -=
           event.movementX * import.meta.env.VITE_INGAME_MOUSE_SPEED;
         const isOnGround = Math.abs(velocity.y) < 0.1;
-        const minY = isOnGround ? -0.5 : -0.8;
+        const minY = isOnGround ? -0.5 : -1;
         // y축 회전 (최대, 최소 제한) +  공중이면 엉덩이 볼 수 있게
         rotationTargetY.current = MathUtils.clamp(
           rotationTargetY.current -
@@ -178,12 +192,16 @@ const RabbitController = ({
         if (movement.x !== 0 || movement.z !== 0 || movement.y !== 0) {
           // 각도를 구해서 캐릭터 회전을 더함
           characterRotationTarget.current = Math.atan2(movement.x, movement.z);
+          const speedReduction = Math.max(0.5, 1 - giftCnt * 0.1); // 선물 하나당 10%씩 감소, 최소 50%까지
+          const currentSpeed =
+            import.meta.env.VITE_INGAME_SPEED * speedReduction;
+
           vel.x =
             Math.sin(rotationTarget.current + characterRotationTarget.current) *
-            import.meta.env.VITE_INGAME_SPEED;
+            currentSpeed;
           vel.z =
             Math.cos(rotationTarget.current + characterRotationTarget.current) *
-            import.meta.env.VITE_INGAME_SPEED;
+            currentSpeed;
         }
 
         if (get().catch && !isPunching.current) {
@@ -196,8 +214,17 @@ const RabbitController = ({
           );
         } else if (!isPunching.current && isOnGround) {
           if (movement.x !== 0 || movement.z !== 0)
-            setAnimation('CharacterArmature|Run');
-          else setAnimation('CharacterArmature|Idle');
+            setAnimation(
+              giftCnt > 0
+                ? 'CharacterArmature|Run_Gun'
+                : 'CharacterArmature|Run',
+            );
+          else
+            setAnimation(
+              giftCnt > 0
+                ? 'CharacterArmature|Idle_Gun'
+                : 'CharacterArmature|Idle',
+            );
         }
 
         rb.current.setLinvel(vel, true);
@@ -247,13 +274,13 @@ const RabbitController = ({
 
         // 현재 상태에 따른 목표 값 계산
         const targetExtraHeight =
-          !isOnGround && rotationTargetY.current < -0.2 ? 5 : 0;
+          !isOnGround && rotationTargetY.current < -0.2 ? 0 : 0;
         const targetExtraDistance =
           !isOnGround && rotationTargetY.current < -0.2 ? 10 : 0;
         const targetCameraHeight =
-          !isOnGround && rotationTargetY.current < -0.2 ? 10 : 0;
+          !isOnGround && rotationTargetY.current < -0.2 ? 15 : 0;
         const targetForwardDistance =
-          !isOnGround && rotationTargetY.current < -0.2 ? 15 : 6;
+          !isOnGround && rotationTargetY.current < -0.2 ? 10 : 6;
 
         currentExtraHeight.current = MathUtils.lerp(
           currentExtraHeight.current,
@@ -384,12 +411,18 @@ const RabbitController = ({
             bellyColor={bellyColor}
             hairColor={hairColor}
           />
-          {hasTail && (
-            <group position={[0, 0.3, -0.2]}>
-              <Tail scale={[3, 3, 3]} />
-              <TailEffect />
+          {Array.from({ length: giftCnt }).map((_, index) => (
+            <group key={index} position={[-0.8, 0.8 + index * 0.8, 0.8]}>
+              <Gift
+                scale={[0.3, 0.3, 0.3]}
+                colors={{
+                  'Material.002': GIFT_COLORS[index % GIFT_COLORS.length].main,
+                  'Material.008': GIFT_COLORS[index % GIFT_COLORS.length].main,
+                }}
+              />
+              <GiftEffect />
             </group>
-          )}
+          ))}
         </group>
       </group>
       {/* args: [halfHeight, radius], rabbit 사이즈만큼 position으로 끌어올려야함 */}
