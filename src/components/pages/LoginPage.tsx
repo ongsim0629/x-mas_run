@@ -4,18 +4,11 @@ import { playerInfoAtom } from '../../atoms/PlayerAtoms';
 import { gameScreenAtom } from '../../atoms/GameAtoms';
 import { GameScreen } from '../../types/game';
 import useGame from '../../hooks/useGame';
-import useAudio from '../../hooks/useAudio';
-import { FaBell, FaBellSlash } from 'react-icons/fa';
 
 const LoginPage = () => {
   const [player, setPlayer] = useAtom(playerInfoAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
   const { registerPlayerQuery } = useGame();
-  const { audioEnabled, setAudioEnabled } = useAudio();
-
-  const handleAudioClick = () => {
-    setAudioEnabled((prev) => !prev);
-  };
 
   const handleRegisterPlayer = useCallback(
     async (e: FormEvent<HTMLElement>) => {
@@ -36,18 +29,6 @@ const LoginPage = () => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center flex-col">
-      <button
-        className="flex justify-end absolute top-5 right-5 z-20 "
-        onClick={handleAudioClick}
-        type="button"
-        aria-label="sound-button"
-      >
-        {audioEnabled ? (
-          <FaBell className="w-10 h-10 cursor-pointer text-white my-2 hover:scale-110" />
-        ) : (
-          <FaBellSlash className="w-10 h-10 cursor-pointer text-white my-2 hover:scale-110" />
-        )}
-      </button>
       <video
         autoPlay
         loop
