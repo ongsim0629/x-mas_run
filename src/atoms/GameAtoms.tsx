@@ -1,8 +1,14 @@
 import { atom } from 'jotai';
 import { AudioInstance, BGMAudioType, GameScreen } from '../types/game';
 import { SocketService } from '../apis/SocketService';
+import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
-export const gameScreenAtom = atom<GameScreen>(GameScreen.LOADING);
+export const gameScreenAtom = atomWithStorage<GameScreen>(
+  'gameScreen',
+  GameScreen.LOADING,
+  createJSONStorage(() => sessionStorage),
+);
+
 export const winnerAtom = atom<string>('');
 
 // Socket
