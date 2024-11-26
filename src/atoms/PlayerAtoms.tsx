@@ -21,7 +21,10 @@ export const playersAtom = atom<Character[]>([
     bodyColor: 'gold',
     hairColor: 'black',
     bellyColor: 'white',
-    hasTail: true,
+    giftCnt: 0,
+    shift: false,
+    isBeingStolen: false,
+    isSteal: false,
   },
 ]);
 
