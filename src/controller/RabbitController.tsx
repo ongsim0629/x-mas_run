@@ -127,7 +127,7 @@ const RabbitController = ({
     return () => document.removeEventListener('mousemove', onMouseMove);
   }, [import.meta.env.VITE_INGAME_MOUSE_SPEED]);
 
-  useFrame(({ camera }) => {
+  useFrame(({ camera }, delta) => {
     if (isLocalPlayer) {
       if (rb.current) {
         // 직선 운동 속도
@@ -266,10 +266,16 @@ const RabbitController = ({
           rb.current.setTranslation(position, true);
           rb.current.setLinvel(velocity, true);
         } else {
+          const predictPosition = {
+            x: currentPosition.current.x + currentVelocity.current.x * delta,
+            y: currentPosition.current.y + currentVelocity.current.y * delta,
+            z: currentPosition.current.z + currentVelocity.current.z * delta,
+          };
+
           currentPosition.current = {
-            x: MathUtils.lerp(currentPosition.current.x, position.x, 0.1),
-            y: MathUtils.lerp(currentPosition.current.y, position.y, 0.1),
-            z: MathUtils.lerp(currentPosition.current.z, position.z, 0.1),
+            x: MathUtils.lerp(predictPosition.x, position.x, 0.1),
+            y: MathUtils.lerp(predictPosition.y, position.y, 0.1),
+            z: MathUtils.lerp(predictPosition.z, position.z, 0.1),
           };
 
           currentVelocity.current = {
