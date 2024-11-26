@@ -17,6 +17,7 @@ import { playersAtom } from '../../atoms/PlayerAtoms';
 import { isMovingSignificantly, lerpAngle } from '../../utils/movementCalc';
 import { playAudioAtom } from '../../atoms/GameAtoms';
 import { GIFT_COLORS } from '../../types/gift';
+import { Present } from '../present';
 
 interface RabbitControllerProps {
   player: Character;
@@ -412,16 +413,7 @@ const RabbitController = ({
             hairColor={hairColor}
           />
           {Array.from({ length: giftCnt }).map((_, index) => (
-            <group key={index} position={[-0.8, 0.8 + index * 0.8, 0.8]}>
-              <Gift
-                scale={[0.3, 0.3, 0.3]}
-                colors={{
-                  'Material.002': GIFT_COLORS[index % GIFT_COLORS.length].main,
-                  'Material.008': GIFT_COLORS[index % GIFT_COLORS.length].main,
-                }}
-              />
-              <GiftEffect />
-            </group>
+            <Present index={index} key={id + index} />
           ))}
         </group>
       </group>
