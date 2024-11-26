@@ -10,7 +10,7 @@ export default function Scene() {
   const { id } = useAtomValue(playerInfoAtom);
   return (
     <>
-      <Environment preset="sunset" />
+      <Environment preset="warehouse" />
       <ambientLight intensity={0.3} />
       <Physics>
         <Map scale={0.1} position={[0, 0, 0]} model={`/maps/map.glb`} />

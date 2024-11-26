@@ -15,7 +15,10 @@ const useAudio = () => {
   const lastPlayedBGM = useRef<'bgm' | 'gameover' | 'lobby'>('lobby');
 
   useEffect(() => {
-    if (!audioEnabled) return;
+    if (!audioEnabled) {
+      playBGMAudio(lastPlayedBGM.current);
+      return;
+    }
 
     let targetBGM: 'bgm' | 'gameover' | 'lobby' = 'lobby';
 
@@ -27,10 +30,8 @@ const useAudio = () => {
       targetBGM = 'lobby';
     }
 
-    if (lastPlayedBGM.current !== targetBGM) {
-      playBGMAudio(targetBGM);
-      lastPlayedBGM.current = targetBGM;
-    }
+    playBGMAudio(targetBGM);
+    lastPlayedBGM.current = targetBGM;
   }, [audioEnabled, gameScreen, playBGMAudio]);
 
   return {

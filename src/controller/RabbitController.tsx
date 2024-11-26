@@ -166,6 +166,12 @@ const RabbitController = ({
         const vel = rb.current.linvel();
         const pos = rb.current.translation();
 
+        if (isBeingStolen) {
+          playAudio('stolen');
+          setAnimation('CharacterArmature|Duck');
+          return;
+        }
+
         const distanceToServer = Math.sqrt(
           Math.pow(lastServerPosition.current.x - pos.x, 2) +
             Math.pow(lastServerPosition.current.z - pos.z, 2),
