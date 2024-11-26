@@ -6,6 +6,8 @@ import {
   CreateSpriteProps,
   AnimateSpriteProps,
 } from '../../types/gift';
+import { useAtom } from 'jotai';
+import { playAudioAtom } from '../../atoms/GameAtoms';
 
 const EFFECTS: { LIGHTS: EffectConfig } = {
   LIGHTS: {
@@ -50,9 +52,12 @@ const createCircleTexture = () => {
 };
 
 const GiftEffect: React.FC = () => {
+  const [, playAudio] = useAtom(playAudioAtom);
   const effectGroup = useRef<THREE.Group>(null);
   const sprites = useRef<THREE.Sprite[]>([]);
   const loader = useMemo(() => new THREE.TextureLoader(), []);
+  const hasPlayedSound = useRef(false);
+  const soundTimeoutRef = useRef<NodeJS.Timeout>();
 
   const createSprite = useCallback(
     ({
@@ -125,6 +130,15 @@ const GiftEffect: React.FC = () => {
   );
 
   const createEffect = useCallback(() => {
+    if (!hasPlayedSound.current) {
+      playAudio('woosh');
+      hasPlayedSound.current = true;
+
+      soundTimeoutRef.current = setTimeout(() => {
+        playAudio('wooshss', true);
+      }, 1000);
+    }
+
     const circleTexture = createCircleTexture();
     if (!circleTexture) return;
 
@@ -186,7 +200,7 @@ const GiftEffect: React.FC = () => {
         delay: Math.random(),
       });
     }
-  }, [loader, createSprite, animateSprite]);
+  }, [loader, createSprite, animateSprite, playAudio]);
 
   useEffect(() => {
     if (!effectGroup.current) return;
@@ -196,6 +210,7 @@ const GiftEffect: React.FC = () => {
         if (sprite.parent) sprite.parent.remove(sprite);
       });
       sprites.current = [];
+      hasPlayedSound.current = false;
     };
 
     cleanup();
