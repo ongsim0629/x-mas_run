@@ -17,7 +17,7 @@ export const GameTimer = () => {
   const setWinner = useSetAtom(winnerAtom);
 
   useEffect(() => {
-    if (timeLeft !== null && timeLeft <= 10) {
+    if (timeLeft !== null && timeLeft <= 10 && timeLeft > 0) {
       playAudio('beep1');
     }
   }, [timeLeft, playAudio]);

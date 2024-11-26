@@ -69,7 +69,6 @@ const SocketController = () => {
 
   // 플레이어 움직임 처리
   const lastSentTime = useRef(Date.now());
-  const SEND_INTERVAL = 200; // 100ms = 10fps
   useEffect(() => {
     if (!socket || !player.id) return;
     const currentPlayer = players.find((p) => p.id === player.id);
@@ -77,7 +76,7 @@ const SocketController = () => {
     if (!currentPlayer) return;
 
     const now = Date.now();
-    if (now - lastSentTime.current < SEND_INTERVAL) return;
+    if (now - lastSentTime.current < import.meta.env.VITE_SEND_INTERVAL) return;
 
     if (!isInitialized.current) {
       prevPosition.current = currentPlayer.position;
@@ -85,13 +84,12 @@ const SocketController = () => {
       return;
     }
 
+    const wantsToShift = get().catch || isMouseDown.current;
     const shouldUpdatePosition =
       hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
-      get().catch ||
-      isMouseDown.current;
+      wantsToShift;
 
     if (shouldUpdatePosition) {
-      const wantsToShift = get().catch || isMouseDown.current;
       if (wantsToShift && !shiftCooldown.current) {
         socket.updateMovement({
           character: currentPlayer,

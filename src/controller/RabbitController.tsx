@@ -67,13 +67,12 @@ const RabbitController = ({
   // 다른 플레이어들의 부드러운 움직임을 위한 ref
   const currentPosition = useRef(position);
   const currentVelocity = useRef(velocity);
+  const lastServerPosition = useRef(position);
 
   const [, get] = useKeyboardControls();
 
   const updateAnimation = useCallback(
-    (vel: Position, isOnGround: boolean) => {
-      // if (!isOnGround) return;
-
+    (vel: Position) => {
       // 맞고 있는 상태면 우선적으로 Duck 애니메이션
       if (isBeingStolen) {
         setAnimation('CharacterArmature|Duck');
@@ -166,6 +165,27 @@ const RabbitController = ({
         // 직선 운동 속도
         const vel = rb.current.linvel();
         const pos = rb.current.translation();
+
+        const distanceToServer = Math.sqrt(
+          Math.pow(lastServerPosition.current.x - pos.x, 2) +
+            Math.pow(lastServerPosition.current.z - pos.z, 2),
+        );
+
+        // 거리가 임계값을 초과하면 서버 위치로 보정
+        if (distanceToServer > import.meta.env.VITE_DISTANCE_THRESHOLD * 10) {
+          currentPosition.current = { ...lastServerPosition.current };
+          rb.current.setTranslation(lastServerPosition.current, true);
+
+          // 속도는 유지하되 방향만 서버 위치를 향하도록 조정
+          const angle = Math.atan2(
+            lastServerPosition.current.x - pos.x,
+            lastServerPosition.current.z - pos.z,
+          );
+          const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
+          vel.x = Math.sin(angle) * speed;
+          vel.z = Math.cos(angle) * speed;
+          rb.current.setLinvel(vel, true);
+        }
 
         const isOnGround = Math.abs(vel.y) < 0.1;
 
@@ -262,6 +282,12 @@ const RabbitController = ({
               : player,
           ),
         );
+        // 서버로 보낼 위치를 lastServerPosition으로 저장
+        lastServerPosition.current = {
+          x: pos.x,
+          y: pos.y,
+          z: pos.z,
+        };
 
         if (character.current) {
           character.current.rotation.y = lerpAngle(
