@@ -1,9 +1,9 @@
 import { ChangeEvent, FormEvent, useCallback } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
-import { playerInfoAtom } from '../../atoms/PlayerAtoms';
-import { gameScreenAtom } from '../../atoms/GameAtoms';
-import { GameScreen } from '../../types/game';
-import useGame from '../../hooks/useGame';
+import { playerInfoAtom } from '../atoms/PlayerAtoms';
+import { gameScreenAtom } from '../atoms/GameAtoms';
+import { GameScreen } from '../types/game';
+import useGame from '../hooks/useGame';
 
 const LoginPage = () => {
   const [player, setPlayer] = useAtom(playerInfoAtom);

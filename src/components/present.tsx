@@ -1,4 +1,4 @@
-import { Gift } from './models/Gift';
+import { Gift } from '../models/Gift';
 import { GIFT_COLORS } from '../types/gift';
 import GiftEffect from './effect/GiftEffect';
 

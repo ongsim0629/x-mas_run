@@ -1,7 +1,7 @@
 import { useAtomValue, useAtom } from 'jotai';
-import { gameScreenAtom } from '../../atoms/GameAtoms';
-import { GameScreen } from '../../types/game';
-import { playerInfoAtom } from '../../atoms/PlayerAtoms';
+import { gameScreenAtom } from '../atoms/GameAtoms';
+import { GameScreen } from '../types/game';
+import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import { Canvas } from '@react-three/fiber';
 import { AnimatedRabbit } from '../models/AnimatedRabbit';
 import { OrbitControls } from '@react-three/drei';

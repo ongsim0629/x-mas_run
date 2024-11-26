@@ -18,7 +18,6 @@ export interface Character {
   giftCnt: number;
   shift: boolean;
   isBeingStolen: boolean;
-  isSteal: boolean;
 }
 
 export interface PlayerMovement {

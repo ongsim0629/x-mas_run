@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
-import { gameScreenAtom } from '../../atoms/GameAtoms';
-import { GameScreen } from '../../types/game';
-import { playerInfoAtom } from '../../atoms/PlayerAtoms';
-import useUser from '../../hooks/useUser';
+import { gameScreenAtom } from '../atoms/GameAtoms';
+import { GameScreen } from '../types/game';
+import { playerInfoAtom } from '../atoms/PlayerAtoms';
+import useUser from '../hooks/useUser';
 
 const LoadingPage = () => {
   const setGameScreen = useSetAtom(gameScreenAtom);

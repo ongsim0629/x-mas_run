@@ -9,15 +9,12 @@ import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
 import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
-import { Gift } from '../models/Gift';
-import GiftEffect from '../effect/GiftEffect';
-import { Character, Position } from '../../types/player';
+import { Character, Position } from '../types/player';
 import { useAtom, useSetAtom } from 'jotai';
-import { playersAtom } from '../../atoms/PlayerAtoms';
-import { isMovingSignificantly, lerpAngle } from '../../utils/movementCalc';
-import { playAudioAtom } from '../../atoms/GameAtoms';
-import { GIFT_COLORS } from '../../types/gift';
-import { Present } from '../present';
+import { playersAtom } from '../atoms/PlayerAtoms';
+import { isMovingSignificantly, lerpAngle } from '../utils/movementCalc';
+import { playAudioAtom } from '../atoms/GameAtoms';
+import { Present } from '../components/present';
 
 interface RabbitControllerProps {
   player: Character;
@@ -34,6 +31,8 @@ const RabbitController = ({
     bellyColor,
     hairColor,
     bodyColor,
+    shift,
+    isBeingStolen,
   },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
@@ -73,7 +72,20 @@ const RabbitController = ({
 
   const updateAnimation = useCallback(
     (vel: Position, isOnGround: boolean) => {
-      if (!isOnGround) return;
+      // if (!isOnGround) return;
+
+      // 맞고 있는 상태면 우선적으로 Duck 애니메이션
+      if (isBeingStolen) {
+        setAnimation('CharacterArmature|Duck');
+        return;
+      }
+
+      // 공격 중인 상태면 Punch 애니메이션
+      if (shift) {
+        setAnimation('CharacterArmature|Punch');
+        return;
+      }
+
       const velocityMagnitude = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
       const isMoving = velocityMagnitude > 0.5;
       const hasGift = giftCnt > 0;
@@ -98,7 +110,7 @@ const RabbitController = ({
             : 'CharacterArmature|Idle',
       );
     },
-    [animation],
+    [animation, giftCnt, isBeingStolen, shift],
   );
 
   // Mouse Control 부분
@@ -148,7 +160,7 @@ const RabbitController = ({
     return () => document.removeEventListener('mousemove', onMouseMove);
   }, [import.meta.env.VITE_INGAME_MOUSE_SPEED, velocity.y]);
 
-  useFrame(({ camera }) => {
+  useFrame(({ camera }, delta) => {
     if (isLocalPlayer) {
       if (rb.current) {
         // 직선 운동 속도
@@ -341,10 +353,16 @@ const RabbitController = ({
           rb.current.setTranslation(position, true);
           rb.current.setLinvel(velocity, true);
         } else {
+          const predictPosition = {
+            x: currentPosition.current.x + currentVelocity.current.x * delta,
+            y: currentPosition.current.y + currentVelocity.current.y * delta,
+            z: currentPosition.current.z + currentVelocity.current.z * delta,
+          };
+
           currentPosition.current = {
-            x: MathUtils.lerp(currentPosition.current.x, position.x, 0.1),
-            y: MathUtils.lerp(currentPosition.current.y, position.y, 0.1),
-            z: MathUtils.lerp(currentPosition.current.z, position.z, 0.1),
+            x: MathUtils.lerp(predictPosition.x, position.x, 0.1),
+            y: MathUtils.lerp(predictPosition.y, position.y, 0.1),
+            z: MathUtils.lerp(predictPosition.z, position.z, 0.1),
           };
 
           currentVelocity.current = {
@@ -405,7 +423,6 @@ const RabbitController = ({
         )}
         <group ref={character}>
           <AnimatedRabbit
-            // scale={0.18}
             nickName={nickName}
             animation={animation}
             bodyColor={bodyColor}
