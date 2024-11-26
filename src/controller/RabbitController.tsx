@@ -31,6 +31,8 @@ const RabbitController = ({
     bellyColor,
     hairColor,
     bodyColor,
+    shift,
+    isBeingStolen,
   },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
@@ -70,7 +72,20 @@ const RabbitController = ({
 
   const updateAnimation = useCallback(
     (vel: Position, isOnGround: boolean) => {
-      if (!isOnGround) return;
+      // if (!isOnGround) return;
+
+      // 맞고 있는 상태면 우선적으로 Duck 애니메이션
+      if (isBeingStolen) {
+        setAnimation('CharacterArmature|Duck');
+        return;
+      }
+
+      // 공격 중인 상태면 Punch 애니메이션
+      if (shift) {
+        setAnimation('CharacterArmature|Punch');
+        return;
+      }
+
       const velocityMagnitude = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
       const isMoving = velocityMagnitude > 0.5;
       const hasGift = giftCnt > 0;
@@ -95,7 +110,7 @@ const RabbitController = ({
             : 'CharacterArmature|Idle',
       );
     },
-    [animation],
+    [animation, giftCnt, isBeingStolen, shift],
   );
 
   // Mouse Control 부분
@@ -408,7 +423,6 @@ const RabbitController = ({
         )}
         <group ref={character}>
           <AnimatedRabbit
-            // scale={0.18}
             nickName={nickName}
             animation={animation}
             bodyColor={bodyColor}

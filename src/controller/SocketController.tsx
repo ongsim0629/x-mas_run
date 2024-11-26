@@ -68,12 +68,13 @@ const SocketController = () => {
   }, []);
 
   // 플레이어 움직임 처리
-  const currentPlayer = players.find((p) => p.id === player.id);
-  const { position, velocity } = currentPlayer || {};
   const lastSentTime = useRef(Date.now());
   const SEND_INTERVAL = 200; // 100ms = 10fps
   useEffect(() => {
-    if (!socket || !currentPlayer) return;
+    if (!socket || !player.id) return;
+    const currentPlayer = players.find((p) => p.id === player.id);
+
+    if (!currentPlayer) return;
 
     const now = Date.now();
     if (now - lastSentTime.current < SEND_INTERVAL) return;
@@ -90,21 +91,30 @@ const SocketController = () => {
       isMouseDown.current;
 
     if (shouldUpdatePosition) {
-      socket.updateMovement({
-        character: currentPlayer,
-        shift: (get().catch || isMouseDown.current) && !shiftCooldown.current, // 쿨다운 중이면 false전송
-      });
-
-      if ((get().catch || isMouseDown.current) && !shiftCooldown.current) {
+      const wantsToShift = get().catch || isMouseDown.current;
+      if (wantsToShift && !shiftCooldown.current) {
+        socket.updateMovement({
+          character: currentPlayer,
+          shift: true,
+        });
         shiftCooldown.current = true;
-        shiftCooldownTimer.current = setTimeout(() => {
-          shiftCooldown.current = false;
-        }, 500);
+        if (shiftCooldownTimer.current)
+          clearTimeout(shiftCooldownTimer.current);
+        shiftCooldownTimer.current = setTimeout(
+          () => (shiftCooldown.current = false),
+          1000,
+        );
+      } else {
+        socket.updateMovement({
+          character: currentPlayer,
+          shift: false,
+        });
       }
 
       prevPosition.current = currentPlayer.position;
+      lastSentTime.current = now;
     }
-  }, [position, velocity]);
+  }, [player.id, socket, players]);
 
   const hasSignificantMovement = useCallback(
     (current: Position, prev: Position): boolean =>
