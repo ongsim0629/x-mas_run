@@ -71,7 +71,7 @@ const SocketController = () => {
   const currentPlayer = players.find((p) => p.id === player.id);
   const { position, velocity } = currentPlayer || {};
   const lastSentTime = useRef(Date.now());
-  const SEND_INTERVAL = 100; // 100ms = 10fps
+  const SEND_INTERVAL = 200; // 100ms = 10fps
   useEffect(() => {
     if (!socket || !currentPlayer) return;
 
