@@ -5,9 +5,9 @@ import {
   gameTimeAtom,
   playAudioAtom,
   winnerAtom,
-} from '../../atoms/GameAtoms';
-import { GameScreen, WinnerData } from '../../types/game';
-import useSocket from '../../hooks/useSocket';
+} from '../atoms/GameAtoms';
+import { GameScreen, WinnerData } from '../types/game';
+import useSocket from '../hooks/useSocket';
 
 export const GameTimer = () => {
   const [, playAudio] = useAtom(playAudioAtom);

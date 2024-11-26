@@ -1,6 +1,6 @@
 import { useAtom, useAtomValue } from 'jotai';
-import { gameScreenAtom, winnerAtom } from '../../atoms/GameAtoms';
-import { GameScreen } from '../../types/game';
+import { gameScreenAtom, winnerAtom } from '../atoms/GameAtoms';
+import { GameScreen } from '../types/game';
 import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { AnimatedRabbit } from '../models/AnimatedRabbit';

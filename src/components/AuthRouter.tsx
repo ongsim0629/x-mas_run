@@ -1,15 +1,15 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { gameScreenAtom } from '../atoms/GameAtoms';
 import { GameScreen } from '../types/game';
-import SocketController from './controller/SocketController';
-import LoadingPage from './pages/LoadingPage';
-import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage';
-import MatchingPage from './pages/MatchingPage';
-import { GameTimer } from './pages/GameTimer';
+import SocketController from '../controller/SocketController';
+import LoadingPage from '../pages/LoadingPage';
+import LoginPage from '../pages/LoginPage';
+import HomePage from '../pages/HomePage';
+import MatchingPage from '../pages/MatchingPage';
+import { GameTimer } from '../pages/GameTimer';
 import { Canvas } from '@react-three/fiber';
 import Scene from './Scene';
-import GameOverPage from './pages/GameOverPage';
+import GameOverPage from '../pages/GameOverPage';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 
 const AuthRouter = () => {

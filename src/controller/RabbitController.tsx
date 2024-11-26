@@ -10,12 +10,12 @@ import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
 import { Tail } from '../models/Tail';
-import TailEffect from '../effect/TailEffect';
-import { Character, Position } from '../../types/player';
+import TailEffect from '../components/effect/TailEffect';
+import { Character, Position } from '../types/player';
 import { useAtom, useSetAtom } from 'jotai';
-import { playersAtom } from '../../atoms/PlayerAtoms';
-import { isMovingSignificantly, lerpAngle } from '../../utils/movementCalc';
-import { playAudioAtom } from '../../atoms/GameAtoms';
+import { playersAtom } from '../atoms/PlayerAtoms';
+import { isMovingSignificantly, lerpAngle } from '../utils/movementCalc';
+import { playAudioAtom } from '../atoms/GameAtoms';
 
 interface RabbitControllerProps {
   player: Character;

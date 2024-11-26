@@ -1,10 +1,10 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef } from 'react';
-import { playerInfoAtom, playersAtom } from '../../atoms/PlayerAtoms';
-import { Position } from '../../types/player';
+import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
+import { Position } from '../types/player';
 import { useKeyboardControls } from '@react-three/drei';
-import useSocket from '../../hooks/useSocket';
-import { gameTimeAtom } from '../../atoms/GameAtoms';
+import useSocket from '../hooks/useSocket';
+import { gameTimeAtom } from '../atoms/GameAtoms';
 
 const SocketController = () => {
   const { socket } = useSocket();

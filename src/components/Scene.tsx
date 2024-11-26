@@ -1,5 +1,5 @@
 import { Environment } from '@react-three/drei';
-import RabbitController from './controller/RabbitController';
+import RabbitController from '../controller/RabbitController';
 import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';

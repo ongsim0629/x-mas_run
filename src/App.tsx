@@ -4,7 +4,7 @@ import { Flip, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactQueryClientProvider from './components/ReactQueryClientProvider';
 import { ErrorBoundary } from 'react-error-boundary';
-import RenderErrorPage from './components/pages/RenderErrorPage';
+import RenderErrorPage from './pages/RenderErrorPage';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import AuthRouter from './components/AuthRouter';
 
