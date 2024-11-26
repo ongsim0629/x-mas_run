@@ -1,5 +1,5 @@
 import { KeyboardControls } from '@react-three/drei';
-import SoundControlHeader from './components/SoundControlHeader';
+import SoundControlHeader from './components/UI/SoundControlHeader';
 import { Flip, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactQueryClientProvider from './components/ReactQueryClientProvider';

@@ -6,7 +6,7 @@ import LoadingPage from '../pages/LoadingPage';
 import LoginPage from '../pages/LoginPage';
 import HomePage from '../pages/HomePage';
 import MatchingPage from '../pages/MatchingPage';
-import { GameTimer } from '../pages/GameTimer';
+import { GameTimer } from '../components/UI/GameTimer';
 import { Canvas } from '@react-three/fiber';
 import Scene from './Scene';
 import GameOverPage from '../pages/GameOverPage';

@@ -1,5 +1,4 @@
-import useAudio from '../hooks/useAudio';
-import { FaBell, FaBellSlash } from 'react-icons/fa';
+import useAudio from '../../hooks/useAudio';
 
 const SoundControlHeader = () => {
   const { audioEnabled, setAudioEnabled } = useAudio();
@@ -14,9 +13,15 @@ const SoundControlHeader = () => {
       aria-label="sound-button"
     >
       {audioEnabled ? (
-        <FaBell className="w-10 h-10 cursor-pointer text-white my-2 hover:scale-110" />
+        <img
+          src="/images/bell.svg"
+          className="w-10 h-10 cursor-pointer text-white my-2 hover:scale-110"
+        />
       ) : (
-        <FaBellSlash className="w-10 h-10 cursor-pointer text-white my-2 hover:scale-110" />
+        <img
+          src="/images/bellMute.svg"
+          className="w-10 h-10 cursor-pointer text-white my-2 hover:scale-110"
+        />
       )}
     </button>
   );

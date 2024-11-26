@@ -4,8 +4,8 @@ import { gameScreenAtom, playAudioAtom } from '../atoms/GameAtoms';
 import { GameScreen } from '../types/game';
 import useSocket from '../hooks/useSocket';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
-import Star, { generateStars } from './Star';
-import KeyboardGuide from './KeyboardGuide';
+import Star, { generateStars } from '../components/UI/Star';
+import KeyboardGuide from '../components/UI/KeyboardGuide';
 
 interface RoomInfo {
   playerCnt: number;
