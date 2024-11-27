@@ -15,7 +15,7 @@ import { playersAtom } from '../atoms/PlayerAtoms';
 import { isMovingSignificantly, lerpAngle } from '../utils/movementCalc';
 import { playAudioAtom } from '../atoms/GameAtoms';
 import { Present } from '../components/present';
-import useControl from '../hooks/useControl';
+import useKeyControl from '../hooks/useKeyControl';
 
 interface RabbitControllerProps {
   player: Character;
@@ -72,7 +72,7 @@ const RabbitController = ({
   const currentVelocity = useRef(velocity);
   const lastServerPosition = useRef(position);
 
-  const getControls = useControl();
+  const getControls = useKeyControl();
 
   const updateAnimation = useCallback(
     (vel: Position) => {

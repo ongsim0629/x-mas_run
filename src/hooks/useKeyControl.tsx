@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 type Controls = 'forward' | 'backward' | 'left' | 'right' | 'jump' | 'catch';
 
-const useControl = () => {
+const useKeyControl = () => {
   const [, get] = useKeyboardControls<Controls>();
   const [isMouseDown, setIsMouseDown] = useState(false);
 
@@ -31,4 +31,4 @@ const useControl = () => {
   return getState;
 };
 
-export default useControl;
+export default useKeyControl;

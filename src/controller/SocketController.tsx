@@ -4,7 +4,7 @@ import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import { Position } from '../types/player';
 import { gameTimeAtom } from '../atoms/GameAtoms';
 import useSocket from '../hooks/useSocket';
-import useControl from '../hooks/useControl'; // 새로 만든 훅 import
+import useKeyControl from '../hooks/useKeyControl'; // 새로 만든 훅 import
 
 const SocketController = () => {
   const { socket } = useSocket();
@@ -14,7 +14,7 @@ const SocketController = () => {
   const setTimer = useSetAtom(gameTimeAtom);
   const isInitialized = useRef(false);
 
-  const getControls = useControl();
+  const getControls = useKeyControl();
 
   // steal 쿨타임 관리 ref
   const stealCooldown = useRef(false);
