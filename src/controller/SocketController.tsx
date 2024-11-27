@@ -13,7 +13,7 @@ const SocketController = () => {
   const player = useAtomValue(playerInfoAtom);
   const setTimer = useSetAtom(gameTimeAtom);
   const isInitialized = useRef(false);
-  const [killLogs, setKillLogs] = useAtom(killLogsAtom);
+  const [, setKillLogs] = useAtom(killLogsAtom);
 
   const getControls = useKeyControl();
 
