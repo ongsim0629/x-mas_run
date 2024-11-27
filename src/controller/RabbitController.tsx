@@ -1,16 +1,8 @@
-import {
-  CapsuleCollider,
-  RapierRigidBody,
-  RigidBody,
-} from '@react-three/rapier';
-import { useEffect, useRef, useState } from 'react';
+import { CapsuleCollider, RigidBody } from '@react-three/rapier';
+import { useState } from 'react';
 import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
-import { Group, Vector3 } from 'three';
-import { useFrame } from '@react-three/fiber';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
-import { useSetAtom } from 'jotai';
-import { playersAtom } from '../atoms/PlayerAtoms';
 import { Present } from '../components/present';
 import useKeyControl from '../hooks/useKeyControl';
 import useCharacterControl from '../hooks/useCharacterControl';
@@ -19,6 +11,11 @@ import useCamera from '../hooks/useCamera';
 import usePlayerState from '../hooks/usePlayerState';
 import useMouseRotation from '../hooks/useMouseRotation';
 import usePlayersInterpolation from '../hooks/usePlayersInterpolation';
+import useRabbitRefs from '../hooks/refs/useRabbitRefs';
+import useCameraRefs from '../hooks/refs/useCameraRefs';
+import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
+import useGameLoop from '../hooks/useGameLoop';
+import useMouseRefs from '../hooks/refs/useMouseRefs';
 
 interface RabbitControllerProps {
   player: Character;
@@ -41,49 +38,41 @@ const RabbitController = ({
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
-  const rb = useRef<RapierRigidBody>(null);
-  const container = useRef<Group>(null);
-  const character = useRef<Group>(null);
-  // 위치 초기화
-  const isInitialized = useRef(false);
-  // 뺏는 액션 시간 제한
-  const punchAnimationTimer = useRef<NodeJS.Timeout | null>(null);
-  const isPunching = useRef(false);
 
-  // 빼앗긴 액션 시간 제한
-  const stolenAnimationTimer = useRef<NodeJS.Timeout | null>(null);
-  const isCurrentlyStolen = useRef(false);
+  const {
+    rb,
+    container,
+    character,
+    currentPosition,
+    currentVelocity,
+    lastServerPosition,
+  } = useRabbitRefs(position, velocity);
 
-  const mouseControlRef = useRef<any>(null);
-  const characterRotationTarget = useRef(0);
-  const rotationTarget = useRef(0);
-  const rotationTargetY = useRef(0);
-  const cameraTarget = useRef<Group>(null);
-  const cameraPosition = useRef<Group>(null); // 그룹 내에서의 상대적 위치
-  const cameraLookAtWorldPosition = useRef(new Vector3()); // cameraTarget의 절대 위치
-  const cameraWorldPosition = useRef(new Vector3()); // cameraPosition의 절대 위치
-  const cameraLookAt = useRef(new Vector3()); // 부드럽게 해당 위치로 회전하기 위한 Ref
-  const currentExtraHeight = useRef(0);
-  const currentExtraDistance = useRef(0);
-  const currentCameraHeight = useRef(0);
-  const currentForwardDistance = useRef(6);
-  const { updateCamera } = useCamera({
+  const {
+    mouseControlRef,
+    rotationTarget,
+    rotationTargetY,
+    characterRotationTarget,
+  } = useMouseRefs();
+
+  const {
     cameraTarget,
     cameraPosition,
-    rotationTargetY,
+    cameraLookAtWorldPosition,
+    cameraWorldPosition,
+    cameraLookAt,
     currentExtraHeight,
     currentExtraDistance,
     currentCameraHeight,
     currentForwardDistance,
-    cameraWorldPosition,
-    cameraLookAtWorldPosition,
-    cameraLookAt,
-  });
+  } = useCameraRefs();
 
-  // 다른 플레이어들의 부드러운 움직임을 위한 ref
-  const currentPosition = useRef(position);
-  const currentVelocity = useRef(velocity);
-  const lastServerPosition = useRef(position);
+  const {
+    punchAnimationTimer,
+    isPunching,
+    stolenAnimationTimer,
+    isCurrentlyStolen,
+  } = useAnimationRefs();
 
   const getControls = useKeyControl();
 
@@ -116,7 +105,11 @@ const RabbitController = ({
     setAnimation,
   });
 
-  const { updatePlayerState } = usePlayerState({ id, lastServerPosition });
+  const { updatePlayerState } = usePlayerState({
+    id,
+    lastServerPosition,
+  });
+
   const { updateRemotePosition } = usePlayersInterpolation({
     currentPosition,
     currentVelocity,
@@ -126,7 +119,19 @@ const RabbitController = ({
     character,
   });
 
-  // Mouse Control 부분
+  const { updateCamera } = useCamera({
+    cameraTarget,
+    cameraPosition,
+    rotationTargetY,
+    currentExtraHeight,
+    currentExtraDistance,
+    currentCameraHeight,
+    currentForwardDistance,
+    cameraWorldPosition,
+    cameraLookAtWorldPosition,
+    cameraLookAt,
+  });
+
   useMouseRotation({
     mouseControlRef,
     rotationTarget,
@@ -134,41 +139,19 @@ const RabbitController = ({
     velocity,
   });
 
-  useFrame(({ camera }, delta) => {
-    if (rb.current) {
-      if (isLocalPlayer) {
-        // 직선 운동 속도
-        const pos = rb.current.translation();
-        const isOnGround = Math.abs(rb.current.linvel().y) < 0.1;
-
-        const controls = getControls();
-        const { velocity: vel } = updateMovement(
-          controls,
-          rb.current,
-          isOnGround,
-        );
-        updatePlayerState(pos, vel);
-        updateCamera(camera, isOnGround);
-      } else {
-        updateRemotePosition(delta);
-        updateAnimation(velocity);
-      }
-    }
+  useGameLoop({
+    isLocalPlayer,
+    rb,
+    getControls,
+    updateMovement,
+    updatePlayerState,
+    updateCamera,
+    updateRemotePosition,
+    updateAnimation,
+    velocity,
   });
 
-  // 초기 위치 설정
-  useEffect(() => {
-    if (!isInitialized.current && rb.current) {
-      currentPosition.current = position;
-      currentVelocity.current = velocity;
-      rb.current.setTranslation(position, true);
-      rb.current.setLinvel(velocity, true);
-      isInitialized.current = true;
-    }
-  }, []);
-
   return (
-    // 충돌 감지 비활성화: Capsule 쓰기 위해서, lockRotations: 안넘어지게
     <RigidBody colliders={false} lockRotations ref={rb}>
       {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
       <group ref={container}>
