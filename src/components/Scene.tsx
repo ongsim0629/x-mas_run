@@ -1,4 +1,4 @@
-import { Stage } from '@react-three/drei';
+import { Environment } from '@react-three/drei';
 import RabbitController from '../controller/RabbitController';
 import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
@@ -10,12 +10,7 @@ export default function Scene() {
   const { id } = useAtomValue(playerInfoAtom);
   return (
     <>
-      <Stage
-        environment={{
-          files:
-            'https://res.cloudinary.com/dkjk8h8zd/raw/upload/v1732709625/Venice_Sunset_1k_wohap7.hdr',
-        }}
-      />
+      <Environment files={import.meta.env.VITE_INGAME_MAP_FILE} />
       <ambientLight intensity={0.3} />
       <Physics>
         <Map scale={0.1} position={[0, 0, 0]} model={`/maps/map.glb`} />

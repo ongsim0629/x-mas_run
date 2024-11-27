@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useCallback } from 'react';
+import { ChangeEvent, FormEvent, useCallback, useEffect, useRef } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import { gameScreenAtom } from '../atoms/GameAtoms';
@@ -9,6 +9,10 @@ const LoginPage = () => {
   const [player, setPlayer] = useAtom(playerInfoAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
   const { registerPlayerQuery } = useGame();
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleRegisterPlayer = useCallback(
     async (e: FormEvent<HTMLElement>) => {
@@ -50,6 +54,7 @@ const LoginPage = () => {
           <div className="flex flex-col gap-2">
             <label className="text-lg font-semibold">닉네임</label>
             <input
+              ref={inputRef}
               aria-label="nickname-input"
               type="text"
               onChange={handleNicknameChange}
@@ -60,7 +65,7 @@ const LoginPage = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-0-accentColor text-white py-3 rounded hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+            className="w-full bg-0-accentColor text-white py-3 rounded hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold outline-none"
           >
             입장하기
           </button>
