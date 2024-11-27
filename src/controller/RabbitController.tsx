@@ -8,13 +8,14 @@ import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
 import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
 import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
-import { PointerLockControls, useKeyboardControls } from '@react-three/drei';
+import { PointerLockControls } from '@react-three/drei';
 import { Character, Position } from '../types/player';
 import { useAtom, useSetAtom } from 'jotai';
 import { playersAtom } from '../atoms/PlayerAtoms';
 import { isMovingSignificantly, lerpAngle } from '../utils/movementCalc';
 import { playAudioAtom } from '../atoms/GameAtoms';
 import { Present } from '../components/present';
+import useControl from '../hooks/useControl';
 
 interface RabbitControllerProps {
   player: Character;
@@ -71,7 +72,7 @@ const RabbitController = ({
   const currentVelocity = useRef(velocity);
   const lastServerPosition = useRef(position);
 
-  const [, get] = useKeyboardControls();
+  const getControls = useControl();
 
   const updateAnimation = useCallback(
     (vel: Position) => {
@@ -212,13 +213,13 @@ const RabbitController = ({
           y: 0,
           z: 0,
         };
+        const constrols = getControls();
+        if (constrols.forward) movement.z = 1;
+        if (constrols.backward) movement.z = -1;
+        if (constrols.left) movement.x = 1;
+        if (constrols.right) movement.x = -1;
 
-        if (get().forward) movement.z = 1;
-        if (get().backward) movement.z = -1;
-        if (get().left) movement.x = 1;
-        if (get().right) movement.x = -1;
-
-        if (get().jump) {
+        if (constrols.jump) {
           playAudio('jump');
           if (position.y >= 30)
             vel.y +=
@@ -255,7 +256,7 @@ const RabbitController = ({
             currentSpeed;
         }
 
-        if (get().catch && !isPunching.current) {
+        if (constrols.catch && !isPunching.current) {
           playAudio('punch');
           isPunching.current = true;
           setAnimation('CharacterArmature|Punch');

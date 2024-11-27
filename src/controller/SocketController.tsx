@@ -2,9 +2,9 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef } from 'react';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import { Position } from '../types/player';
-import { useKeyboardControls } from '@react-three/drei';
-import useSocket from '../hooks/useSocket';
 import { gameTimeAtom } from '../atoms/GameAtoms';
+import useSocket from '../hooks/useSocket';
+import useControl from '../hooks/useControl'; // 새로 만든 훅 import
 
 const SocketController = () => {
   const { socket } = useSocket();
@@ -13,33 +13,13 @@ const SocketController = () => {
   const player = useAtomValue(playerInfoAtom);
   const setTimer = useSetAtom(gameTimeAtom);
   const isInitialized = useRef(false);
-  const [, get] = useKeyboardControls();
 
-  // steal 쿨타임 관리 ref 추가
+  const getControls = useControl();
+
+  // steal 쿨타임 관리 ref
   const stealCooldown = useRef(false);
   const stealCooldownTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // 마우스 이벤트 리스너 추가
-  const isMouseDown = useRef(false);
-
-  useEffect(() => {
-    const handleMouseDown = () => {
-      isMouseDown.current = true;
-    };
-    const handleMouseUp = () => {
-      isMouseDown.current = false;
-    };
-
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, []);
-
-  // 소켓 이벤트 구독
   useEffect(() => {
     if (!socket) return;
     const unsubscribeConnect = socket.onConnect(() => {
@@ -84,7 +64,9 @@ const SocketController = () => {
       return;
     }
 
-    const wantsToSteal = get().catch || isMouseDown.current;
+    // getControls()로 현재 상태 가져오기
+    const controls = getControls();
+    const wantsToSteal = controls.catch;
     const shouldUpdatePosition =
       hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
       wantsToSteal;
