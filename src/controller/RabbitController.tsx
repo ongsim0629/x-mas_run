@@ -3,21 +3,21 @@ import {
   RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
-import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
+import { MathUtils } from 'three/src/math/MathUtils.js';
 import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { PointerLockControls } from '@react-three/drei';
-import { Character, Position } from '../types/player';
-import { useAtom, useSetAtom } from 'jotai';
+import { Character } from '../types/player';
+import { useSetAtom } from 'jotai';
 import { playersAtom } from '../atoms/PlayerAtoms';
 import { isMovingSignificantly, lerpAngle } from '../utils/movementCalc';
-import { playAudioAtom } from '../atoms/GameAtoms';
 import { Present } from '../components/present';
 import useKeyControl from '../hooks/useKeyControl';
 import useCharacterControl from '../hooks/useCharacterControl';
 import useCharacterAnimation from '../hooks/useCharacterAnimation';
+import useCamera from '../hooks/useCamera';
 
 interface RabbitControllerProps {
   player: Character;
@@ -67,6 +67,18 @@ const RabbitController = ({
   const currentExtraDistance = useRef(0);
   const currentCameraHeight = useRef(0);
   const currentForwardDistance = useRef(6);
+  const { updateCamera } = useCamera({
+    cameraTarget,
+    cameraPosition,
+    rotationTargetY,
+    currentExtraHeight,
+    currentExtraDistance,
+    currentCameraHeight,
+    currentForwardDistance,
+    cameraWorldPosition,
+    cameraLookAtWorldPosition,
+    cameraLookAt,
+  });
 
   // 다른 플레이어들의 부드러운 움직임을 위한 ref
   const currentPosition = useRef(position);
@@ -93,17 +105,16 @@ const RabbitController = ({
     container,
   });
 
-  const { updateAnimation, playJumpAnimation, playPunchAnimation } =
-    useCharacterAnimation({
-      isBeingStolen,
-      isCurrentlyStolen,
-      stolenAnimationTimer,
-      isPunching,
-      punchAnimationTimer,
-      steal,
-      giftCnt,
-      setAnimation,
-    });
+  const { updateAnimation } = useCharacterAnimation({
+    isBeingStolen,
+    isCurrentlyStolen,
+    stolenAnimationTimer,
+    isPunching,
+    punchAnimationTimer,
+    steal,
+    giftCnt,
+    setAnimation,
+  });
 
   // Mouse Control 부분
   useEffect(() => {
@@ -153,8 +164,8 @@ const RabbitController = ({
   }, [import.meta.env.VITE_INGAME_MOUSE_SPEED, velocity.y]);
 
   useFrame(({ camera }, delta) => {
-    if (isLocalPlayer) {
-      if (rb.current) {
+    if (rb.current) {
+      if (isLocalPlayer) {
         // 직선 운동 속도
         const pos = rb.current.translation();
         const isOnGround = Math.abs(rb.current.linvel().y) < 0.1;
@@ -177,7 +188,6 @@ const RabbitController = ({
                     z: pos.z,
                   },
                   velocity: newVel,
-                  isOnGround,
                 }
               : player,
           ),
@@ -188,116 +198,55 @@ const RabbitController = ({
           y: pos.y,
           z: pos.z,
         };
-      }
-
-      if (cameraPosition.current && cameraTarget.current) {
-        const isOnGround = Math.abs(velocity.y || 0) < 0.1;
-        // 카메라 수직 회전 적용
-        const verticalOffset = Math.sin(rotationTargetY.current) * 15;
-        const horizontalDistance = Math.cos(rotationTargetY.current) * 15;
-
-        // 현재 상태에 따른 목표 값 계산
-        const targetExtraHeight =
-          !isOnGround && rotationTargetY.current < -0.2 ? 0 : 0;
-        const targetExtraDistance =
-          !isOnGround && rotationTargetY.current < -0.2 ? 10 : 0;
-        const targetCameraHeight =
-          !isOnGround && rotationTargetY.current < -0.2 ? 15 : 0;
-        const targetForwardDistance =
-          !isOnGround && rotationTargetY.current < -0.2 ? 10 : 6;
-
-        currentExtraHeight.current = MathUtils.lerp(
-          currentExtraHeight.current,
-          targetExtraHeight,
-          0.05,
-        );
-
-        currentExtraDistance.current = MathUtils.lerp(
-          currentExtraDistance.current,
-          targetExtraDistance,
-          0.05,
-        );
-
-        currentCameraHeight.current = MathUtils.lerp(
-          currentCameraHeight.current,
-          targetCameraHeight,
-          0.05,
-        );
-
-        currentForwardDistance.current = MathUtils.lerp(
-          currentForwardDistance.current,
-          targetForwardDistance,
-          0.05,
-        );
-
-        cameraPosition.current.position.set(
-          0,
-          10 + verticalOffset + currentExtraHeight.current,
-          -(horizontalDistance + currentExtraDistance.current),
-        );
-
-        cameraTarget.current.position.set(
-          0,
-          currentCameraHeight.current,
-          currentForwardDistance.current,
-        );
-      }
-
-      // Vector3 실행을 반복하지 않기 위해 나눠서 진행
-      cameraPosition.current?.getWorldPosition(cameraWorldPosition.current);
-      camera.position.lerp(cameraWorldPosition.current, 0.1);
-
-      cameraTarget.current?.getWorldPosition(cameraLookAtWorldPosition.current);
-      // 부드러운 회전을 위한 중간값 지정
-      cameraLookAt.current.lerp(cameraLookAtWorldPosition.current, 0.1);
-      camera.lookAt(cameraLookAt.current);
-    } else {
-      if (rb.current) {
-        // 거리 보정
-        const distanceToTarget = Math.sqrt(
-          Math.pow(currentPosition.current.x - position.x, 2) +
-            Math.pow(currentPosition.current.z - position.z, 2),
-        );
-        if (distanceToTarget > import.meta.env.VITE_DISTANCE_THRESHOLD) {
-          currentPosition.current = { ...position };
-          currentVelocity.current = { ...velocity };
-          rb.current.setTranslation(position, true);
-          rb.current.setLinvel(velocity, true);
-        } else {
-          const predictPosition = {
-            x: currentPosition.current.x + currentVelocity.current.x * delta,
-            y: currentPosition.current.y + currentVelocity.current.y * delta,
-            z: currentPosition.current.z + currentVelocity.current.z * delta,
-          };
-
-          currentPosition.current = {
-            x: MathUtils.lerp(predictPosition.x, position.x, 0.1),
-            y: MathUtils.lerp(predictPosition.y, position.y, 0.1),
-            z: MathUtils.lerp(predictPosition.z, position.z, 0.1),
-          };
-
-          currentVelocity.current = {
-            x: MathUtils.lerp(currentVelocity.current.x, velocity.x, 0.1),
-            y: MathUtils.lerp(currentVelocity.current.y, velocity.y, 0.1),
-            z: MathUtils.lerp(currentVelocity.current.z, velocity.z, 0.1),
-          };
-
-          // 서버에서 받은 위치로 업데이트
-          rb.current.setTranslation(currentPosition.current, true);
-          rb.current.setLinvel(currentVelocity.current, true);
-        }
-
-        // 애니메이션 설정
-        updateAnimation(velocity);
-
-        // 캐릭터 회전
-        if (character.current && isMovingSignificantly(velocity)) {
-          const targetAngle = Math.atan2(velocity.x, velocity.z);
-          character.current.rotation.y = lerpAngle(
-            character.current.rotation.y,
-            targetAngle,
-            0.1,
+        updateCamera(camera, isOnGround);
+      } else {
+        if (rb.current) {
+          // 거리 보정
+          const distanceToTarget = Math.sqrt(
+            Math.pow(currentPosition.current.x - position.x, 2) +
+              Math.pow(currentPosition.current.z - position.z, 2),
           );
+          if (distanceToTarget > import.meta.env.VITE_DISTANCE_THRESHOLD) {
+            currentPosition.current = { ...position };
+            currentVelocity.current = { ...velocity };
+            rb.current.setTranslation(position, true);
+            rb.current.setLinvel(velocity, true);
+          } else {
+            const predictPosition = {
+              x: currentPosition.current.x + currentVelocity.current.x * delta,
+              y: currentPosition.current.y + currentVelocity.current.y * delta,
+              z: currentPosition.current.z + currentVelocity.current.z * delta,
+            };
+
+            currentPosition.current = {
+              x: MathUtils.lerp(predictPosition.x, position.x, 0.1),
+              y: MathUtils.lerp(predictPosition.y, position.y, 0.1),
+              z: MathUtils.lerp(predictPosition.z, position.z, 0.1),
+            };
+
+            currentVelocity.current = {
+              x: MathUtils.lerp(currentVelocity.current.x, velocity.x, 0.1),
+              y: MathUtils.lerp(currentVelocity.current.y, velocity.y, 0.1),
+              z: MathUtils.lerp(currentVelocity.current.z, velocity.z, 0.1),
+            };
+
+            // 서버에서 받은 위치로 업데이트
+            rb.current.setTranslation(currentPosition.current, true);
+            rb.current.setLinvel(currentVelocity.current, true);
+          }
+
+          // 애니메이션 설정
+          updateAnimation(velocity);
+
+          // 캐릭터 회전
+          if (character.current && isMovingSignificantly(velocity)) {
+            const targetAngle = Math.atan2(velocity.x, velocity.z);
+            character.current.rotation.y = lerpAngle(
+              character.current.rotation.y,
+              targetAngle,
+              0.1,
+            );
+          }
         }
       }
     }
@@ -312,16 +261,6 @@ const RabbitController = ({
       rb.current.setLinvel(velocity, true);
       isInitialized.current = true;
     }
-  }, []);
-  useEffect(() => {
-    return () => {
-      if (punchAnimationTimer.current) {
-        clearTimeout(punchAnimationTimer.current);
-      }
-      if (stolenAnimationTimer.current) {
-        clearTimeout(stolenAnimationTimer.current);
-      }
-    };
   }, []);
 
   return (
@@ -346,7 +285,6 @@ const RabbitController = ({
           ))}
         </group>
       </group>
-      {/* args: [halfHeight, radius], rabbit 사이즈만큼 position으로 끌어올려야함 */}
       <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
     </RigidBody>
   );
