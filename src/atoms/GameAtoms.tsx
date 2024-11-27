@@ -2,6 +2,7 @@ import { atom } from 'jotai';
 import { AudioInstance, BGMAudioType, GameScreen } from '../types/game';
 import { SocketService } from '../apis/SocketService';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
+import { KillLogInfo } from '../types/player';
 
 export const gameScreenAtom = atomWithStorage<GameScreen>(
   'gameScreen',
@@ -82,3 +83,5 @@ export const playAudioAtom = atom(
     audio.play();
   },
 );
+
+export const killLogsAtom = atom<KillLogInfo[]>([]);

@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { GameData, RoomInfo, WinnerData } from '../types/game';
-import { PlayerMovement } from '../types/player';
+import { KillLogInfo, PlayerMovement } from '../types/player';
 
 export class SocketService {
   private socket: Socket;
@@ -82,6 +82,11 @@ export class SocketService {
   onCharactersUpdate(handler: (gameData: GameData) => void) {
     this.socket.on('game.state', handler);
     return () => this.socket.off('game.state');
+  }
+
+  onKillLogUpdate(handler: (killData: KillLogInfo) => void) {
+    this.socket.on('game.log.steal', handler);
+    return () => this.socket.off('game.log.steal');
   }
 
   // Connection 관련

@@ -1,8 +1,8 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef } from 'react';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
-import { Position } from '../types/player';
-import { gameTimeAtom } from '../atoms/GameAtoms';
+import { KillLogInfo, Position } from '../types/player';
+import { gameTimeAtom, killLogsAtom } from '../atoms/GameAtoms';
 import useSocket from '../hooks/useSocket';
 import useKeyControl from '../hooks/useKeyControl'; // 새로 만든 훅 import
 
@@ -13,6 +13,7 @@ const SocketController = () => {
   const player = useAtomValue(playerInfoAtom);
   const setTimer = useSetAtom(gameTimeAtom);
   const isInitialized = useRef(false);
+  const [killLogs, setKillLogs] = useAtom(killLogsAtom);
 
   const getControls = useKeyControl();
 
@@ -64,7 +65,6 @@ const SocketController = () => {
       return;
     }
 
-    // getControls()로 현재 상태 가져오기
     const controls = getControls();
     const wantsToSteal = controls.catch;
     const shouldUpdatePosition =
@@ -105,6 +105,24 @@ const SocketController = () => {
       Math.abs(current.z - prev.z) > import.meta.env.VITE_POSITION_THRESHOLD,
     [],
   );
+
+  useEffect(() => {
+    if (!socket || !player.id) return;
+
+    const unsubscribeKillLog = socket.onKillLogUpdate(
+      (killLog: KillLogInfo) => {
+        setKillLogs((prev) => [...prev, killLog]);
+
+        setTimeout(() => {
+          setKillLogs((prev) => prev.slice(1));
+        }, 3000);
+      },
+    );
+
+    return () => {
+      unsubscribeKillLog();
+    };
+  }, [socket, player.id, setKillLogs]);
 
   return null;
 };
