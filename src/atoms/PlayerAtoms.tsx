@@ -3,28 +3,26 @@ import { Character, PlayerInfo, PlayerMovement } from '../types/player';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
 export const playerMovementAtom = atom<PlayerMovement>({
-  shift: false,
+  steal: false,
+  skill: false,
   character: {
     id: '',
     position: { x: 0, y: 0, z: 0 },
     velocity: { x: 0, y: 0, z: 0 },
-    isOnGround: true,
   },
 });
 export const playersAtom = atom<Character[]>([
   {
     id: '',
+    charType: 0,
     nickName: 'ONGSIM',
     position: { x: 0, y: 0, z: 0 },
     velocity: { x: 0, y: 0, z: 0 },
-    isOnGround: true,
-    bodyColor: 'gold',
-    hairColor: 'black',
-    bellyColor: 'white',
+    charColor: 'gold',
     giftCnt: 0,
-    shift: false,
+    steal: false,
     isBeingStolen: false,
-    isSteal: false,
+    skill: false,
   },
 ]);
 

@@ -15,9 +15,9 @@ const SocketController = () => {
   const isInitialized = useRef(false);
   const [, get] = useKeyboardControls();
 
-  // shift 쿨타임 관리 ref 추가
-  const shiftCooldown = useRef(false);
-  const shiftCooldownTimer = useRef<NodeJS.Timeout | null>(null);
+  // steal 쿨타임 관리 ref 추가
+  const stealCooldown = useRef(false);
+  const stealCooldownTimer = useRef<NodeJS.Timeout | null>(null);
 
   // 마우스 이벤트 리스너 추가
   const isMouseDown = useRef(false);
@@ -63,7 +63,7 @@ const SocketController = () => {
 
   useEffect(() => {
     return () => {
-      if (shiftCooldownTimer.current) clearTimeout(shiftCooldownTimer.current);
+      if (stealCooldownTimer.current) clearTimeout(stealCooldownTimer.current);
     };
   }, []);
 
@@ -84,28 +84,30 @@ const SocketController = () => {
       return;
     }
 
-    const wantsToShift = get().catch || isMouseDown.current;
+    const wantsToSteal = get().catch || isMouseDown.current;
     const shouldUpdatePosition =
       hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
-      wantsToShift;
+      wantsToSteal;
 
     if (shouldUpdatePosition) {
-      if (wantsToShift && !shiftCooldown.current) {
+      if (wantsToSteal && !stealCooldown.current) {
         socket.updateMovement({
           character: currentPlayer,
-          shift: true,
+          steal: true,
+          skill: false,
         });
-        shiftCooldown.current = true;
-        if (shiftCooldownTimer.current)
-          clearTimeout(shiftCooldownTimer.current);
-        shiftCooldownTimer.current = setTimeout(
-          () => (shiftCooldown.current = false),
+        stealCooldown.current = true;
+        if (stealCooldownTimer.current)
+          clearTimeout(stealCooldownTimer.current);
+        stealCooldownTimer.current = setTimeout(
+          () => (stealCooldown.current = false),
           1000,
         );
       } else {
         socket.updateMovement({
           character: currentPlayer,
-          shift: false,
+          steal: true,
+          skill: false,
         });
       }
 

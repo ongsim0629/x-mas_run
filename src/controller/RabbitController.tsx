@@ -28,10 +28,8 @@ const RabbitController = ({
     position,
     velocity,
     nickName,
-    bellyColor,
-    hairColor,
-    bodyColor,
-    shift,
+    charColor,
+    steal,
     isBeingStolen,
   },
   isLocalPlayer,
@@ -49,6 +47,10 @@ const RabbitController = ({
   // 뺏는 액션 시간 제한
   const punchAnimationTimer = useRef<NodeJS.Timeout | null>(null);
   const isPunching = useRef(false);
+
+  // 빼앗긴 액션 시간 제한
+  const stolenAnimationTimer = useRef<NodeJS.Timeout | null>(null);
+  const isCurrentlyStolen = useRef(false);
 
   const mouseControlRef = useRef<any>(null);
   const characterRotationTarget = useRef(0);
@@ -74,13 +76,23 @@ const RabbitController = ({
   const updateAnimation = useCallback(
     (vel: Position) => {
       // 맞고 있는 상태면 우선적으로 Duck 애니메이션
-      if (isBeingStolen) {
+      if (isBeingStolen && !isCurrentlyStolen.current) {
+        isCurrentlyStolen.current = true;
         setAnimation('CharacterArmature|Duck');
+        if (stolenAnimationTimer.current) {
+          clearTimeout(stolenAnimationTimer.current);
+        }
+        stolenAnimationTimer.current = setTimeout(() => {
+          isCurrentlyStolen.current = false;
+        }, 500);
         return;
       }
 
+      // 현재 stolen 애니메이션이 진행 중이면 다른 애니메이션으로 변경하지 않음
+      if (isCurrentlyStolen.current) return;
+
       // 공격 중인 상태면 Punch 애니메이션
-      if (shift) {
+      if (steal) {
         setAnimation('CharacterArmature|Punch');
         return;
       }
@@ -109,7 +121,7 @@ const RabbitController = ({
             : 'CharacterArmature|Idle',
       );
     },
-    [animation, giftCnt, isBeingStolen, shift],
+    [animation, giftCnt, isBeingStolen, steal],
   );
 
   // Mouse Control 부분
@@ -409,7 +421,7 @@ const RabbitController = ({
         }
 
         // 애니메이션 설정
-        updateAnimation(velocity, Math.abs(velocity.y) < 0.1);
+        updateAnimation(velocity);
 
         // 캐릭터 회전
         if (character.current && isMovingSignificantly(velocity)) {
@@ -439,6 +451,9 @@ const RabbitController = ({
       if (punchAnimationTimer.current) {
         clearTimeout(punchAnimationTimer.current);
       }
+      if (stolenAnimationTimer.current) {
+        clearTimeout(stolenAnimationTimer.current);
+      }
     };
   }, []);
 
@@ -457,9 +472,7 @@ const RabbitController = ({
           <AnimatedRabbit
             nickName={nickName}
             animation={animation}
-            bodyColor={bodyColor}
-            bellyColor={bellyColor}
-            hairColor={hairColor}
+            charColor={charColor}
           />
           {Array.from({ length: giftCnt }).map((_, index) => (
             <Present index={index} key={id + index} />

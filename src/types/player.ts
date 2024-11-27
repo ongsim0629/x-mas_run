@@ -8,21 +8,21 @@ export type Position = { x: number; y: number; z: number };
 
 export interface Character {
   id: string;
+  charType: 0 | 1 | 2;
   nickName: string;
   position: Position;
-  bodyColor: string;
-  hairColor: string;
-  bellyColor: string;
+  charColor: string;
   velocity: Position;
-  isOnGround: boolean;
   giftCnt: number;
-  shift: boolean;
+  steal: boolean;
   isBeingStolen: boolean;
+  skill: boolean;
 }
 
 export interface PlayerMovement {
-  shift: boolean;
-  character: Pick<Character, 'id' | 'position' | 'velocity' | 'isOnGround'>;
+  steal: boolean;
+  skill: boolean;
+  character: Pick<Character, 'id' | 'position' | 'velocity'>;
 }
 
 export interface PlayerInfo {
