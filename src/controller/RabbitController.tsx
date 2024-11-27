@@ -5,14 +5,12 @@ import {
 } from '@react-three/rapier';
 import { useEffect, useRef, useState } from 'react';
 import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
-import { MathUtils } from 'three/src/math/MathUtils.js';
 import { Group, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { useSetAtom } from 'jotai';
 import { playersAtom } from '../atoms/PlayerAtoms';
-import { isMovingSignificantly, lerpAngle } from '../utils/movementCalc';
 import { Present } from '../components/present';
 import useKeyControl from '../hooks/useKeyControl';
 import useCharacterControl from '../hooks/useCharacterControl';
@@ -20,6 +18,7 @@ import useCharacterAnimation from '../hooks/useCharacterAnimation';
 import useCamera from '../hooks/useCamera';
 import usePlayerState from '../hooks/usePlayerState';
 import useMouseRotation from '../hooks/useMouseRotation';
+import usePlayersInterpolation from '../hooks/usePlayersInterpolation';
 
 interface RabbitControllerProps {
   player: Character;
@@ -39,7 +38,6 @@ const RabbitController = ({
   },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
-  const setPlayers = useSetAtom(playersAtom);
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
@@ -119,6 +117,14 @@ const RabbitController = ({
   });
 
   const { updatePlayerState } = usePlayerState({ id, lastServerPosition });
+  const { updateRemotePosition } = usePlayersInterpolation({
+    currentPosition,
+    currentVelocity,
+    position,
+    velocity,
+    rb,
+    character,
+  });
 
   // Mouse Control 부분
   useMouseRotation({
@@ -144,54 +150,8 @@ const RabbitController = ({
         updatePlayerState(pos, vel);
         updateCamera(camera, isOnGround);
       } else {
-        if (rb.current) {
-          // 거리 보정
-          const distanceToTarget = Math.sqrt(
-            Math.pow(currentPosition.current.x - position.x, 2) +
-              Math.pow(currentPosition.current.z - position.z, 2),
-          );
-          if (distanceToTarget > import.meta.env.VITE_DISTANCE_THRESHOLD) {
-            currentPosition.current = { ...position };
-            currentVelocity.current = { ...velocity };
-            rb.current.setTranslation(position, true);
-            rb.current.setLinvel(velocity, true);
-          } else {
-            const predictPosition = {
-              x: currentPosition.current.x + currentVelocity.current.x * delta,
-              y: currentPosition.current.y + currentVelocity.current.y * delta,
-              z: currentPosition.current.z + currentVelocity.current.z * delta,
-            };
-
-            currentPosition.current = {
-              x: MathUtils.lerp(predictPosition.x, position.x, 0.1),
-              y: MathUtils.lerp(predictPosition.y, position.y, 0.1),
-              z: MathUtils.lerp(predictPosition.z, position.z, 0.1),
-            };
-
-            currentVelocity.current = {
-              x: MathUtils.lerp(currentVelocity.current.x, velocity.x, 0.1),
-              y: MathUtils.lerp(currentVelocity.current.y, velocity.y, 0.1),
-              z: MathUtils.lerp(currentVelocity.current.z, velocity.z, 0.1),
-            };
-
-            // 서버에서 받은 위치로 업데이트
-            rb.current.setTranslation(currentPosition.current, true);
-            rb.current.setLinvel(currentVelocity.current, true);
-          }
-
-          // 애니메이션 설정
-          updateAnimation(velocity);
-
-          // 캐릭터 회전
-          if (character.current && isMovingSignificantly(velocity)) {
-            const targetAngle = Math.atan2(velocity.x, velocity.z);
-            character.current.rotation.y = lerpAngle(
-              character.current.rotation.y,
-              targetAngle,
-              0.1,
-            );
-          }
-        }
+        updateRemotePosition(delta);
+        updateAnimation(velocity);
       }
     }
   });
