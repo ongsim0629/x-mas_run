@@ -4,12 +4,25 @@ import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import { gameScreenAtom } from '../atoms/GameAtoms';
 import { GameScreen } from '../types/game';
 import useGame from '../hooks/useGame';
+import useUser from '../hooks/useUser';
 
 const LoginPage = () => {
   const [player, setPlayer] = useAtom(playerInfoAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
   const { registerPlayerQuery } = useGame();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { nicknameQuery } = useUser();
+
+  useEffect(() => {
+    if (player.id) {
+      setGameScreen(GameScreen.HOME);
+    }
+    if (nicknameQuery) {
+      setPlayer((prev) => ({ ...prev, nickname: nicknameQuery }));
+      setGameScreen(GameScreen.LOGIN);
+    }
+  }, [nicknameQuery, player.id]);
+
   useEffect(() => {
     inputRef.current?.focus();
   }, []);

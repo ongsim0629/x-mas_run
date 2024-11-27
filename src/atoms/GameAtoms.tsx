@@ -6,7 +6,7 @@ import { KillLogInfo } from '../types/player';
 
 export const gameScreenAtom = atomWithStorage<GameScreen>(
   'gameScreen',
-  GameScreen.LOADING,
+  GameScreen.HOME,
   createJSONStorage(() => sessionStorage),
 );
 

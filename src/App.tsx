@@ -7,6 +7,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 import RenderErrorPage from './pages/RenderErrorPage';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import AuthRouter from './components/AuthRouter';
+import { Suspense } from 'react';
+import LoadingPage from './pages/LoadingPage';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -24,8 +26,10 @@ function App() {
     <KeyboardControls map={keyboardMap}>
       <ReactQueryClientProvider>
         <ErrorBoundary FallbackComponent={RenderErrorPage} onReset={reset}>
-          <SoundControlHeader />
-          <AuthRouter />
+          <Suspense fallback={<LoadingPage />}>
+            <SoundControlHeader />
+            <AuthRouter />
+          </Suspense>
         </ErrorBoundary>
       </ReactQueryClientProvider>
       <ToastContainer
