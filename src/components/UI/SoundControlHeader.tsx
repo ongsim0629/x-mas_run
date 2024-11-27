@@ -11,6 +11,8 @@ const SoundControlHeader = () => {
       onClick={handleAudioClick}
       type="button"
       aria-label="sound-button"
+      tabIndex={-1}
+      onKeyDown={(e) => e.preventDefault()}
     >
       {audioEnabled ? (
         <img

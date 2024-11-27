@@ -2,9 +2,9 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef } from 'react';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import { Position } from '../types/player';
-import { useKeyboardControls } from '@react-three/drei';
-import useSocket from '../hooks/useSocket';
 import { gameTimeAtom } from '../atoms/GameAtoms';
+import useSocket from '../hooks/useSocket';
+import useKeyControl from '../hooks/useKeyControl'; // 새로 만든 훅 import
 
 const SocketController = () => {
   const { socket } = useSocket();
@@ -13,33 +13,13 @@ const SocketController = () => {
   const player = useAtomValue(playerInfoAtom);
   const setTimer = useSetAtom(gameTimeAtom);
   const isInitialized = useRef(false);
-  const [, get] = useKeyboardControls();
 
-  // shift 쿨타임 관리 ref 추가
-  const shiftCooldown = useRef(false);
-  const shiftCooldownTimer = useRef<NodeJS.Timeout | null>(null);
+  const getControls = useKeyControl();
 
-  // 마우스 이벤트 리스너 추가
-  const isMouseDown = useRef(false);
+  // steal 쿨타임 관리 ref
+  const stealCooldown = useRef(false);
+  const stealCooldownTimer = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    const handleMouseDown = () => {
-      isMouseDown.current = true;
-    };
-    const handleMouseUp = () => {
-      isMouseDown.current = false;
-    };
-
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, []);
-
-  // 소켓 이벤트 구독
   useEffect(() => {
     if (!socket) return;
     const unsubscribeConnect = socket.onConnect(() => {
@@ -63,13 +43,12 @@ const SocketController = () => {
 
   useEffect(() => {
     return () => {
-      if (shiftCooldownTimer.current) clearTimeout(shiftCooldownTimer.current);
+      if (stealCooldownTimer.current) clearTimeout(stealCooldownTimer.current);
     };
   }, []);
 
   // 플레이어 움직임 처리
   const lastSentTime = useRef(Date.now());
-  const SEND_INTERVAL = 200; // 100ms = 10fps
   useEffect(() => {
     if (!socket || !player.id) return;
     const currentPlayer = players.find((p) => p.id === player.id);
@@ -77,7 +56,7 @@ const SocketController = () => {
     if (!currentPlayer) return;
 
     const now = Date.now();
-    if (now - lastSentTime.current < SEND_INTERVAL) return;
+    if (now - lastSentTime.current < import.meta.env.VITE_SEND_INTERVAL) return;
 
     if (!isInitialized.current) {
       prevPosition.current = currentPlayer.position;
@@ -85,29 +64,32 @@ const SocketController = () => {
       return;
     }
 
+    // getControls()로 현재 상태 가져오기
+    const controls = getControls();
+    const wantsToSteal = controls.catch;
     const shouldUpdatePosition =
       hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
-      get().catch ||
-      isMouseDown.current;
+      wantsToSteal;
 
     if (shouldUpdatePosition) {
-      const wantsToShift = get().catch || isMouseDown.current;
-      if (wantsToShift && !shiftCooldown.current) {
+      if (wantsToSteal && !stealCooldown.current) {
         socket.updateMovement({
           character: currentPlayer,
-          shift: true,
+          steal: true,
+          skill: false,
         });
-        shiftCooldown.current = true;
-        if (shiftCooldownTimer.current)
-          clearTimeout(shiftCooldownTimer.current);
-        shiftCooldownTimer.current = setTimeout(
-          () => (shiftCooldown.current = false),
+        stealCooldown.current = true;
+        if (stealCooldownTimer.current)
+          clearTimeout(stealCooldownTimer.current);
+        stealCooldownTimer.current = setTimeout(
+          () => (stealCooldown.current = false),
           1000,
         );
       } else {
         socket.updateMovement({
           character: currentPlayer,
-          shift: false,
+          steal: false,
+          skill: false,
         });
       }
 

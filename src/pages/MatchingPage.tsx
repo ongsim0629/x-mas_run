@@ -29,6 +29,7 @@ const MatchingPage = () => {
   useEffect(() => {
     if (!socket) return;
     socket.enterRoom();
+
     const unsubscribeRoomState = socket.onRoomStateChange(
       (roomInfo: RoomInfo) => {
         setPlayerCount(roomInfo.playerCnt);

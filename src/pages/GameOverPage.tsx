@@ -23,9 +23,7 @@ const RotatingRabbit = () => {
         scale={0.8}
         animation="CharacterArmature|Wave"
         position={[0, -2, 0]}
-        bodyColor="pink"
-        bellyColor="white"
-        hairColor="pink"
+        charColor="pink"
         nickName={' '}
       />
     </group>

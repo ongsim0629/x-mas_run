@@ -56,17 +56,13 @@ type GLTFResult = GLTF & {
 
 type AnimatedRabbitProps = {
   animation: RabbitActionName;
-  bodyColor: string;
-  bellyColor: string;
-  hairColor: string;
+  charColor: string;
   nickName: string;
 } & JSX.IntrinsicElements['group'];
 
 export function AnimatedRabbit({
   animation,
-  bodyColor = 'gold',
-  bellyColor = 'white',
-  hairColor = 'black',
+  charColor = 'gold',
   nickName = 'ONGSIM',
   ...props
 }: AnimatedRabbitProps) {
@@ -133,7 +129,7 @@ export function AnimatedRabbit({
               material={materials.Main}
               skeleton={nodes.Body_2.skeleton}
             >
-              <meshStandardMaterial color={bodyColor} />
+              <meshStandardMaterial color={charColor} />
             </skinnedMesh>
             <skinnedMesh
               name="Body_3"
@@ -147,7 +143,7 @@ export function AnimatedRabbit({
               material={materials.Main2}
               skeleton={nodes.Body_4.skeleton}
             >
-              <meshStandardMaterial color={bellyColor} />
+              <meshStandardMaterial color="white" />
             </skinnedMesh>
           </group>
           <skinnedMesh
@@ -158,7 +154,7 @@ export function AnimatedRabbit({
             rotation={[-Math.PI / 2, 0, 0]}
             scale={100}
           >
-            <meshStandardMaterial color={hairColor} />
+            <meshStandardMaterial color={charColor} />
           </skinnedMesh>
           <group name="Head_1" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
             <skinnedMesh
@@ -167,7 +163,7 @@ export function AnimatedRabbit({
               material={materials.Main}
               skeleton={nodes.Head_2.skeleton}
             >
-              <meshStandardMaterial color={hairColor} />
+              <meshStandardMaterial color={charColor} />
             </skinnedMesh>
             <skinnedMesh
               name="Head_3"
@@ -203,7 +199,7 @@ export function AnimatedRabbit({
               material={materials.Main}
               skeleton={nodes.Arms_1.skeleton}
             >
-              <meshStandardMaterial color={bodyColor} />
+              <meshStandardMaterial color={charColor} />
             </skinnedMesh>
             <skinnedMesh
               name="Arms_2"

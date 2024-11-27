@@ -34,9 +34,7 @@ const HomePage = () => {
             scale={0.8}
             animation="CharacterArmature|Yes"
             position={[0, -2, 0]}
-            bodyColor="pink"
-            bellyColor="white"
-            hairColor="pink"
+            charColor="pink"
             nickName={' '}
           />
           <OrbitControls

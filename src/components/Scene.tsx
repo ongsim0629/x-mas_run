@@ -14,7 +14,6 @@ export default function Scene() {
       <ambientLight intensity={0.3} />
       <Physics>
         <Map scale={0.1} position={[0, 0, 0]} model={`/maps/map.glb`} />
-        {/* <GroundMap /> */}
         {players.map((player) => (
           <RabbitController
             player={player}

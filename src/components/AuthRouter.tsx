@@ -34,6 +34,7 @@ const AuthRouter = () => {
                 camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
                 style={{ touchAction: 'none' }}
                 className="w-full h-full"
+                gl={{ failIfMajorPerformanceCaveat: true }}
               >
                 <color attach="background" args={['#0D1B2A']} />
                 <Scene />
