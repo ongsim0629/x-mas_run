@@ -103,6 +103,11 @@ const useCharacterControl = ({
       return STATIC_STATE(vel);
     }
 
+    // 스틸 액션 처리
+    if (controls.catch && !isPunching.current) {
+      playPunchAnimation();
+    }
+
     const movement = { x: 0, y: 0, z: 0 };
     // 기본 이동 방향 설정
     if (controls.forward) movement.z = 1;
@@ -132,11 +137,6 @@ const useCharacterControl = ({
         import.meta.env.VITE_INGAME_GRAVITY *
         0.016 *
         import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
-    }
-
-    // 스틸 액션 처리
-    if (controls.catch && !isPunching.current) {
-      playPunchAnimation();
     }
 
     // 이동 처리

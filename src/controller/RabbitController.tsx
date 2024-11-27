@@ -18,6 +18,8 @@ import useKeyControl from '../hooks/useKeyControl';
 import useCharacterControl from '../hooks/useCharacterControl';
 import useCharacterAnimation from '../hooks/useCharacterAnimation';
 import useCamera from '../hooks/useCamera';
+import usePlayerState from '../hooks/usePlayerState';
+import useMouseRotation from '../hooks/useMouseRotation';
 
 interface RabbitControllerProps {
   player: Character;
@@ -116,52 +118,15 @@ const RabbitController = ({
     setAnimation,
   });
 
+  const { updatePlayerState } = usePlayerState({ id, lastServerPosition });
+
   // Mouse Control 부분
-  useEffect(() => {
-    const handlePointerLockChange = () => {
-      if (document.pointerLockElement) {
-      } else {
-        rotationTargetY.current = 0;
-      }
-    };
-
-    const handleClick = () => {
-      if (mouseControlRef.current && !mouseControlRef.current.isLocked)
-        mouseControlRef.current.lock();
-    };
-
-    document.addEventListener('pointerlockchange', handlePointerLockChange);
-    document.addEventListener('click', handleClick);
-
-    return () => {
-      document.removeEventListener(
-        'pointerlockchange',
-        handlePointerLockChange,
-      );
-      document.removeEventListener('click', handleClick);
-    };
-  }, []);
-
-  useEffect(() => {
-    const onMouseMove = (event: MouseEvent) => {
-      if (mouseControlRef.current?.isLocked) {
-        // x축 회전
-        rotationTarget.current -=
-          event.movementX * import.meta.env.VITE_INGAME_MOUSE_SPEED;
-        const isOnGround = Math.abs(velocity.y) < 0.1;
-        const minY = isOnGround ? -0.5 : -1;
-        // y축 회전 (최대, 최소 제한) +  공중이면 엉덩이 볼 수 있게
-        rotationTargetY.current = MathUtils.clamp(
-          rotationTargetY.current -
-            event.movementY * import.meta.env.VITE_INGAME_MOUSE_SPEED,
-          minY,
-          0.5,
-        );
-      }
-    };
-    document.addEventListener('mousemove', onMouseMove);
-    return () => document.removeEventListener('mousemove', onMouseMove);
-  }, [import.meta.env.VITE_INGAME_MOUSE_SPEED, velocity.y]);
+  useMouseRotation({
+    mouseControlRef,
+    rotationTarget,
+    rotationTargetY,
+    velocity,
+  });
 
   useFrame(({ camera }, delta) => {
     if (rb.current) {
@@ -171,33 +136,12 @@ const RabbitController = ({
         const isOnGround = Math.abs(rb.current.linvel().y) < 0.1;
 
         const controls = getControls();
-        const { velocity: newVel } = updateMovement(
+        const { velocity: vel } = updateMovement(
           controls,
           rb.current,
           isOnGround,
         );
-
-        setPlayers((prev) =>
-          prev.map((player) =>
-            player.id === id
-              ? {
-                  ...player,
-                  position: {
-                    x: pos.x,
-                    y: pos.y,
-                    z: pos.z,
-                  },
-                  velocity: newVel,
-                }
-              : player,
-          ),
-        );
-        // 서버로 보낼 위치를 lastServerPosition으로 저장
-        lastServerPosition.current = {
-          x: pos.x,
-          y: pos.y,
-          z: pos.z,
-        };
+        updatePlayerState(pos, vel);
         updateCamera(camera, isOnGround);
       } else {
         if (rb.current) {
