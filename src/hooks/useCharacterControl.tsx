@@ -1,12 +1,11 @@
-import { useAtom } from 'jotai';
 import { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { playAudioAtom } from '../atoms/GameAtoms';
 import { RapierRigidBody } from '@react-three/rapier';
 import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
 import { RabbitActionName } from '../models/AnimatedRabbit';
 import { Group } from 'three';
 import { Position } from '../types/player';
 import { lerpAngle } from '../utils/movementCalc';
+import useCharacterAnimation from './useCharacterAnimation';
 
 type CharacterControlConfig = {
   rotationTarget: MutableRefObject<number>;
@@ -50,13 +49,23 @@ const useCharacterControl = ({
   character,
   container,
 }: CharacterControlConfig) => {
-  const [, playAudio] = useAtom(playAudioAtom);
-
   const STATIC_STATE = (vel: { x: number; y: number; z: number }) => ({
     velocity: vel,
     movement: { x: 0, y: 0, z: 0 },
     isMoving: false,
   });
+
+  const { updateAnimation, playJumpAnimation, playPunchAnimation } =
+    useCharacterAnimation({
+      isBeingStolen,
+      isCurrentlyStolen,
+      stolenAnimationTimer,
+      isPunching,
+      punchAnimationTimer,
+      steal,
+      giftCnt,
+      setAnimation,
+    });
 
   const updateMovement = (
     controls: Controls,
@@ -90,24 +99,7 @@ const useCharacterControl = ({
 
     // 빼앗기는 상태 처리
     if (isBeingStolen && !isCurrentlyStolen.current) {
-      isCurrentlyStolen.current = true;
-      setAnimation('CharacterArmature|Duck');
-      playAudio('stolen');
-      if (stolenAnimationTimer.current) {
-        clearTimeout(stolenAnimationTimer.current);
-      }
-      stolenAnimationTimer.current = setTimeout(() => {
-        isCurrentlyStolen.current = false;
-      }, 500);
-      return STATIC_STATE(vel);
-    }
-
-    if (isCurrentlyStolen.current) {
-      return STATIC_STATE(vel);
-    }
-
-    if (steal) {
-      setAnimation('CharacterArmature|Punch');
+      updateAnimation(vel);
       return STATIC_STATE(vel);
     }
 
@@ -126,7 +118,6 @@ const useCharacterControl = ({
 
     // 점프 처리
     if (controls.jump) {
-      playAudio('jump');
       if (pos.y >= 30) {
         vel.y +=
           import.meta.env.VITE_INGAME_GRAVITY *
@@ -135,7 +126,7 @@ const useCharacterControl = ({
       } else {
         vel.y = import.meta.env.VITE_INGAME_JUMP_FORCE;
       }
-      setAnimation('CharacterArmature|Jump');
+      playJumpAnimation();
     } else if (!isOnGround) {
       vel.y +=
         import.meta.env.VITE_INGAME_GRAVITY *
@@ -145,13 +136,7 @@ const useCharacterControl = ({
 
     // 스틸 액션 처리
     if (controls.catch && !isPunching.current) {
-      playAudio('punch');
-      isPunching.current = true;
-      setAnimation('CharacterArmature|Punch');
-      punchAnimationTimer.current = setTimeout(
-        () => (isPunching.current = false),
-        500,
-      );
+      playPunchAnimation();
     }
 
     // 이동 처리
@@ -171,17 +156,7 @@ const useCharacterControl = ({
         currentSpeed;
     }
 
-    if (!isPunching.current && isOnGround) {
-      setAnimation(
-        isMoving
-          ? giftCnt > 0
-            ? 'CharacterArmature|Run_Gun'
-            : 'CharacterArmature|Run'
-          : giftCnt > 0
-            ? 'CharacterArmature|Idle_Gun'
-            : 'CharacterArmature|Idle',
-      );
-    }
+    updateAnimation(vel);
 
     if (character.current) {
       character.current.rotation.y = lerpAngle(

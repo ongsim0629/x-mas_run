@@ -17,6 +17,7 @@ import { playAudioAtom } from '../atoms/GameAtoms';
 import { Present } from '../components/present';
 import useKeyControl from '../hooks/useKeyControl';
 import useCharacterControl from '../hooks/useCharacterControl';
+import useCharacterAnimation from '../hooks/useCharacterAnimation';
 
 interface RabbitControllerProps {
   player: Character;
@@ -92,56 +93,17 @@ const RabbitController = ({
     container,
   });
 
-  const updateAnimation = useCallback(
-    (vel: Position) => {
-      // 맞고 있는 상태면 우선적으로 Duck 애니메이션
-      if (isBeingStolen && !isCurrentlyStolen.current) {
-        isCurrentlyStolen.current = true;
-        setAnimation('CharacterArmature|Duck');
-        if (stolenAnimationTimer.current) {
-          clearTimeout(stolenAnimationTimer.current);
-        }
-        stolenAnimationTimer.current = setTimeout(() => {
-          isCurrentlyStolen.current = false;
-        }, 500);
-        return;
-      }
-
-      // 현재 stolen 애니메이션이 진행 중이면 다른 애니메이션으로 변경하지 않음
-      if (isCurrentlyStolen.current) return;
-
-      // 공격 중인 상태면 Punch 애니메이션
-      if (steal) {
-        setAnimation('CharacterArmature|Punch');
-        return;
-      }
-
-      const velocityMagnitude = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
-      const isMoving = velocityMagnitude > 0.5;
-      const hasGift = giftCnt > 0;
-      if (
-        (isMoving &&
-          animation ===
-            (hasGift
-              ? 'CharacterArmature|Run_Gun'
-              : 'CharacterArmature|Run')) ||
-        (!isMoving &&
-          animation ===
-            (hasGift ? 'CharacterArmature|Idle_Gun' : 'CharacterArmature|Idle'))
-      )
-        return;
-      setAnimation(
-        isMoving
-          ? hasGift
-            ? 'CharacterArmature|Run_Gun'
-            : 'CharacterArmature|Run'
-          : hasGift
-            ? 'CharacterArmature|Idle_Gun'
-            : 'CharacterArmature|Idle',
-      );
-    },
-    [animation, giftCnt, isBeingStolen, steal],
-  );
+  const { updateAnimation, playJumpAnimation, playPunchAnimation } =
+    useCharacterAnimation({
+      isBeingStolen,
+      isCurrentlyStolen,
+      stolenAnimationTimer,
+      isPunching,
+      punchAnimationTimer,
+      steal,
+      giftCnt,
+      setAnimation,
+    });
 
   // Mouse Control 부분
   useEffect(() => {
