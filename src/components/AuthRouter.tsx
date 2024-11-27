@@ -11,6 +11,7 @@ import { Canvas } from '@react-three/fiber';
 import Scene from './Scene';
 import GameOverPage from '../pages/GameOverPage';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
+import KillLogs from './KillLogs';
 
 const AuthRouter = () => {
   const [gameScreen] = useAtom(gameScreenAtom);
@@ -39,6 +40,7 @@ const AuthRouter = () => {
                 <color attach="background" args={['#0D1B2A']} />
                 <Scene />
               </Canvas>
+              <KillLogs />
             </div>
           )}
           {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
