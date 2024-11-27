@@ -136,7 +136,6 @@ const KeyboardGuide = () => {
           'ArrowRight',
           'ShiftLeft',
           'ControlLeft',
-          'KeyE',
         ]}
         movement={['↑', '←', '↓', '→']}
         steal="Shift"

@@ -14,7 +14,7 @@ export const playerMovementAtom = atom<PlayerMovement>({
 export const playersAtom = atom<Character[]>([
   {
     id: '',
-    charType: 0,
+    charType: 1,
     nickName: 'ONGSIM',
     position: { x: 0, y: 0, z: 0 },
     velocity: { x: 0, y: 0, z: 0 },

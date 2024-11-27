@@ -30,7 +30,7 @@ function App() {
       </ReactQueryClientProvider>
       <ToastContainer
         position="top-center"
-        autoClose={1500}
+        autoClose={1000}
         hideProgressBar={true}
         closeOnClick
         theme="light"

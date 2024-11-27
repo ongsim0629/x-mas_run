@@ -8,7 +8,7 @@ export type Position = { x: number; y: number; z: number };
 
 export interface Character {
   id: string;
-  charType: 0 | 1 | 2;
+  charType: 1 | 2 | 3;
   nickName: string;
   position: Position;
   charColor: string;

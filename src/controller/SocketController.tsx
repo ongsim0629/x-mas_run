@@ -106,7 +106,7 @@ const SocketController = () => {
       } else {
         socket.updateMovement({
           character: currentPlayer,
-          steal: true,
+          steal: false,
           skill: false,
         });
       }
