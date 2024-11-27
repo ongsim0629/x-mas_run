@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { useGLTF } from '@react-three/drei';
-import { GLTFGiftResult } from '../../types/gift';
+import { GLTFGiftResult } from '../types/gift';
 
 export function Gift({
   colors = {},
