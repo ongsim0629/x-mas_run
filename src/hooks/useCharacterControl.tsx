@@ -1,8 +1,12 @@
 import { useAtom } from 'jotai';
-import { MutableRefObject } from 'react';
+import { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { playAudioAtom } from '../atoms/GameAtoms';
 import { RapierRigidBody } from '@react-three/rapier';
-import { degToRad } from 'three/src/math/MathUtils.js';
+import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
+import { RabbitActionName } from '../models/AnimatedRabbit';
+import { Group } from 'three';
+import { Position } from '../types/player';
+import { lerpAngle } from '../utils/movementCalc';
 
 type CharacterControlConfig = {
   rotationTarget: MutableRefObject<number>;
@@ -10,8 +14,16 @@ type CharacterControlConfig = {
   characterRotationTarget: MutableRefObject<number>;
   isPunching: MutableRefObject<boolean>;
   punchAnimationTimer: MutableRefObject<NodeJS.Timeout | null>;
-  setAnimation: (animation: string) => void;
+  isCurrentlyStolen: MutableRefObject<boolean>;
+  stolenAnimationTimer: MutableRefObject<NodeJS.Timeout | null>;
+  setAnimation: Dispatch<SetStateAction<RabbitActionName>>;
   giftCnt: number;
+  isBeingStolen: boolean;
+  steal: boolean;
+  character: MutableRefObject<Group | null>;
+  container: MutableRefObject<Group | null>;
+  lastServerPosition: MutableRefObject<Position>;
+  currentPosition: MutableRefObject<Position>;
 };
 type Controls = {
   forward: boolean;
@@ -29,14 +41,76 @@ const useCharacterControl = ({
   punchAnimationTimer,
   setAnimation,
   giftCnt,
+  isBeingStolen,
+  steal,
+  isCurrentlyStolen,
+  stolenAnimationTimer,
+  lastServerPosition,
+  currentPosition,
+  character,
+  container,
 }: CharacterControlConfig) => {
   const [, playAudio] = useAtom(playAudioAtom);
+
+  const STATIC_STATE = (vel: { x: number; y: number; z: number }) => ({
+    velocity: vel,
+    movement: { x: 0, y: 0, z: 0 },
+    isMoving: false,
+  });
+
   const updateMovement = (
     controls: Controls,
     rb: RapierRigidBody,
     isOnGround: boolean,
   ) => {
     const vel = rb.linvel();
+    const pos = rb.translation();
+
+    // 서버 위치 보정
+    const distanceToServer = Math.sqrt(
+      Math.pow(lastServerPosition.current.x - pos.x, 2) +
+        Math.pow(lastServerPosition.current.z - pos.z, 2),
+    );
+
+    if (distanceToServer > import.meta.env.VITE_DISTANCE_THRESHOLD * 10) {
+      currentPosition.current = { ...lastServerPosition.current };
+      rb.setTranslation(lastServerPosition.current, true);
+
+      const angle = Math.atan2(
+        lastServerPosition.current.x - pos.x,
+        lastServerPosition.current.z - pos.z,
+      );
+      const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
+      vel.x = Math.sin(angle) * speed;
+      vel.z = Math.cos(angle) * speed;
+      rb.setLinvel(vel, true);
+
+      return STATIC_STATE(vel);
+    }
+
+    // 빼앗기는 상태 처리
+    if (isBeingStolen && !isCurrentlyStolen.current) {
+      isCurrentlyStolen.current = true;
+      setAnimation('CharacterArmature|Duck');
+      playAudio('stolen');
+      if (stolenAnimationTimer.current) {
+        clearTimeout(stolenAnimationTimer.current);
+      }
+      stolenAnimationTimer.current = setTimeout(() => {
+        isCurrentlyStolen.current = false;
+      }, 500);
+      return STATIC_STATE(vel);
+    }
+
+    if (isCurrentlyStolen.current) {
+      return STATIC_STATE(vel);
+    }
+
+    if (steal) {
+      setAnimation('CharacterArmature|Punch');
+      return STATIC_STATE(vel);
+    }
+
     const movement = { x: 0, y: 0, z: 0 };
     // 기본 이동 방향 설정
     if (controls.forward) movement.z = 1;
@@ -51,10 +125,22 @@ const useCharacterControl = ({
     }
 
     // 점프 처리
-    if (controls.jump && isOnGround) {
+    if (controls.jump) {
       playAudio('jump');
-      vel.y = import.meta.env.VITE_INGAME_JUMP_FORCE;
+      if (pos.y >= 30) {
+        vel.y +=
+          import.meta.env.VITE_INGAME_GRAVITY *
+          0.016 *
+          import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
+      } else {
+        vel.y = import.meta.env.VITE_INGAME_JUMP_FORCE;
+      }
       setAnimation('CharacterArmature|Jump');
+    } else if (!isOnGround) {
+      vel.y +=
+        import.meta.env.VITE_INGAME_GRAVITY *
+        0.016 *
+        import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
     }
 
     // 스틸 액션 처리
@@ -68,15 +154,15 @@ const useCharacterControl = ({
       );
     }
 
-    // 이동 방향이 있을 때만 캐릭터 회전과 속도 계산
-    if (movement.x !== 0 || movement.z !== 0) {
+    // 이동 처리
+    const isMoving = movement.x !== 0 || movement.z !== 0;
+    if (isMoving) {
       // 캐릭터 회전
       characterRotationTarget.current = Math.atan2(movement.x, movement.z);
 
       // 속도 계산 (선물 개수에 따른 감속 포함)
       const speedReduction = Math.max(0.5, 1 - giftCnt * 0.1);
       const currentSpeed = import.meta.env.VITE_INGAME_SPEED * speedReduction;
-
       vel.x =
         Math.sin(rotationTarget.current + characterRotationTarget.current) *
         currentSpeed;
@@ -85,6 +171,34 @@ const useCharacterControl = ({
         currentSpeed;
     }
 
+    if (!isPunching.current && isOnGround) {
+      setAnimation(
+        isMoving
+          ? giftCnt > 0
+            ? 'CharacterArmature|Run_Gun'
+            : 'CharacterArmature|Run'
+          : giftCnt > 0
+            ? 'CharacterArmature|Idle_Gun'
+            : 'CharacterArmature|Idle',
+      );
+    }
+
+    if (character.current) {
+      character.current.rotation.y = lerpAngle(
+        character.current.rotation.y,
+        characterRotationTarget.current,
+        0.1,
+      );
+    }
+
+    if (container.current) {
+      container.current.rotation.y = MathUtils.lerp(
+        container.current.rotation.y,
+        rotationTarget.current,
+        0.1,
+      );
+    }
+    rb.setLinvel(vel, true);
     return {
       velocity: vel,
       movement,

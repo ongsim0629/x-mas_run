@@ -16,6 +16,7 @@ import { isMovingSignificantly, lerpAngle } from '../utils/movementCalc';
 import { playAudioAtom } from '../atoms/GameAtoms';
 import { Present } from '../components/present';
 import useKeyControl from '../hooks/useKeyControl';
+import useCharacterControl from '../hooks/useCharacterControl';
 
 interface RabbitControllerProps {
   player: Character;
@@ -39,7 +40,6 @@ const RabbitController = ({
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
-  const [, playAudio] = useAtom(playAudioAtom);
   const rb = useRef<RapierRigidBody>(null);
   const container = useRef<Group>(null);
   const character = useRef<Group>(null);
@@ -73,6 +73,24 @@ const RabbitController = ({
   const lastServerPosition = useRef(position);
 
   const getControls = useKeyControl();
+
+  const { updateMovement } = useCharacterControl({
+    rotationTarget,
+    mouseControlRef,
+    characterRotationTarget,
+    isPunching,
+    punchAnimationTimer,
+    setAnimation,
+    giftCnt,
+    isBeingStolen,
+    isCurrentlyStolen,
+    stolenAnimationTimer,
+    steal,
+    lastServerPosition,
+    currentPosition,
+    character,
+    container,
+  });
 
   const updateAnimation = useCallback(
     (vel: Position) => {
@@ -176,110 +194,15 @@ const RabbitController = ({
     if (isLocalPlayer) {
       if (rb.current) {
         // 직선 운동 속도
-        const vel = rb.current.linvel();
         const pos = rb.current.translation();
+        const isOnGround = Math.abs(rb.current.linvel().y) < 0.1;
 
-        if (isBeingStolen) {
-          playAudio('stolen');
-          setAnimation('CharacterArmature|Duck');
-          return;
-        }
-
-        const distanceToServer = Math.sqrt(
-          Math.pow(lastServerPosition.current.x - pos.x, 2) +
-            Math.pow(lastServerPosition.current.z - pos.z, 2),
+        const controls = getControls();
+        const { velocity: newVel } = updateMovement(
+          controls,
+          rb.current,
+          isOnGround,
         );
-
-        // 거리가 임계값을 초과하면 서버 위치로 보정
-        if (distanceToServer > import.meta.env.VITE_DISTANCE_THRESHOLD * 10) {
-          currentPosition.current = { ...lastServerPosition.current };
-          rb.current.setTranslation(lastServerPosition.current, true);
-
-          // 속도는 유지하되 방향만 서버 위치를 향하도록 조정
-          const angle = Math.atan2(
-            lastServerPosition.current.x - pos.x,
-            lastServerPosition.current.z - pos.z,
-          );
-          const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
-          vel.x = Math.sin(angle) * speed;
-          vel.z = Math.cos(angle) * speed;
-          rb.current.setLinvel(vel, true);
-        }
-
-        const isOnGround = Math.abs(vel.y) < 0.1;
-
-        const movement = {
-          x: 0,
-          y: 0,
-          z: 0,
-        };
-        const constrols = getControls();
-        if (constrols.forward) movement.z = 1;
-        if (constrols.backward) movement.z = -1;
-        if (constrols.left) movement.x = 1;
-        if (constrols.right) movement.x = -1;
-
-        if (constrols.jump) {
-          playAudio('jump');
-          if (position.y >= 30)
-            vel.y +=
-              import.meta.env.VITE_INGAME_GRAVITY *
-              0.016 *
-              import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
-          else vel.y = import.meta.env.VITE_INGAME_JUMP_FORCE;
-          setAnimation('CharacterArmature|Jump');
-        } else if (!isOnGround) {
-          vel.y +=
-            import.meta.env.VITE_INGAME_GRAVITY *
-            0.016 *
-            import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
-        }
-
-        if (movement.x !== 0 && !mouseControlRef.current?.isLocked) {
-          // 전체 회전
-          rotationTarget.current +=
-            degToRad(import.meta.env.VITE_INGAME_ROTATION_SPEED) * movement.x;
-        }
-
-        if (movement.x !== 0 || movement.z !== 0 || movement.y !== 0) {
-          // 각도를 구해서 캐릭터 회전을 더함
-          characterRotationTarget.current = Math.atan2(movement.x, movement.z);
-          const speedReduction = Math.max(0.5, 1 - giftCnt * 0.1); // 선물 하나당 10%씩 감소, 최소 50%까지
-          const currentSpeed =
-            import.meta.env.VITE_INGAME_SPEED * speedReduction;
-
-          vel.x =
-            Math.sin(rotationTarget.current + characterRotationTarget.current) *
-            currentSpeed;
-          vel.z =
-            Math.cos(rotationTarget.current + characterRotationTarget.current) *
-            currentSpeed;
-        }
-
-        if (constrols.catch && !isPunching.current) {
-          playAudio('punch');
-          isPunching.current = true;
-          setAnimation('CharacterArmature|Punch');
-          punchAnimationTimer.current = setTimeout(
-            () => (isPunching.current = false),
-            500,
-          );
-        } else if (!isPunching.current && isOnGround) {
-          if (movement.x !== 0 || movement.z !== 0)
-            setAnimation(
-              giftCnt > 0
-                ? 'CharacterArmature|Run_Gun'
-                : 'CharacterArmature|Run',
-            );
-          else
-            setAnimation(
-              giftCnt > 0
-                ? 'CharacterArmature|Idle_Gun'
-                : 'CharacterArmature|Idle',
-            );
-        }
-
-        rb.current.setLinvel(vel, true);
 
         setPlayers((prev) =>
           prev.map((player) =>
@@ -291,11 +214,7 @@ const RabbitController = ({
                     y: pos.y,
                     z: pos.z,
                   },
-                  velocity: {
-                    x: vel.x,
-                    y: vel.y,
-                    z: vel.z,
-                  },
+                  velocity: newVel,
                   isOnGround,
                 }
               : player,
@@ -307,21 +226,6 @@ const RabbitController = ({
           y: pos.y,
           z: pos.z,
         };
-
-        if (character.current) {
-          character.current.rotation.y = lerpAngle(
-            character.current.rotation.y,
-            characterRotationTarget.current,
-            0.1,
-          );
-        }
-      }
-      if (container.current) {
-        container.current.rotation.y = MathUtils.lerp(
-          container.current.rotation.y,
-          rotationTarget.current,
-          0.1,
-        );
       }
 
       if (cameraPosition.current && cameraTarget.current) {
