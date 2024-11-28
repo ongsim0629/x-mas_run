@@ -17,6 +17,7 @@ export interface Character {
   steal: boolean;
   isBeingStolen: boolean;
   skill: boolean;
+  protect: number;
 }
 
 export interface PlayerMovement {
@@ -28,4 +29,9 @@ export interface PlayerMovement {
 export interface PlayerInfo {
   id: string | null | undefined;
   nickname: string;
+}
+
+export interface KillLogInfo {
+  actor: { id: string; nickName: string };
+  victim: { id: string; nickName: string };
 }

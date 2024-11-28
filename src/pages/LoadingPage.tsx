@@ -1,25 +1,4 @@
-import { useEffect } from 'react';
-import { useAtom, useSetAtom } from 'jotai';
-import { gameScreenAtom } from '../atoms/GameAtoms';
-import { GameScreen } from '../types/game';
-import { playerInfoAtom } from '../atoms/PlayerAtoms';
-import useUser from '../hooks/useUser';
-
 const LoadingPage = () => {
-  const setGameScreen = useSetAtom(gameScreenAtom);
-  const [player, setPlayer] = useAtom(playerInfoAtom);
-  const { nicknameQuery } = useUser();
-
-  useEffect(() => {
-    if (player.id) {
-      setGameScreen(GameScreen.HOME);
-    }
-    if (nicknameQuery) {
-      setPlayer((prev) => ({ ...prev, nickname: nicknameQuery }));
-      setGameScreen(GameScreen.LOGIN);
-    }
-  }, [nicknameQuery, player.id]);
-
   return (
     <div className="fixed inset-0 bg-gradient-to-b from-purple-600 to-blue-600 flex items-center justify-center">
       <div className="flex flex-col items-center">

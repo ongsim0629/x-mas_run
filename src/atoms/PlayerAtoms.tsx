@@ -23,6 +23,7 @@ export const playersAtom = atom<Character[]>([
     steal: false,
     isBeingStolen: false,
     skill: false,
+    protect: 0,
   },
 ]);
 

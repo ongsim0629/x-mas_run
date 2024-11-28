@@ -16,6 +16,7 @@ import useCameraRefs from '../hooks/refs/useCameraRefs';
 import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
 import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
+import ProtectEffect from '../components/effect/ProtectEffect';
 
 interface RabbitControllerProps {
   player: Character;
@@ -32,6 +33,7 @@ const RabbitController = ({
     charColor,
     steal,
     isBeingStolen,
+    protect,
   },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
@@ -172,6 +174,7 @@ const RabbitController = ({
           ))}
         </group>
       </group>
+      <ProtectEffect duration={protect} radius={2.2} />
       <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
     </RigidBody>
   );
