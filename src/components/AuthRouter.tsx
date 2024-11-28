@@ -20,6 +20,8 @@ const AuthRouter = () => {
   useEffect(() => {
     if (!id && gameScreen !== GameScreen.LOGIN) {
       setGameScreen(GameScreen.LOGIN);
+    } else if (id && gameScreen === GameScreen.LOGIN) {
+      setGameScreen(GameScreen.HOME);
     }
   }, [id, gameScreen, setGameScreen]);
 

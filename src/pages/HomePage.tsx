@@ -5,12 +5,24 @@ import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import { Canvas } from '@react-three/fiber';
 import { AnimatedRabbit } from '../models/AnimatedRabbit';
 import { OrbitControls } from '@react-three/drei';
+import { AnimatedGhost } from '../models/AnimatedGhost';
+import { useState } from 'react';
 
 const HomePage = () => {
   const { nickname } = useAtomValue(playerInfoAtom);
   const [, setGameScreen] = useAtom(gameScreenAtom);
+  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+
   const handleGameStart = () => {
     setGameScreen(GameScreen.MATCHING);
+  };
+
+  const nextCharacter = () => {
+    setCurrentCharIndex((prev) => (prev + 1) % 3);
+  };
+
+  const prevCharacter = () => {
+    setCurrentCharIndex((prev) => (prev - 1 + 2) % 3);
   };
 
   return (
@@ -27,22 +39,71 @@ const HomePage = () => {
             <small>메리 크리스마스🎅🏻</small>
           </span>
         </div>
-        <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[0, 5, 6]} intensity={1} />
-          <AnimatedRabbit
-            scale={0.8}
-            animation="CharacterArmature|Yes"
-            position={[0, -2, 0]}
-            charColor="pink"
-            nickName={' '}
-          />
-          <OrbitControls
-            enableZoom={false}
-            maxPolarAngle={Math.PI / 2}
-            minPolarAngle={Math.PI / 3}
-          />
-        </Canvas>
+        <div className="relative flex items-center justify-center w-full">
+          <button
+            onClick={prevCharacter}
+            className="absolute left-4 z-20 p-4 rounded-full hover:scale-110 transition-all outline-none bg-5-purple-deep"
+            aria-label="character-choose-left-button"
+          >
+            <img
+              src="/images/leftArrow.svg"
+              alt="left-Arrow"
+              className="w-8 h-8"
+            />
+          </button>
+
+          <div className="flex w-full h-[50rem] -mt-32">
+            <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
+              <ambientLight intensity={0.5} />
+              <directionalLight position={[0, 5, 6]} intensity={1} />
+              {currentCharIndex === 0 && (
+                <AnimatedRabbit
+                  scale={0.8}
+                  animation="CharacterArmature|Yes"
+                  position={[0, -2, 0]}
+                  charColor="pink"
+                  nickName=" "
+                />
+              )}
+              {/* 여기에 산타 넣으면 될거같아유 */}
+              {currentCharIndex === 1 && (
+                <AnimatedGhost
+                  scale={0.8}
+                  animation="CharacterArmature|Fast_Flying"
+                  position={[0, -2, 0]}
+                  charColor="gray"
+                  nickName=" "
+                />
+              )}
+              {currentCharIndex === 2 && (
+                <AnimatedGhost
+                  scale={0.8}
+                  animation="CharacterArmature|Fast_Flying"
+                  position={[0, -2, 0]}
+                  charColor="gray"
+                  nickName=" "
+                />
+              )}
+              <OrbitControls
+                enableZoom={false}
+                maxPolarAngle={Math.PI / 2}
+                minPolarAngle={Math.PI / 3}
+              />
+            </Canvas>
+          </div>
+
+          <button
+            onClick={nextCharacter}
+            className="absolute right-4 z-20 p-4 rounded-full hover:scale-110 transition-all outline-none bg-5-purple-deep"
+            aria-label="character-choose-right-button"
+          >
+            <img
+              src="/images/rightArrow.svg"
+              alt="right-Arrow"
+              className="w-8 h-8"
+            />
+          </button>
+        </div>
         <div className="flex justify-end m-10">
           <button
             onClick={handleGameStart}
