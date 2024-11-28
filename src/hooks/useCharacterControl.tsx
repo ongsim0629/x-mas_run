@@ -6,6 +6,7 @@ import { Group } from 'three';
 import { Position } from '../types/player';
 import { lerpAngle } from '../utils/movementCalc';
 import useCharacterAnimation from './useCharacterAnimation';
+import { GhostActionName } from '../models/AnimatedGhost';
 
 type CharacterControlConfig = {
   rotationTarget: MutableRefObject<number>;
@@ -15,7 +16,7 @@ type CharacterControlConfig = {
   punchAnimationTimer: MutableRefObject<NodeJS.Timeout | null>;
   isCurrentlyStolen: MutableRefObject<boolean>;
   stolenAnimationTimer: MutableRefObject<NodeJS.Timeout | null>;
-  setAnimation: Dispatch<SetStateAction<RabbitActionName>>;
+  setAnimation: Dispatch<SetStateAction<any>>;
   giftCnt: number;
   stolenMotion: boolean;
   stealMotion: boolean;

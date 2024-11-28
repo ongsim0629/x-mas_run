@@ -9,6 +9,7 @@ import GhostController from '../controller/GhostController';
 export default function Scene() {
   const players = useAtomValue(playersAtom);
   const { id } = useAtomValue(playerInfoAtom);
+
   return (
     <>
       <Environment files={import.meta.env.VITE_INGAME_MAP_FILE} />
@@ -24,7 +25,14 @@ export default function Scene() {
                 isLocalPlayer={player.id === id}
               />
             );
-          else if (player.charType === 3) return <GhostController />;
+          else if (player.charType === 3)
+            return (
+              <GhostController
+                player={player}
+                key={player.id}
+                isLocalPlayer={player.id === id}
+              />
+            );
         })}
       </Physics>
     </>

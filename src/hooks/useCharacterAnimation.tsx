@@ -18,7 +18,7 @@ type AnimationConfig = {
   punchAnimationTimer: MutableRefObject<NodeJS.Timeout | null>;
   stealMotion: boolean;
   giftCnt: number;
-  setAnimation: Dispatch<SetStateAction<RabbitActionName>>;
+  setAnimation: Dispatch<SetStateAction<any>>;
 };
 
 const useCharacterAnimation = ({
