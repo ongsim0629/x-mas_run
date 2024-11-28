@@ -1,10 +1,11 @@
 import { Environment } from '@react-three/drei';
 import RabbitController from '../controller/RabbitController';
+import SantaController from '../controller/SantaController';
+import GhostController from '../controller/GhostController';
 import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import Map from './map/Map';
-import GhostController from '../controller/GhostController';
 
 export default function Scene() {
   const players = useAtomValue(playersAtom);
@@ -20,6 +21,14 @@ export default function Scene() {
           if (player.charType === 1)
             return (
               <RabbitController
+                player={player}
+                key={player.id}
+                isLocalPlayer={player.id === id}
+              />
+            );
+          else if (player.charType === 2)
+            return (
+              <SantaController
                 player={player}
                 key={player.id}
                 isLocalPlayer={player.id === id}
