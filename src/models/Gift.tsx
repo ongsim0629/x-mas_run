@@ -2,10 +2,11 @@ import * as THREE from 'three';
 import { useGLTF } from '@react-three/drei';
 import { GLTFGiftResult } from '../types/gift';
 
-export function Gift({
-  colors = {},
-  ...props
-}: JSX.IntrinsicElements['group'] & { colors?: Record<string, string> }) {
+type GiftProps = {
+  colors?: Record<string, string>;
+  opacity?: number;
+} & JSX.IntrinsicElements['group'];
+export function Gift({ colors = {}, opacity = 1, ...props }: GiftProps) {
   const { nodes, materials: originalMaterials } = useGLTF(
     '/models/Gift.glb',
   ) as GLTFGiftResult;
@@ -23,6 +24,8 @@ export function Gift({
         materials[materialName as keyof GLTFGiftResult['materials']];
       if (material instanceof THREE.MeshStandardMaterial) {
         material.color.set(color);
+        material.transparent = opacity < 1;
+        material.opacity = opacity;
       }
     }
   });

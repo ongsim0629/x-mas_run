@@ -177,9 +177,14 @@ const GhostController = ({
             nickName={nickName}
             animation={animation}
             charColor={charColor}
+            isTransparent={isSkillActive}
           />
           {Array.from({ length: giftCnt }).map((_, index) => (
-            <Present index={index} key={id + index} />
+            <Present
+              index={index}
+              key={id + index}
+              isTransparent={isSkillActive}
+            />
           ))}
         </group>
       </group>

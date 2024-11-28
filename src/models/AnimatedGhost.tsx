@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFrame, useGraph } from '@react-three/fiber';
 import { useGLTF, useAnimations, Text } from '@react-three/drei';
 import { GLTF, SkeletonUtils } from 'three-stdlib';
@@ -37,20 +37,24 @@ type AnimatedGhostProps = {
   animation: GhostActionName;
   charColor: string;
   nickName: string;
+  isTransparent?: boolean;
 } & JSX.IntrinsicElements['group'];
 
 export function AnimatedGhost({
   animation,
   charColor,
   nickName,
+  isTransparent = false,
   ...props
 }: AnimatedGhostProps) {
-  const group = React.useRef<THREE.Group>(null);
+  const group = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF('/models/AnimatedGhost.glb');
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { nodes, materials } = useGraph(clone) as GLTFResult;
+  const { nodes } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
   const nicknameRef = useRef<THREE.Group>(null);
+  const [opacity, setOpacity] = useState(1);
+  const time = useRef(0);
 
   useEffect(() => {
     actions[animation]?.reset().fadeIn(0.5).play();
@@ -58,10 +62,15 @@ export function AnimatedGhost({
       actions[animation]?.fadeOut(0.5);
     };
   }, [animation]);
-  useFrame(({ camera }) => {
+
+  useFrame(({ camera, clock }) => {
     if (nicknameRef.current) {
       nicknameRef.current.lookAt(camera.position);
     }
+    time.current += clock.getDelta();
+    const targetOpacity = isTransparent ? 0.3 : 1;
+    const lerpSpeed = 0.1;
+    setOpacity(THREE.MathUtils.lerp(opacity, targetOpacity, lerpSpeed));
   });
 
   return (
@@ -74,9 +83,11 @@ export function AnimatedGhost({
             anchorX="center"
             anchorY="middle"
             font="fonts/PaytoneOne-Regular.ttf"
+            material-opacity={opacity}
+            material-transparent
           >
             {nickName}
-            <meshBasicMaterial color="white" />
+            <meshBasicMaterial color="white" transparent />
           </Text>
           <Text
             position-y={3.98}
@@ -86,9 +97,11 @@ export function AnimatedGhost({
             anchorX="center"
             anchorY="middle"
             font="fonts/PaytoneOne-Regular.ttf"
+            material-opacity={opacity}
+            material-transparent
           >
             {nickName}
-            <meshBasicMaterial color="black" />
+            <meshBasicMaterial color="black" transparent />
           </Text>
         </group>
       )}
@@ -105,24 +118,35 @@ export function AnimatedGhost({
             <skinnedMesh
               name="Ghost_1"
               geometry={nodes.Ghost_1.geometry}
-              material={materials.Eye_White}
               skeleton={nodes.Ghost_1.skeleton}
             >
-              <meshStandardMaterial color="white" />
+              <meshStandardMaterial
+                color="white"
+                transparent
+                opacity={opacity}
+              />
             </skinnedMesh>
             <skinnedMesh
               name="Ghost_2"
               geometry={nodes.Ghost_2.geometry}
-              material={materials.Eye_Black}
               skeleton={nodes.Ghost_2.skeleton}
-            />
+            >
+              <meshStandardMaterial
+                color="black"
+                transparent
+                opacity={opacity}
+              />
+            </skinnedMesh>
             <skinnedMesh
               name="Ghost_3"
               geometry={nodes.Ghost_3.geometry}
-              material={materials.Ghost_Main}
               skeleton={nodes.Ghost_3.skeleton}
             >
-              <meshStandardMaterial color={charColor} />
+              <meshStandardMaterial
+                color={charColor}
+                transparent
+                opacity={opacity}
+              />
             </skinnedMesh>
           </group>
         </group>
