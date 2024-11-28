@@ -37,11 +37,11 @@ export class SocketService {
   }
 
   // Room 관련
-  enterRoom() {
+  enterRoom(charType: number) {
     if (!this.connected) return;
     if (this.isInRoom) return;
 
-    this.socket.emit('room.enter');
+    this.socket.emit('room.enter', { charType });
     this.isInRoom = true;
   }
 

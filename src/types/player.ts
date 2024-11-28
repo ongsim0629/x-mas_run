@@ -14,10 +14,17 @@ export interface Character {
   charColor: string;
   velocity: Position;
   giftCnt: number;
-  steal: boolean;
-  isBeingStolen: boolean;
-  skill: boolean;
-  protect: number;
+  // steal: boolean;
+  // isBeingStolen: boolean;
+  // skill: boolean;
+  // protect: number;
+  stealMotion: boolean;
+  stolenMotion: boolean;
+  protectMotion: number;
+  eventBlock: number;
+  isSkillActive: boolean;
+  totalSkillCooldown: number;
+  currentSkillCooldown: number;
 }
 
 export interface PlayerMovement {

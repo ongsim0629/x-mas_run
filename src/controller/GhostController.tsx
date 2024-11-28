@@ -17,13 +17,14 @@ import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
 import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
+import { AnimatedGhost, GhostActionName } from '../models/AnimatedGhost';
 
-interface RabbitControllerProps {
+interface GhostControllerProps {
   player: Character;
   isLocalPlayer?: boolean;
 }
 
-const RabbitController = ({
+const GhostController = ({
   player: {
     id,
     giftCnt,
@@ -40,9 +41,9 @@ const RabbitController = ({
     currentSkillCooldown,
   },
   isLocalPlayer,
-}: RabbitControllerProps): JSX.Element => {
-  const [animation, setAnimation] = useState<RabbitActionName>(
-    'CharacterArmature|Idle',
+}: GhostControllerProps): JSX.Element => {
+  const [animation, setAnimation] = useState<GhostActionName>(
+    'CharacterArmature|Flying_Idle',
   );
 
   const {
@@ -172,13 +173,18 @@ const RabbitController = ({
           </>
         )}
         <group ref={character}>
-          <AnimatedRabbit
+          <AnimatedGhost
             nickName={nickName}
             animation={animation}
             charColor={charColor}
+            isTransparent={isSkillActive}
           />
           {Array.from({ length: giftCnt }).map((_, index) => (
-            <Present index={index} key={id + index} />
+            <Present
+              index={index}
+              key={id + index}
+              isTransparent={isSkillActive}
+            />
           ))}
         </group>
       </group>
@@ -188,4 +194,4 @@ const RabbitController = ({
   );
 };
 
-export default RabbitController;
+export default GhostController;

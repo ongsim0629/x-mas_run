@@ -11,23 +11,23 @@ import { useAtom } from 'jotai';
 import { playAudioAtom } from '../atoms/GameAtoms';
 
 type AnimationConfig = {
-  isBeingStolen: boolean;
+  stolenMotion: boolean;
   isCurrentlyStolen: MutableRefObject<boolean>;
   stolenAnimationTimer: MutableRefObject<NodeJS.Timeout | null>;
   isPunching: MutableRefObject<boolean>;
   punchAnimationTimer: MutableRefObject<NodeJS.Timeout | null>;
-  steal: boolean;
+  stealMotion: boolean;
   giftCnt: number;
-  setAnimation: Dispatch<SetStateAction<RabbitActionName>>;
+  setAnimation: Dispatch<SetStateAction<any>>;
 };
 
 const useCharacterAnimation = ({
-  isBeingStolen,
+  stolenMotion,
   isCurrentlyStolen,
   stolenAnimationTimer,
   isPunching,
   punchAnimationTimer,
-  steal,
+  stealMotion,
   giftCnt,
   setAnimation,
 }: AnimationConfig) => {
@@ -50,7 +50,7 @@ const useCharacterAnimation = ({
 
   const updateAnimation = useCallback(
     (vel: Position) => {
-      if (isBeingStolen && !isCurrentlyStolen.current) {
+      if (stolenMotion && !isCurrentlyStolen.current) {
         isCurrentlyStolen.current = true;
         setAnimation('CharacterArmature|Duck');
         playAudio('stolen');
@@ -65,7 +65,7 @@ const useCharacterAnimation = ({
 
       if (isCurrentlyStolen.current) return;
 
-      if (steal) {
+      if (stealMotion) {
         setAnimation('CharacterArmature|Punch');
         return;
       }
@@ -99,7 +99,7 @@ const useCharacterAnimation = ({
         hasGift ? 'CharacterArmature|Run_Gun' : 'CharacterArmature|Run',
       );
     },
-    [isBeingStolen, steal, giftCnt],
+    [stolenMotion, stealMotion, giftCnt],
   );
 
   useEffect(() => {

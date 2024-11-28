@@ -20,10 +20,13 @@ export const playersAtom = atom<Character[]>([
     velocity: { x: 0, y: 0, z: 0 },
     charColor: 'gold',
     giftCnt: 0,
-    steal: false,
-    isBeingStolen: false,
-    skill: false,
-    protect: 0,
+    stealMotion: false,
+    stolenMotion: false,
+    protectMotion: 0,
+    eventBlock: 0,
+    isSkillActive: false,
+    totalSkillCooldown: 0,
+    currentSkillCooldown: 0,
   },
 ]);
 
