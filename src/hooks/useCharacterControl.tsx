@@ -19,6 +19,7 @@ type CharacterControlConfig = {
   setAnimation: Dispatch<SetStateAction<any>>;
   giftCnt: number;
   stolenMotion: boolean;
+  speedMultiplier?: number;
   stealMotion: boolean;
   character: MutableRefObject<Group | null>;
   container: MutableRefObject<Group | null>;

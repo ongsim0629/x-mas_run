@@ -1,5 +1,5 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
@@ -17,6 +17,8 @@ import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
 import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
+import { Model as Portal } from '../models/Portal';
+import * as THREE from 'three';
 
 interface RabbitControllerProps {
   player: Character;
@@ -82,6 +84,29 @@ const RabbitController = ({
   } = useAnimationRefs();
 
   const getControls = useKeyControl();
+
+  // 포탈 위치 계산
+  const getPortalPosition = useCallback((): [number, number, number] => {
+    if (!rb.current || !container.current) return [0, 0, 0];
+
+    const forwardDirection = new THREE.Vector3(0, 0, -1);
+    forwardDirection.applyQuaternion(container.current.quaternion);
+    forwardDirection.normalize();
+
+    const playerPosition = rb.current.translation();
+    if (!playerPosition) return [0, 0, 0];
+
+    return [
+      playerPosition.x + forwardDirection.x * 2,
+      playerPosition.y + forwardDirection.y + 1,
+      playerPosition.z + forwardDirection.z * 2,
+    ];
+  }, [rb, container]);
+
+  const portalPosition = useMemo(() => {
+    if (!isSkillActive) return [0, 0, 0];
+    return getPortalPosition();
+  }, [isSkillActive, getPortalPosition]);
 
   const { updateMovement } = useCharacterControl({
     charType: 1,
@@ -165,29 +190,32 @@ const RabbitController = ({
   });
 
   return (
-    <RigidBody colliders={false} lockRotations ref={rb}>
-      {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
-      <group ref={container}>
-        {isLocalPlayer && (
-          <>
-            <group ref={cameraTarget} position-z={6} />
-            <group ref={cameraPosition} position-y={10} position-z={-15} />
-          </>
-        )}
-        <group ref={character}>
-          <AnimatedRabbit
-            nickName={nickName}
-            animation={animation}
-            charColor={charColor}
-          />
-          {Array.from({ length: giftCnt }).map((_, index) => (
-            <Present index={index} key={id + index} />
-          ))}
+    <>
+      <RigidBody colliders={false} lockRotations ref={rb}>
+        {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
+        <group ref={container}>
+          {isLocalPlayer && (
+            <>
+              <group ref={cameraTarget} position-z={6} />
+              <group ref={cameraPosition} position-y={10} position-z={-15} />
+            </>
+          )}
+          <group ref={character}>
+            <AnimatedRabbit
+              nickName={nickName}
+              animation={animation}
+              charColor={charColor}
+            />
+            {Array.from({ length: giftCnt }).map((_, index) => (
+              <Present index={index} key={id + index} />
+            ))}
+          </group>
         </group>
-      </group>
-      <ProtectEffect duration={protectMotion} radius={2.2} />
-      <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
-    </RigidBody>
+        <ProtectEffect duration={protectMotion} radius={2.2} />
+        <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
+      </RigidBody>
+      {isSkillActive && <Portal position={portalPosition} />}
+    </>
   );
 };
 
