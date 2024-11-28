@@ -17,12 +17,16 @@ type CharacterControlConfig = {
   stolenAnimationTimer: MutableRefObject<NodeJS.Timeout | null>;
   setAnimation: Dispatch<SetStateAction<RabbitActionName>>;
   giftCnt: number;
-  isBeingStolen: boolean;
-  steal: boolean;
+  stolenMotion: boolean;
+  stealMotion: boolean;
   character: MutableRefObject<Group | null>;
   container: MutableRefObject<Group | null>;
   lastServerPosition: MutableRefObject<Position>;
   currentPosition: MutableRefObject<Position>;
+  eventBlock: number;
+  isSkillActive: boolean;
+  totalSkillCooldown: number;
+  currentSkillCooldown: number;
 };
 type Controls = {
   forward: boolean;
@@ -40,14 +44,18 @@ const useCharacterControl = ({
   punchAnimationTimer,
   setAnimation,
   giftCnt,
-  isBeingStolen,
-  steal,
+  stolenMotion,
+  stealMotion,
   isCurrentlyStolen,
   stolenAnimationTimer,
   lastServerPosition,
   currentPosition,
   character,
   container,
+  eventBlock,
+  // isSkillActive,
+  // totalSkillCooldown,
+  // currentSkillCooldown,
 }: CharacterControlConfig) => {
   const STATIC_STATE = (vel: { x: number; y: number; z: number }) => ({
     velocity: vel,
@@ -57,12 +65,12 @@ const useCharacterControl = ({
 
   const { updateAnimation, playJumpAnimation, playPunchAnimation } =
     useCharacterAnimation({
-      isBeingStolen,
+      stolenMotion,
       isCurrentlyStolen,
       stolenAnimationTimer,
       isPunching,
       punchAnimationTimer,
-      steal,
+      stealMotion,
       giftCnt,
       setAnimation,
     });
@@ -74,6 +82,8 @@ const useCharacterControl = ({
   ) => {
     const vel = rb.linvel();
     const pos = rb.translation();
+
+    if (eventBlock !== 0) return STATIC_STATE(vel);
 
     // 서버 위치 보정
     const distanceToServer = Math.sqrt(
@@ -98,7 +108,7 @@ const useCharacterControl = ({
     }
 
     // 빼앗기는 상태 처리
-    if (isBeingStolen && !isCurrentlyStolen.current) {
+    if (stolenMotion && !isCurrentlyStolen.current) {
       updateAnimation(vel);
       return STATIC_STATE(vel);
     }

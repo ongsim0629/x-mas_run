@@ -31,9 +31,13 @@ const RabbitController = ({
     velocity,
     nickName,
     charColor,
-    steal,
-    isBeingStolen,
-    protect,
+    stealMotion,
+    stolenMotion,
+    protectMotion,
+    eventBlock,
+    isSkillActive,
+    totalSkillCooldown,
+    currentSkillCooldown,
   },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
@@ -86,23 +90,27 @@ const RabbitController = ({
     punchAnimationTimer,
     setAnimation,
     giftCnt,
-    isBeingStolen,
+    stolenMotion,
     isCurrentlyStolen,
     stolenAnimationTimer,
-    steal,
+    stealMotion,
     lastServerPosition,
     currentPosition,
     character,
     container,
+    eventBlock,
+    isSkillActive,
+    totalSkillCooldown,
+    currentSkillCooldown,
   });
 
   const { updateAnimation } = useCharacterAnimation({
-    isBeingStolen,
+    stolenMotion,
     isCurrentlyStolen,
     stolenAnimationTimer,
     isPunching,
     punchAnimationTimer,
-    steal,
+    stealMotion,
     giftCnt,
     setAnimation,
   });
@@ -174,7 +182,7 @@ const RabbitController = ({
           ))}
         </group>
       </group>
-      <ProtectEffect duration={protect} radius={2.2} />
+      <ProtectEffect duration={protectMotion} radius={2.2} />
       <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
     </RigidBody>
   );

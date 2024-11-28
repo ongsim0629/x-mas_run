@@ -7,13 +7,17 @@ import { AnimatedRabbit } from '../models/AnimatedRabbit';
 import { OrbitControls } from '@react-three/drei';
 import { AnimatedGhost } from '../models/AnimatedGhost';
 import { useState } from 'react';
+import useSocket from '../hooks/useSocket';
 
 const HomePage = () => {
   const { nickname } = useAtomValue(playerInfoAtom);
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const { socket } = useSocket();
 
   const handleGameStart = () => {
+    if (!socket) return;
+    socket.enterRoom(currentCharIndex + 1);
     setGameScreen(GameScreen.MATCHING);
   };
 
