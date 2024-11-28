@@ -11,7 +11,7 @@ import useCamera from '../hooks/useCamera';
 import usePlayerState from '../hooks/usePlayerState';
 import useMouseRotation from '../hooks/useMouseRotation';
 import usePlayersInterpolation from '../hooks/usePlayersInterpolation';
-import useRabbitRefs from '../hooks/refs/useRabbitRefs';
+import useCharacterRefs from '../hooks/refs/useCharacterRefs';
 import useCameraRefs from '../hooks/refs/useCameraRefs';
 import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
 import useGameLoop from '../hooks/useGameLoop';
@@ -30,6 +30,7 @@ const RabbitController = ({
     position,
     velocity,
     nickName,
+    charType,
     charColor,
     stealMotion,
     stolenMotion,
@@ -52,7 +53,7 @@ const RabbitController = ({
     currentPosition,
     currentVelocity,
     lastServerPosition,
-  } = useRabbitRefs(position, velocity);
+  } = useCharacterRefs(position, velocity);
 
   const {
     mouseControlRef,
@@ -83,6 +84,7 @@ const RabbitController = ({
   const getControls = useKeyControl();
 
   const { updateMovement } = useCharacterControl({
+    charType: 1,
     rotationTarget,
     mouseControlRef,
     characterRotationTarget,
@@ -105,6 +107,7 @@ const RabbitController = ({
   });
 
   const { updateAnimation } = useCharacterAnimation({
+    charType,
     stolenMotion,
     isCurrentlyStolen,
     stolenAnimationTimer,

@@ -1,6 +1,5 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
 import { useState } from 'react';
-import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
@@ -11,7 +10,7 @@ import useCamera from '../hooks/useCamera';
 import usePlayerState from '../hooks/usePlayerState';
 import useMouseRotation from '../hooks/useMouseRotation';
 import usePlayersInterpolation from '../hooks/usePlayersInterpolation';
-import useRabbitRefs from '../hooks/refs/useRabbitRefs';
+import useCharacterRefs from '../hooks/refs/useCharacterRefs';
 import useCameraRefs from '../hooks/refs/useCameraRefs';
 import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
 import useGameLoop from '../hooks/useGameLoop';
@@ -31,6 +30,7 @@ const GhostController = ({
     position,
     velocity,
     nickName,
+    charType,
     charColor,
     stealMotion,
     stolenMotion,
@@ -53,7 +53,7 @@ const GhostController = ({
     currentPosition,
     currentVelocity,
     lastServerPosition,
-  } = useRabbitRefs(position, velocity);
+  } = useCharacterRefs(position, velocity);
 
   const {
     mouseControlRef,
@@ -84,6 +84,7 @@ const GhostController = ({
   const getControls = useKeyControl();
 
   const { updateMovement } = useCharacterControl({
+    charType: 3,
     rotationTarget,
     mouseControlRef,
     characterRotationTarget,
@@ -106,6 +107,7 @@ const GhostController = ({
   });
 
   const { updateAnimation } = useCharacterAnimation({
+    charType,
     stolenMotion,
     isCurrentlyStolen,
     stolenAnimationTimer,
