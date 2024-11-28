@@ -35,7 +35,7 @@ const useCharacterAnimation = ({
 
   const playJumpAnimation = useCallback(() => {
     playAudio('jump');
-    setAnimation('CharacterArmature|Jump');
+    setAnimation('CharacterArmature|Jump_Idle');
   }, []);
 
   const playPunchAnimation = useCallback(() => {
@@ -70,18 +70,33 @@ const useCharacterAnimation = ({
         return;
       }
 
+      // 점프/공중 상태 체크
+      if (vel.y > 0.1) {
+        setAnimation('CharacterArmature|Jump_Idle');
+        return;
+      }
+
       const velocityMagnitude = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
       const isMoving = velocityMagnitude > 0.5;
       const hasGift = giftCnt > 0;
+      const hasLotsOfGifts = giftCnt >= 3;
 
+      if (!isMoving) {
+        setAnimation(
+          hasGift ? 'CharacterArmature|Idle_Gun' : 'CharacterArmature|Idle',
+        );
+        return;
+      }
+
+      // 선물 3개 이상일 때는 걷기 애니메이션
+      if (hasLotsOfGifts) {
+        setAnimation('CharacterArmature|Walk_Gun');
+        return;
+      }
+
+      // 기본 달리기 애니메이션
       setAnimation(
-        isMoving
-          ? hasGift
-            ? 'CharacterArmature|Run_Gun'
-            : 'CharacterArmature|Run'
-          : hasGift
-            ? 'CharacterArmature|Idle_Gun'
-            : 'CharacterArmature|Idle',
+        hasGift ? 'CharacterArmature|Run_Gun' : 'CharacterArmature|Run',
       );
     },
     [isBeingStolen, steal, giftCnt],
