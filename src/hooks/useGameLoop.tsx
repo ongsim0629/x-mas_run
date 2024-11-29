@@ -13,6 +13,7 @@ type GameLoopProps = {
   updateRemotePosition: (delta: number) => void;
   updateAnimation: (velocity: Position) => void;
   velocity: Position;
+  speedMultiplier?: number;
 };
 const useGameLoop = (props: GameLoopProps) => {
   useFrame(({ camera }, delta) => {
