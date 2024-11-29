@@ -5,9 +5,10 @@ import GiftEffect from './effect/GiftEffect';
 type Props = {
   index: number;
   isTransparent?: boolean;
+  isLocalPlayer?: boolean;
 };
-export const Present = ({ index, isTransparent }: Props) => {
-  const opacity = isTransparent ? 0.1 : 1;
+export const Present = ({ index, isTransparent, isLocalPlayer }: Props) => {
+  const opacity = isTransparent ? (isLocalPlayer ? 0.5 : 0) : 1;
   return (
     <group position={[-0.8, 0.8 + index * 0.8, 0.8]}>
       <Gift

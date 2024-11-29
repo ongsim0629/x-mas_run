@@ -38,6 +38,7 @@ type AnimatedGhostProps = {
   charColor: string;
   nickName: string;
   isTransparent?: boolean;
+  isLocalPlayer?: boolean;
 } & JSX.IntrinsicElements['group'];
 
 export function AnimatedGhost({
@@ -45,6 +46,7 @@ export function AnimatedGhost({
   charColor,
   nickName,
   isTransparent = false,
+  isLocalPlayer = false,
   ...props
 }: AnimatedGhostProps) {
   const group = useRef<THREE.Group>(null);
@@ -68,7 +70,11 @@ export function AnimatedGhost({
       nicknameRef.current.lookAt(camera.position);
     }
     time.current += clock.getDelta();
-    const targetOpacity = isTransparent ? 0.3 : 1;
+    const targetOpacity = isTransparent
+      ? isLocalPlayer
+        ? 0.5
+        : 0 // 스킬 사용 중: 로컬 플레이어는 0.5, 다른 플레이어는 0
+      : 1; // 스킬 미사용 시 완전 불투명
     const lerpSpeed = 0.1;
     setOpacity(THREE.MathUtils.lerp(opacity, targetOpacity, lerpSpeed));
   });

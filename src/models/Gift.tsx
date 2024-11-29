@@ -14,18 +14,21 @@ export function Gift({ colors = {}, opacity = 1, ...props }: GiftProps) {
   const materials: GLTFGiftResult['materials'] =
     {} as GLTFGiftResult['materials'];
 
+  // 모든 머티리얼을 복제하고 투명도 설정
   for (const [key, material] of Object.entries(originalMaterials)) {
-    materials[key as keyof GLTFGiftResult['materials']] = material.clone();
+    const clonedMaterial = material.clone();
+    if (clonedMaterial instanceof THREE.MeshStandardMaterial) {
+      clonedMaterial.transparent = opacity < 1;
+      clonedMaterial.opacity = opacity;
+    }
+    materials[key as keyof GLTFGiftResult['materials']] = clonedMaterial;
   }
-
   Object.entries(colors).forEach(([materialName, color]) => {
     if (materialName in materials) {
       const material =
         materials[materialName as keyof GLTFGiftResult['materials']];
       if (material instanceof THREE.MeshStandardMaterial) {
         material.color.set(color);
-        material.transparent = opacity < 1;
-        material.opacity = opacity;
       }
     }
   });

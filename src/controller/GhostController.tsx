@@ -180,12 +180,14 @@ const GhostController = ({
             animation={animation}
             charColor={charColor}
             isTransparent={isSkillActive}
+            isLocalPlayer={isLocalPlayer}
           />
           {Array.from({ length: giftCnt }).map((_, index) => (
             <Present
               index={index}
               key={id + index}
               isTransparent={isSkillActive}
+              isLocalPlayer={isLocalPlayer}
             />
           ))}
         </group>
