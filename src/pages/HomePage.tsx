@@ -36,6 +36,7 @@ const HomePage = () => {
         src={import.meta.env.VITE_HOME_IMAGE_URL}
         alt="background"
         className="absolute w-full h-full object-cover blur-sm"
+        fetchPriority="high"
       />
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-between">
         <div className="flex items-center gap-2 m-4">
@@ -106,7 +107,7 @@ const HomePage = () => {
             />
           </button>
         </div>
-        <div className="flex justify-end m-10">
+        <div className="flex justify-end mb-8 mr-8">
           <button
             onClick={handleGameStart}
             className="bg-3-xmas-gold text-white text-3xl font-bold rounded-xl transition-colors min-w-56 min-h-16 p-4 border-6-pinkish-ivory border-4 hover:scale-110"

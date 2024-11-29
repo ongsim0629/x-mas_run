@@ -50,6 +50,7 @@ const LoginPage = () => {
         autoPlay
         loop
         muted
+        preload="auto"
         className="absolute w-full h-full object-cover"
         aria-label="xmas-background-video"
       >
