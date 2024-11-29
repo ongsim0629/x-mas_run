@@ -47,15 +47,9 @@ const RabbitController = ({
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
-  
-  const {
-    rb,
-    container,
-    character,
-    currentPosition,
-    currentVelocity,
-    lastServerPosition,
-  } = useCharacterRefs(position, velocity);
+
+  const { rb, container, character, currentPosition, currentVelocity } =
+    useCharacterRefs(position, velocity);
 
   const {
     mouseControlRef,
@@ -121,8 +115,7 @@ const RabbitController = ({
     isCurrentlyStolen,
     stolenAnimationTimer,
     stealMotion,
-    lastServerPosition,
-    currentPosition,
+    position,
     character,
     container,
     eventBlock,
@@ -145,7 +138,6 @@ const RabbitController = ({
 
   const { updatePlayerState } = usePlayerState({
     id,
-    lastServerPosition,
   });
 
   const { updateRemotePosition } = usePlayersInterpolation({

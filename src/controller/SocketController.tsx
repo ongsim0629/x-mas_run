@@ -105,7 +105,7 @@ const SocketController = () => {
       prevPosition.current = currentPlayer.position;
       lastSentTime.current = now;
     }
-  }, [player.id, socket, players]);
+  }, [player.id, socket, players, getControls]);
 
   const hasSignificantMovement = useCallback(
     (current: Position, prev: Position): boolean =>
