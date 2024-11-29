@@ -50,13 +50,14 @@ const LoginPage = () => {
         autoPlay
         loop
         muted
+        preload="auto"
         className="absolute w-full h-full object-cover"
         aria-label="xmas-background-video"
       >
         <source src={import.meta.env.VITE_VIDEO_URL} type="video/mp4" />
       </video>
       <div className="relative z-10 flex flex-col gap-10">
-        <h1 className="text-center font-bold text-white text-6xl border-separate">
+        <h1 className="text-center font-bold text-white text-6xl">
           X-MAS RUN🎅🏻
         </h1>
         <form

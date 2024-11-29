@@ -23,7 +23,7 @@ type CharacterControlConfig = {
   stealMotion: boolean;
   character: MutableRefObject<Group | null>;
   container: MutableRefObject<Group | null>;
-  position: Position;
+  lastServerPosition: MutableRefObject<Position>;
   currentPosition: MutableRefObject<Position>;
   eventBlock: number;
   isSkillActive: boolean;
@@ -52,7 +52,7 @@ const useCharacterControl = ({
   stealMotion,
   isCurrentlyStolen,
   stolenAnimationTimer,
-  position,
+  lastServerPosition,
   currentPosition,
   character,
   container,
@@ -100,18 +100,21 @@ const useCharacterControl = ({
     // 서버 위치 보정
     // console.log(position);
     if (isSkillActive) {
-      console.log(position, pos);
+      console.log(lastServerPosition.current, pos);
     }
     const distanceToServer = Math.sqrt(
-      Math.pow(position.x - pos.x, 2) + Math.pow(position.z - pos.z, 2),
+      Math.pow(lastServerPosition.current.x - pos.x, 2) +
+        Math.pow(lastServerPosition.current.z - pos.z, 2),
     );
-    
 
     if (distanceToServer > import.meta.env.VITE_DISTANCE_THRESHOLD * 2) {
-      currentPosition.current = { ...position };
-      rb.setTranslation(position, true);
+      currentPosition.current = { ...lastServerPosition.current };
+      rb.setTranslation(lastServerPosition.current, true);
 
-      const angle = Math.atan2(position.x - pos.x, position.z - pos.z);
+      const angle = Math.atan2(
+        lastServerPosition.current.x - pos.x,
+        lastServerPosition.current.z - pos.z,
+      );
       const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
       vel.x = Math.sin(angle) * speed;
       vel.z = Math.cos(angle) * speed;

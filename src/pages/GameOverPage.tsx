@@ -39,15 +39,16 @@ const GameOverPage = () => {
   };
 
   const handlePlayAgain = () => {
-    setGameScreen(GameScreen.MATCHING);
+    setGameScreen(GameScreen.HOME);
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center">
       <img
-        src={import.meta.env.VITE_GAME_OVE_IMAGE_URL}
+        src={import.meta.env.VITE_GAME_OVER_IMAGE_URL}
         alt="background"
         className="absolute w-full h-full object-cover"
+        fetchPriority="high"
       />
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-around">
         <div className="flex flex-col items-center gap-2 mt-10">

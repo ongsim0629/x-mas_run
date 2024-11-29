@@ -11,19 +11,10 @@ import Scene from './Scene';
 import GameOverPage from '../pages/GameOverPage';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import KillLogs from './KillLogs';
-import { useEffect } from 'react';
 
 const AuthRouter = () => {
-  const [gameScreen, setGameScreen] = useAtom(gameScreenAtom);
+  const [gameScreen] = useAtom(gameScreenAtom);
   const { id } = useAtomValue(playerInfoAtom);
-
-  useEffect(() => {
-    if (!id && gameScreen !== GameScreen.LOGIN) {
-      setGameScreen(GameScreen.LOGIN);
-    } else if (id && gameScreen === GameScreen.LOGIN) {
-      setGameScreen(GameScreen.HOME);
-    }
-  }, [id, gameScreen, setGameScreen]);
 
   if (!id) {
     return <LoginPage />;

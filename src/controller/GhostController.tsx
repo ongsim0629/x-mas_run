@@ -16,7 +16,7 @@ import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
 import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
-import { AnimatedGhost, GhostActionName } from '../models/AnimatedGhost';
+import { AnimatedGhost, GhostActionName } from '../hooks/AnimatedGhost';
 
 interface GhostControllerProps {
   player: Character;
