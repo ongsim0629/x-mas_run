@@ -9,6 +9,7 @@ import { AnimatedSanta } from '../models/AnimatedSanta';
 import { AnimatedGhost } from '../hooks/AnimatedGhost';
 import { GameScreen } from '../types/game';
 import { Canvas } from '@react-three/fiber';
+import Snow from '../components/UI/Snow';
 const RotatingWinner = ({
   charType,
   charColor,
@@ -69,6 +70,7 @@ const GameLogsPage = () => {
   const handleGoHome = () => setGameScreen(GameScreen.HOME);
   return (
     <div className="fixed inset-0 flex items-center justify-center">
+      <Snow />
       <img
         src="https://res.cloudinary.com/dkjk8h8zd/image/upload/v1732899211/original-d2f44765653571b8cf6a54584a6f092e_sfrv1p.webp"
         alt="background"
