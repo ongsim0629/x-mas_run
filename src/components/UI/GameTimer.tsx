@@ -4,9 +4,9 @@ import {
   gameScreenAtom,
   gameTimeAtom,
   playAudioAtom,
-  winnerAtom,
+  roomIdAtom,
 } from '../../atoms/GameAtoms';
-import { GameScreen, WinnerData } from '../../types/game';
+import { GameScreen } from '../../types/game';
 import useSocket from '../../hooks/useSocket';
 
 export const GameTimer = () => {
@@ -14,7 +14,7 @@ export const GameTimer = () => {
   const timeLeft = useAtomValue(gameTimeAtom);
   const setGameScreen = useSetAtom(gameScreenAtom);
   const { socket } = useSocket();
-  const setWinner = useSetAtom(winnerAtom);
+  const setRoomId = useSetAtom(roomIdAtom);
 
   useEffect(() => {
     if (timeLeft !== null && timeLeft <= 10 && timeLeft > 0) {
@@ -24,15 +24,17 @@ export const GameTimer = () => {
 
   useEffect(() => {
     if (socket) {
-      const unsubscribe = socket.onGameOver((winnerData: WinnerData) => {
-        setWinner(winnerData.winner.nickName);
-        setGameScreen(GameScreen.GAME_OVER);
-      });
+      const unsubscribe = socket.onGameOver(
+        ({ roomId }: { roomId: string }) => {
+          setRoomId(roomId);
+          setGameScreen(GameScreen.GAME_OVER);
+        },
+      );
       return () => {
         unsubscribe();
       };
     }
-  }, [socket, setWinner, setGameScreen]);
+  }, [socket, setRoomId, setGameScreen]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);

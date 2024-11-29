@@ -66,7 +66,7 @@ export class SocketService {
     return () => this.socket.off('game.start');
   }
 
-  onGameOver(handler: (winnerData: WinnerData) => void) {
+  onGameOver(handler: ({ roomId }: { roomId: string }) => void) {
     this.socket.on('game.over', handler);
     this.isInRoom = false;
     return () => this.socket.off('game.over');

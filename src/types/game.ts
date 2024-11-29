@@ -24,8 +24,14 @@ export interface GameData {
   characters: Character[];
 }
 
+export type Winner = {
+  id: string;
+  nickName: string;
+  charColor: string;
+  charType: number;
+};
 export interface WinnerData {
-  winner: { nickName: string };
+  character: Winner;
 }
 
 export type BGMAudioType = 'bgm' | 'lobby' | 'gameover';

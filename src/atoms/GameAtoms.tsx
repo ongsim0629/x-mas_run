@@ -10,7 +10,7 @@ export const gameScreenAtom = atomWithStorage<GameScreen>(
   createJSONStorage(() => sessionStorage),
 );
 
-export const winnerAtom = atom<string>('');
+export const roomIdAtom = atom<string>('');
 
 // Socket
 export const socketServiceAtom = atom<SocketService | null>(null);
