@@ -46,14 +46,8 @@ const GhostController = ({
     'CharacterArmature|Flying_Idle',
   );
 
-  const {
-    rb,
-    container,
-    character,
-    currentPosition,
-    currentVelocity,
-    lastServerPosition,
-  } = useCharacterRefs(position, velocity);
+  const { rb, container, character, currentPosition, currentVelocity } =
+    useCharacterRefs(position, velocity);
 
   const {
     mouseControlRef,
@@ -96,8 +90,7 @@ const GhostController = ({
     isCurrentlyStolen,
     stolenAnimationTimer,
     stealMotion,
-    lastServerPosition,
-    currentPosition,
+    position,
     character,
     container,
     eventBlock,
@@ -120,7 +113,6 @@ const GhostController = ({
 
   const { updatePlayerState } = usePlayerState({
     id,
-    lastServerPosition,
   });
 
   const { updateRemotePosition } = usePlayersInterpolation({

@@ -89,8 +89,11 @@ const useCharacterControl = ({
       playPunchAnimation();
     }
 
-    // 이거 하니까 플레이어 맞는 모션 안 보여서 일단 주석 처리 해뒀슴메도
-    if (eventBlock !== 0) return;
+    if (eventBlock !== 0) {
+      const zeroVel = { x: 0, y: 0, z: 0 };
+      rb.setLinvel(zeroVel, true);
+      return;
+    }
 
     // 서버 위치 보정
     const distanceToServer = Math.sqrt(
