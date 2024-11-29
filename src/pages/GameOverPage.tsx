@@ -79,7 +79,7 @@ const GameOverPage = () => {
   }, [winnerQuery, setWinner, roomId]);
 
   const handleGoLogs = () => {
-    setGameScreen(GameScreen.HOME);
+    setGameScreen(GameScreen.GAME_LOGS);
   };
 
   const handlePlayAgain = () => {

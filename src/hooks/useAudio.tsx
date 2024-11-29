@@ -24,7 +24,10 @@ const useAudio = () => {
 
     if (gameScreen === GameScreen.GAME) {
       targetBGM = 'bgm';
-    } else if (gameScreen === GameScreen.GAME_OVER) {
+    } else if (
+      gameScreen === GameScreen.GAME_OVER ||
+      gameScreen === GameScreen.GAME_LOGS
+    ) {
       targetBGM = 'gameover';
     } else {
       targetBGM = 'lobby';

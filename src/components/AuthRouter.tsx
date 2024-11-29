@@ -11,6 +11,7 @@ import Scene from './Scene';
 import GameOverPage from '../pages/GameOverPage';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import KillLogs from './KillLogs';
+import GameLogsPage from '../pages/GameLogsPage';
 
 const AuthRouter = () => {
   const [gameScreen] = useAtom(gameScreenAtom);
@@ -42,6 +43,7 @@ const AuthRouter = () => {
         </div>
       )}
       {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
+      {gameScreen === GameScreen.GAME_LOGS && <GameLogsPage />}
     </>
   );
 };

@@ -19,7 +19,14 @@ const useGame = () => {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['winnerInfo'] }),
   });
-  return { registerPlayerQuery, winnerQuery };
+
+  const { mutateAsync: myGameResultQuery } = useMutation({
+    mutationFn: ({ roomId, userId }: { roomId: string; userId: string }) =>
+      game.getMyGameResult(roomId, userId),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['myGameInfo'] }),
+  });
+  return { registerPlayerQuery, winnerQuery, myGameResultQuery };
 };
 
 export default useGame;
