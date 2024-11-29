@@ -1,5 +1,4 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
-import * as THREE from 'three';
 import { useState, useCallback, useMemo } from 'react';
 import { AnimatedSanta, SantaActionName } from '../models/AnimatedSanta';
 import { PointerLockControls } from '@react-three/drei';
@@ -50,14 +49,8 @@ const SantaController = ({
 
   const [isSleighActive, setIsSleighActive] = useState(false);
 
-  const {
-    rb,
-    container,
-    character,
-    currentPosition,
-    currentVelocity,
-    lastServerPosition,
-  } = useCharacterRefs(position, velocity);
+  const { rb, container, character, currentPosition, currentVelocity } =
+    useCharacterRefs(position, velocity);
 
   // 썰매 위치 계산
   const getSleighPosition = useCallback((): [number, number, number] => {
@@ -119,8 +112,7 @@ const SantaController = ({
     isCurrentlyStolen,
     stolenAnimationTimer,
     stealMotion,
-    lastServerPosition,
-    currentPosition,
+    position,
     character,
     container,
     eventBlock,
@@ -145,7 +137,6 @@ const SantaController = ({
 
   const { updatePlayerState } = usePlayerState({
     id,
-    lastServerPosition,
   });
 
   const { updateRemotePosition } = usePlayersInterpolation({

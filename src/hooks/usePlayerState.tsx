@@ -1,11 +1,9 @@
 import { useSetAtom } from 'jotai';
 import { playersAtom } from '../atoms/PlayerAtoms';
 import { Position } from '../types/player';
-import { MutableRefObject } from 'react';
 
 type PlayerStateProps = {
   id: string;
-  lastServerPosition: MutableRefObject<Position>;
 };
 
 const usePlayerState = (props: PlayerStateProps) => {
@@ -31,9 +29,6 @@ const usePlayerState = (props: PlayerStateProps) => {
           : player,
       ),
     );
-
-    // 서버로 보낼 위치 업데이트
-    props.lastServerPosition.current = { ...pos };
   };
 
   return { updatePlayerState };

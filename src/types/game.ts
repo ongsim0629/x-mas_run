@@ -33,3 +33,13 @@ export interface AudioInstance {
   audio: HTMLAudioElement;
   loop: boolean;
 }
+
+export type Controls = {
+  forward: boolean;
+  backward: boolean;
+  left: boolean;
+  right: boolean;
+  jump: boolean;
+  catch: boolean;
+  skill: boolean;
+};

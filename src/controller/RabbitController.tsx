@@ -4,7 +4,6 @@ import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
-import useKeyControl from '../hooks/useKeyControl';
 import useCharacterControl from '../hooks/useCharacterControl';
 import useCharacterAnimation from '../hooks/useCharacterAnimation';
 import useCamera from '../hooks/useCamera';
@@ -47,15 +46,9 @@ const RabbitController = ({
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
-  
-  const {
-    rb,
-    container,
-    character,
-    currentPosition,
-    currentVelocity,
-    lastServerPosition,
-  } = useCharacterRefs(position, velocity);
+
+  const { rb, container, character, currentPosition, currentVelocity } =
+    useCharacterRefs(position, velocity);
 
   const {
     mouseControlRef,
@@ -82,8 +75,6 @@ const RabbitController = ({
     stolenAnimationTimer,
     isCurrentlyStolen,
   } = useAnimationRefs();
-
-  const getControls = useKeyControl();
 
   // 포탈 위치 계산
   const getPortalPosition = useCallback((): [number, number, number] => {
@@ -121,8 +112,7 @@ const RabbitController = ({
     isCurrentlyStolen,
     stolenAnimationTimer,
     stealMotion,
-    lastServerPosition,
-    currentPosition,
+    position,
     character,
     container,
     eventBlock,
@@ -145,7 +135,6 @@ const RabbitController = ({
 
   const { updatePlayerState } = usePlayerState({
     id,
-    lastServerPosition,
   });
 
   const { updateRemotePosition } = usePlayersInterpolation({
@@ -180,7 +169,6 @@ const RabbitController = ({
   useGameLoop({
     isLocalPlayer,
     rb,
-    getControls,
     updateMovement,
     updatePlayerState,
     updateCamera,

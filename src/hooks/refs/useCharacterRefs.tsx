@@ -10,7 +10,6 @@ const useCharacterRefs = (position: Position, velocity: Position) => {
   const isInitialized = useRef(false);
   const currentPosition = useRef(position);
   const currentVelocity = useRef(velocity);
-  const lastServerPosition = useRef(position);
 
   useEffect(() => {
     if (!isInitialized.current && rb.current) {
@@ -28,7 +27,6 @@ const useCharacterRefs = (position: Position, velocity: Position) => {
     character,
     currentPosition,
     currentVelocity,
-    lastServerPosition,
   };
 };
 export default useCharacterRefs;
