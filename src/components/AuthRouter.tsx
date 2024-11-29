@@ -11,6 +11,7 @@ import Scene from './Scene';
 import GameOverPage from '../pages/GameOverPage';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import KillLogs from './KillLogs';
+import SkillCooldownIndicator from './UI/SkillCooldownIndicator';
 
 const AuthRouter = () => {
   const [gameScreen] = useAtom(gameScreenAtom);
@@ -39,6 +40,7 @@ const AuthRouter = () => {
             <Scene />
           </Canvas>
           <KillLogs />
+          <SkillCooldownIndicator />
         </div>
       )}
       {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
