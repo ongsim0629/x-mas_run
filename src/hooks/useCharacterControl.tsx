@@ -5,9 +5,9 @@ import { Group } from 'three';
 import { Position } from '../types/player';
 import { lerpAngle } from '../utils/movementCalc';
 import useCharacterAnimation from './useCharacterAnimation';
-import { Controls } from '../types/game';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
+import useKeyControl from './useKeyControl';
 
 type CharType = 1 | 2 | 3;
 type CharacterControlConfig = {
@@ -69,14 +69,18 @@ const useCharacterControl = ({
 
   const setPlayers = useSetAtom(playersAtom);
   const { id } = useAtomValue(playerInfoAtom);
+  const getControls = useKeyControl();
+  const controls = getControls();
 
-  const updateMovement = (
-    controls: Controls,
-    rb: RapierRigidBody,
-    isOnGround: boolean,
-  ) => {
+  const updateMovement = (rb: RapierRigidBody) => {
     const vel = rb.linvel();
     const pos = rb.translation();
+    const isOnGround = Math.abs(rb.linvel().y) < 0.1;
+
+    if (isSkillActive) {
+      rb.setTranslation(position, true);
+      return;
+    }
 
     // 빼앗기는 상태 처리
     if (stolenMotion && !isCurrentlyStolen.current) {

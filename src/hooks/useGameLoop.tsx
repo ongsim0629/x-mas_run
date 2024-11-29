@@ -3,17 +3,11 @@ import { RapierRigidBody } from '@react-three/rapier';
 import { MutableRefObject } from 'react';
 import { Position } from '../types/player';
 import { Camera } from 'three';
-import { Controls } from '../types/game';
 
 type GameLoopProps = {
   isLocalPlayer?: boolean;
   rb: MutableRefObject<RapierRigidBody | null>;
-  getControls: () => Controls;
-  updateMovement: (
-    controls: Controls,
-    rigidBody: RapierRigidBody,
-    isOnGround: boolean,
-  ) => void;
+  updateMovement: (rigidBody: RapierRigidBody) => void;
   updatePlayerState: (position: Position, velocity: Position) => void;
   updateCamera: (camera: Camera, isOnGround: boolean) => void;
   updateRemotePosition: (delta: number) => void;
@@ -25,8 +19,7 @@ const useGameLoop = (props: GameLoopProps) => {
     if (props.rb.current) {
       if (props.isLocalPlayer) {
         const isOnGround = Math.abs(props.rb.current.linvel().y) < 0.1;
-        const controls = props.getControls();
-        props.updateMovement(controls, props.rb.current, isOnGround);
+        props.updateMovement(props.rb.current);
         props.updateCamera(camera, isOnGround);
       } else {
         props.updateRemotePosition(delta);
