@@ -5,6 +5,9 @@ import { Group } from 'three';
 import { Position } from '../types/player';
 import { lerpAngle } from '../utils/movementCalc';
 import useCharacterAnimation from './useCharacterAnimation';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
+import useKeyControl from './useKeyControl';
 
 type CharType = 1 | 2 | 3;
 type CharacterControlConfig = {
@@ -23,22 +26,13 @@ type CharacterControlConfig = {
   stealMotion: boolean;
   character: MutableRefObject<Group | null>;
   container: MutableRefObject<Group | null>;
-  lastServerPosition: MutableRefObject<Position>;
-  currentPosition: MutableRefObject<Position>;
+  position: Position;
   eventBlock: number;
   isSkillActive: boolean;
   totalSkillCooldown: number;
   currentSkillCooldown: number;
 };
-type Controls = {
-  forward: boolean;
-  backward: boolean;
-  left: boolean;
-  right: boolean;
-  jump: boolean;
-  catch: boolean;
-  skill: boolean;
-};
+
 const useCharacterControl = ({
   charType,
   rotationTarget,
@@ -52,8 +46,7 @@ const useCharacterControl = ({
   stealMotion,
   isCurrentlyStolen,
   stolenAnimationTimer,
-  lastServerPosition,
-  currentPosition,
+  position,
   character,
   container,
   eventBlock,
@@ -61,12 +54,6 @@ const useCharacterControl = ({
   totalSkillCooldown,
   currentSkillCooldown,
 }: CharacterControlConfig) => {
-  const STATIC_STATE = (vel: { x: number; y: number; z: number }) => ({
-    velocity: vel,
-    movement: { x: 0, y: 0, z: 0 },
-    isMoving: false,
-  });
-
   const { updateAnimation, playJumpAnimation, playPunchAnimation } =
     useCharacterAnimation({
       charType,
@@ -80,58 +67,64 @@ const useCharacterControl = ({
       setAnimation,
     });
 
-  const updateMovement = (
-    controls: Controls,
-    rb: RapierRigidBody,
-    isOnGround: boolean,
-  ) => {
+  const setPlayers = useSetAtom(playersAtom);
+  const { id } = useAtomValue(playerInfoAtom);
+  const getControls = useKeyControl();
+  const controls = getControls();
+
+  const updateMovement = (rb: RapierRigidBody) => {
     const vel = rb.linvel();
     const pos = rb.translation();
+    const isOnGround = Math.abs(rb.linvel().y) < 0.1;
 
-    // // stolenMotion일 때만 움직임을 제한
-    // if (stolenMotion && !isCurrentlyStolen.current) {
-    //   updateAnimation(vel);
-    //   return STATIC_STATE(vel);
-    // }
-
-    // 이거 하니까 플레이어 맞는 모션 안 보여서 일단 주석 처리 해뒀슴메도
-    if (eventBlock !== 0) return STATIC_STATE(vel);
-
-    // 서버 위치 보정
-    // console.log(position);
     if (isSkillActive) {
-      console.log(lastServerPosition.current, pos);
-    }
-    const distanceToServer = Math.sqrt(
-      Math.pow(lastServerPosition.current.x - pos.x, 2) +
-        Math.pow(lastServerPosition.current.z - pos.z, 2),
-    );
-
-    if (distanceToServer > import.meta.env.VITE_DISTANCE_THRESHOLD * 2) {
-      currentPosition.current = { ...lastServerPosition.current };
-      rb.setTranslation(lastServerPosition.current, true);
-
-      const angle = Math.atan2(
-        lastServerPosition.current.x - pos.x,
-        lastServerPosition.current.z - pos.z,
-      );
-      const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
-      vel.x = Math.sin(angle) * speed;
-      vel.z = Math.cos(angle) * speed;
-      rb.setLinvel(vel, true);
-
-      // return STATIC_STATE(vel);
+      rb.setTranslation(position, true);
+      return;
     }
 
     // 빼앗기는 상태 처리
     if (stolenMotion && !isCurrentlyStolen.current) {
       updateAnimation(vel);
-      return STATIC_STATE(vel);
+      return;
     }
 
     // 스틸 액션 처리
     if (controls.catch && !isPunching.current) {
       playPunchAnimation();
+    }
+
+    if (eventBlock !== 0) {
+      const zeroVel = { x: 0, y: 0, z: 0 };
+      rb.setLinvel(zeroVel, true);
+      return;
+    }
+
+    // 서버 위치 보정
+    const distanceToServer = Math.sqrt(
+      Math.pow(position.x - pos.x, 2) + Math.pow(position.z - pos.z, 2),
+    );
+
+    if (distanceToServer > import.meta.env.VITE_DISTANCE_THRESHOLD) {
+      rb.setTranslation(position, true);
+
+      const angle = Math.atan2(position.x - pos.x, position.z - pos.z);
+      const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
+      vel.x = Math.sin(angle) * speed;
+      vel.z = Math.cos(angle) * speed;
+      rb.setLinvel(vel, true);
+
+      setPlayers((prev) =>
+        prev.map((player) =>
+          player.id === id
+            ? {
+                ...player,
+                position: { ...position },
+                velocity: { ...vel },
+              }
+            : player,
+        ),
+      );
+      return;
     }
 
     const movement = { x: 0, y: 0, z: 0 };
@@ -200,11 +193,18 @@ const useCharacterControl = ({
       );
     }
     rb.setLinvel(vel, true);
-    return {
-      velocity: vel,
-      movement,
-      isMoving: movement.x !== 0 || movement.z !== 0,
-    };
+
+    setPlayers((prev) =>
+      prev.map((player) =>
+        player.id === id
+          ? {
+              ...player,
+              position: { x: pos.x, y: pos.y, z: pos.z },
+              velocity: { ...vel },
+            }
+          : player,
+      ),
+    );
   };
   return { updateMovement };
 };
