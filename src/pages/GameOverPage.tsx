@@ -78,7 +78,7 @@ const GameOverPage = () => {
     fetchWinner();
   }, [winnerQuery, setWinner, roomId]);
 
-  const handleGoHome = () => {
+  const handleGoLogs = () => {
     setGameScreen(GameScreen.HOME);
   };
 
@@ -92,11 +92,10 @@ const GameOverPage = () => {
         src={import.meta.env.VITE_GAME_OVER_IMAGE_URL}
         alt="background"
         className="absolute w-full h-full object-cover"
-        fetchPriority="high"
       />
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-around">
         <div className="flex flex-col items-center gap-2 mt-10">
-          <span className="w-full flex flex-col justify-center items-center text-white text-xl font-bold">
+          <span className="w-full flex flex-col justify-center items-center text-white text-4xl font-bold">
             {winner.nickName}
           </span>
           <span className="w-full flex justify-center items-center text-white text-8xl font-bold">
@@ -124,12 +123,12 @@ const GameOverPage = () => {
             한판 더?
           </button>
           <button
-            onClick={handleGoHome}
+            onClick={handleGoLogs}
             className="bg-black text-white text-xl font-semibold rounded-tl-xl transition-colors min-w-56 min-h-16 p-4 hover:scale-110"
             type="button"
             aria-label="goback-home"
           >
-            돌아가기
+            나의 플레이 결과
           </button>
         </div>
       </div>

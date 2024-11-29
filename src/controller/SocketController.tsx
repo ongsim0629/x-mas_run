@@ -1,8 +1,12 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef } from 'react';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
-import { KillLogInfo, Position } from '../types/player';
-import { gameTimeAtom, killLogsAtom } from '../atoms/GameAtoms';
+import { KillComboLogsInfo, KillLogInfo, Position } from '../types/player';
+import {
+  gameTimeAtom,
+  KillComboLogsAtom,
+  killLogsAtom,
+} from '../atoms/GameAtoms';
 import useSocket from '../hooks/useSocket';
 import useKeyControl from '../hooks/useKeyControl'; // 새로 만든 훅 import
 
@@ -14,6 +18,7 @@ const SocketController = () => {
   const setTimer = useSetAtom(gameTimeAtom);
   const isInitialized = useRef(false);
   const [, setKillLogs] = useAtom(killLogsAtom);
+  const [, setComboKillLogs] = useAtom(KillComboLogsAtom);
 
   const getControls = useKeyControl();
 
@@ -128,10 +133,21 @@ const SocketController = () => {
       },
     );
 
+    const unsubscribeKillComboLog = socket.onComboKillLogUpdate(
+      (comboLogs: KillComboLogsInfo) => {
+        setComboKillLogs((prev) => [...prev, comboLogs]);
+
+        setTimeout(() => {
+          setComboKillLogs((prev) => prev.slice(1));
+        }, 5000);
+      },
+    );
+
     return () => {
       unsubscribeKillLog();
+      unsubscribeKillComboLog();
     };
-  }, [socket, player.id, setKillLogs]);
+  }, [socket, player.id, setKillLogs, setComboKillLogs]);
 
   return null;
 };

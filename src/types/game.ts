@@ -10,6 +10,7 @@ export enum GameScreen {
   MATCHING = 'matching',
   GAME = 'game',
   GAME_OVER = 'gameover',
+  GAME_LOGS = 'gamelogs',
 }
 
 export interface RoomInfo {

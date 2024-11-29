@@ -1,6 +1,10 @@
 import { io, Socket } from 'socket.io-client';
 import { GameData, RoomInfo, WinnerData } from '../types/game';
-import { KillLogInfo, PlayerMovement } from '../types/player';
+import {
+  KillComboLogsInfo,
+  KillLogInfo,
+  PlayerMovement,
+} from '../types/player';
 
 export class SocketService {
   private socket: Socket;
@@ -87,6 +91,11 @@ export class SocketService {
   onKillLogUpdate(handler: (killData: KillLogInfo) => void) {
     this.socket.on('game.log.steal', handler);
     return () => this.socket.off('game.log.steal');
+  }
+
+  onComboKillLogUpdate(handler: (killData: KillComboLogsInfo) => void) {
+    this.socket.on('game.log.steal-combo', handler);
+    return () => this.socket.off('game.log.steal-combo');
   }
 
   // Connection 관련
