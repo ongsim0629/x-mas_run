@@ -24,6 +24,7 @@ const usePlayersInterpolation = (props: InterpolationProps) => {
     );
 
     if (distanceToTarget > import.meta.env.VITE_DISTANCE_THRESHOLD) {
+      console.log(props.position);
       props.currentPosition.current = { ...props.position };
       props.currentVelocity.current = { ...props.velocity };
       props.rb.current.setTranslation(props.position, true);

@@ -18,6 +18,9 @@ export default function Scene() {
       <Physics>
         <Map scale={0.1} position={[0, 0, 0]} model={`/maps/map.glb`} />
         {players.map((player) => {
+          if (player.isSkillActive) {
+            // console.log(players);
+          }
           if (player.charType === 1)
             return (
               <RabbitController

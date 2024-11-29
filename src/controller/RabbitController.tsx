@@ -47,7 +47,7 @@ const RabbitController = ({
   const [animation, setAnimation] = useState<RabbitActionName>(
     'CharacterArmature|Idle',
   );
-
+  
   const {
     rb,
     container,
