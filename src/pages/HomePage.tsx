@@ -27,7 +27,7 @@ const HomePage = () => {
   };
 
   const prevCharacter = () => {
-    setCurrentCharIndex((prev) => (prev - 1 + 2) % 3);
+    setCurrentCharIndex((prev) => (prev - 1 + 3) % 3);
   };
 
   return (
