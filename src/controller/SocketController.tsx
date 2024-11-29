@@ -67,9 +67,11 @@ const SocketController = () => {
 
     const controls = getControls();
     const wantsToSteal = controls.catch;
+    const wantsToUseSkill = controls.skill;
     const shouldUpdatePosition =
       hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
-      wantsToSteal;
+      wantsToSteal ||
+      wantsToUseSkill;
 
     if (shouldUpdatePosition) {
       if (wantsToSteal && !stealCooldown.current) {
@@ -85,6 +87,13 @@ const SocketController = () => {
           () => (stealCooldown.current = false),
           1000,
         );
+      } else if (wantsToUseSkill) {
+        // 스킬 사용 요청만 전송 (쿨타임은 서버에서 관리)
+        socket.updateMovement({
+          character: currentPlayer,
+          steal: false,
+          skill: true,
+        });
       } else {
         socket.updateMovement({
           character: currentPlayer,

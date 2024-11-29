@@ -1,5 +1,7 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
-import { useState } from 'react';
+import * as THREE from 'three';
+import { useState, useCallback, useMemo } from 'react';
+import { AnimatedSanta, SantaActionName } from '../models/AnimatedSanta';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
@@ -16,14 +18,14 @@ import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
 import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
-import { AnimatedGhost, GhostActionName } from '../models/AnimatedGhost';
+import { Model as Sleigh } from '../models/Sleigh';
 
-interface GhostControllerProps {
+interface SantaControllerProps {
   player: Character;
   isLocalPlayer?: boolean;
 }
 
-const GhostController = ({
+const SantaController = ({
   player: {
     id,
     giftCnt,
@@ -41,10 +43,12 @@ const GhostController = ({
     currentSkillCooldown,
   },
   isLocalPlayer,
-}: GhostControllerProps): JSX.Element => {
-  const [animation, setAnimation] = useState<GhostActionName>(
-    'CharacterArmature|Flying_Idle',
+}: SantaControllerProps): JSX.Element => {
+  const [animation, setAnimation] = useState<SantaActionName>(
+    'Armature|happy Idle',
   );
+
+  const [isSleighActive, setIsSleighActive] = useState(false);
 
   const {
     rb,
@@ -54,6 +58,27 @@ const GhostController = ({
     currentVelocity,
     lastServerPosition,
   } = useCharacterRefs(position, velocity);
+
+  // 썰매 위치 계산
+  const getSleighPosition = useCallback((): [number, number, number] => {
+    if (!rb.current || !container.current) return [0, 0, 0];
+
+    const playerPosition = rb.current.translation();
+    if (!playerPosition) return [0, 0, 0];
+
+    return [
+      playerPosition.x,
+      playerPosition.y - 1, // 캐릭터보다 약간 아래에 위치
+      playerPosition.z,
+    ];
+  }, [rb, container]);
+
+  const sleighPosition = useMemo(() => {
+    if (!isSkillActive) return [0, 0, 0];
+    return getSleighPosition();
+  }, [isSkillActive, getSleighPosition]);
+
+  const getControls = useKeyControl();
 
   const {
     mouseControlRef,
@@ -81,10 +106,8 @@ const GhostController = ({
     isCurrentlyStolen,
   } = useAnimationRefs();
 
-  const getControls = useKeyControl();
-
   const { updateMovement } = useCharacterControl({
-    charType: 3,
+    charType: 2,
     rotationTarget,
     mouseControlRef,
     characterRotationTarget,
@@ -104,6 +127,8 @@ const GhostController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
+    // 썰매 탑승 시 이동속도 증가
+    speedMultiplier: isSkillActive ? 20 / import.meta.env.VITE_INGAME_SPEED : 1,
   });
 
   const { updateAnimation } = useCharacterAnimation({
@@ -165,35 +190,40 @@ const GhostController = ({
   });
 
   return (
-    <RigidBody colliders={false} lockRotations ref={rb}>
-      {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
-      <group ref={container}>
-        {isLocalPlayer && (
-          <>
-            <group ref={cameraTarget} position-z={6} />
-            <group ref={cameraPosition} position-y={10} position-z={-15} />
-          </>
-        )}
-        <group ref={character}>
-          <AnimatedGhost
-            nickName={nickName}
-            animation={animation}
-            charColor={charColor}
-            isTransparent={isSkillActive}
-          />
-          {Array.from({ length: giftCnt }).map((_, index) => (
-            <Present
-              index={index}
-              key={id + index}
-              isTransparent={isSkillActive}
+    <>
+      <RigidBody colliders={false} lockRotations ref={rb}>
+        {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
+        <group ref={container}>
+          {isLocalPlayer && (
+            <>
+              <group ref={cameraTarget} position-z={6} />
+              <group ref={cameraPosition} position-y={10} position-z={-15} />
+            </>
+          )}
+          <group ref={character}>
+            <AnimatedSanta
+              nickName={nickName}
+              animation={animation}
+              charColor={charColor}
             />
-          ))}
+            {Array.from({ length: giftCnt }).map((_, index) => (
+              <Present index={index} key={id + index} />
+            ))}
+          </group>
         </group>
-      </group>
-      <ProtectEffect duration={protectMotion} radius={2.2} />
-      <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
-    </RigidBody>
+        <ProtectEffect duration={protectMotion} radius={2.2} />
+        <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
+      </RigidBody>
+      {isSkillActive && (
+        <RigidBody type="fixed" position={sleighPosition}>
+          <Sleigh
+            scale={[2, 2, 2]}
+            rotation-y={container.current?.rotation.y ?? 0}
+          />
+        </RigidBody>
+      )}
+    </>
   );
 };
 
-export default GhostController;
+export default SantaController;

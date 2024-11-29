@@ -3,7 +3,7 @@ import { Position } from '../../types/player';
 import { useEffect, useRef } from 'react';
 import { Group } from 'three';
 
-const useRabbitRefs = (position: Position, velocity: Position) => {
+const useCharacterRefs = (position: Position, velocity: Position) => {
   const rb = useRef<RapierRigidBody>(null);
   const container = useRef<Group>(null);
   const character = useRef<Group>(null);
@@ -31,4 +31,4 @@ const useRabbitRefs = (position: Position, velocity: Position) => {
     lastServerPosition,
   };
 };
-export default useRabbitRefs;
+export default useCharacterRefs;

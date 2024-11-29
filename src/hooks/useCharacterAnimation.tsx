@@ -5,12 +5,14 @@ import {
   useCallback,
   useEffect,
 } from 'react';
-import { RabbitActionName } from '../models/AnimatedRabbit';
 import { Position } from '../types/player';
 import { useAtom } from 'jotai';
 import { playAudioAtom } from '../atoms/GameAtoms';
 
+type CharType = 1 | 2 | 3;
+
 type AnimationConfig = {
+  charType: CharType;
   stolenMotion: boolean;
   isCurrentlyStolen: MutableRefObject<boolean>;
   stolenAnimationTimer: MutableRefObject<NodeJS.Timeout | null>;
@@ -21,7 +23,41 @@ type AnimationConfig = {
   setAnimation: Dispatch<SetStateAction<any>>;
 };
 
+const animationTable = {
+  1: {
+    idle: 'CharacterArmature|Idle',
+    idleWithGift: 'CharacterArmature|Idle_Gun',
+    run: 'CharacterArmature|Run',
+    runWithGift: 'CharacterArmature|Run_Gun',
+    walkWithGift: 'CharacterArmature|Walk_Gun',
+    jump: 'CharacterArmature|Jump_Idle',
+    punch: 'CharacterArmature|Punch',
+    duck: 'CharacterArmature|Duck',
+  },
+  2: {
+    idle: 'Armature|happy Idle',
+    idleWithGift: 'Armature|Excited',
+    run: 'Armature|Run',
+    runWithGift: 'Armature|Run.001',
+    walkWithGift: 'Armature|Excited',
+    jump: 'Armature|Jump',
+    punch: 'Armature|Excited',
+    duck: 'Armature|Armature.001|mixamo.com|Layer0',
+  },
+  3: {
+    idle: 'CharacterArmature|Flying_Idle',
+    idleWithGift: 'CharacterArmature|Flying_Idle',
+    run: 'CharacterArmature|Fast_Flying',
+    runWithGift: 'CharacterArmature|Fast_Flying',
+    walkWithGift: 'CharacterArmature|Flying_Idle',
+    jump: 'CharacterArmature|Flying_Idle',
+    punch: 'CharacterArmature|Punch',
+    duck: 'CharacterArmature|HitReact',
+  },
+} as const;
+
 const useCharacterAnimation = ({
+  charType,
   stolenMotion,
   isCurrentlyStolen,
   stolenAnimationTimer,
@@ -35,13 +71,13 @@ const useCharacterAnimation = ({
 
   const playJumpAnimation = useCallback(() => {
     playAudio('jump');
-    setAnimation('CharacterArmature|Jump_Idle');
+    setAnimation(animationTable[charType].jump);
   }, []);
 
   const playPunchAnimation = useCallback(() => {
     playAudio('punch');
     isPunching.current = true;
-    setAnimation('CharacterArmature|Punch');
+    setAnimation(animationTable[charType].punch);
     punchAnimationTimer.current = setTimeout(
       () => (isPunching.current = false),
       500,
@@ -52,7 +88,7 @@ const useCharacterAnimation = ({
     (vel: Position) => {
       if (stolenMotion && !isCurrentlyStolen.current) {
         isCurrentlyStolen.current = true;
-        setAnimation('CharacterArmature|Duck');
+        setAnimation(animationTable[charType].duck);
         playAudio('stolen');
         if (stolenAnimationTimer.current) {
           clearTimeout(stolenAnimationTimer.current);
@@ -66,13 +102,13 @@ const useCharacterAnimation = ({
       if (isCurrentlyStolen.current) return;
 
       if (stealMotion) {
-        setAnimation('CharacterArmature|Punch');
+        setAnimation(animationTable[charType].punch);
         return;
       }
 
       // 점프/공중 상태 체크
       if (vel.y > 0.1) {
-        setAnimation('CharacterArmature|Jump_Idle');
+        setAnimation(animationTable[charType].jump);
         return;
       }
 
@@ -83,23 +119,27 @@ const useCharacterAnimation = ({
 
       if (!isMoving) {
         setAnimation(
-          hasGift ? 'CharacterArmature|Idle_Gun' : 'CharacterArmature|Idle',
+          hasGift
+            ? animationTable[charType].idleWithGift
+            : animationTable[charType].idle,
         );
         return;
       }
 
       // 선물 3개 이상일 때는 걷기 애니메이션
       if (hasLotsOfGifts) {
-        setAnimation('CharacterArmature|Walk_Gun');
+        setAnimation(animationTable[charType].walkWithGift);
         return;
       }
 
       // 기본 달리기 애니메이션
       setAnimation(
-        hasGift ? 'CharacterArmature|Run_Gun' : 'CharacterArmature|Run',
+        hasGift
+          ? animationTable[charType].runWithGift
+          : animationTable[charType].run,
       );
     },
-    [stolenMotion, stealMotion, giftCnt],
+    [charType, stolenMotion, stealMotion, giftCnt],
   );
 
   useEffect(() => {

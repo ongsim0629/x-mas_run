@@ -1,14 +1,14 @@
 import { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { RapierRigidBody } from '@react-three/rapier';
 import { degToRad, MathUtils } from 'three/src/math/MathUtils.js';
-import { RabbitActionName } from '../models/AnimatedRabbit';
 import { Group } from 'three';
 import { Position } from '../types/player';
 import { lerpAngle } from '../utils/movementCalc';
 import useCharacterAnimation from './useCharacterAnimation';
-import { GhostActionName } from '../models/AnimatedGhost';
 
+type CharType = 1 | 2 | 3;
 type CharacterControlConfig = {
+  charType: CharType;
   rotationTarget: MutableRefObject<number>;
   mouseControlRef: MutableRefObject<any>;
   characterRotationTarget: MutableRefObject<number>;
@@ -19,6 +19,7 @@ type CharacterControlConfig = {
   setAnimation: Dispatch<SetStateAction<any>>;
   giftCnt: number;
   stolenMotion: boolean;
+  speedMultiplier?: number;
   stealMotion: boolean;
   character: MutableRefObject<Group | null>;
   container: MutableRefObject<Group | null>;
@@ -38,6 +39,7 @@ type Controls = {
   catch: boolean;
 };
 const useCharacterControl = ({
+  charType,
   rotationTarget,
   mouseControlRef,
   characterRotationTarget,
@@ -53,7 +55,7 @@ const useCharacterControl = ({
   currentPosition,
   character,
   container,
-  eventBlock,
+  // eventBlock,
   // isSkillActive,
   // totalSkillCooldown,
   // currentSkillCooldown,
@@ -66,6 +68,7 @@ const useCharacterControl = ({
 
   const { updateAnimation, playJumpAnimation, playPunchAnimation } =
     useCharacterAnimation({
+      charType,
       stolenMotion,
       isCurrentlyStolen,
       stolenAnimationTimer,
@@ -84,7 +87,8 @@ const useCharacterControl = ({
     const vel = rb.linvel();
     const pos = rb.translation();
 
-    if (eventBlock !== 0) return STATIC_STATE(vel);
+    // 이거 하니까 플레이어 맞는 모션 안 보여서 일단 주석 처리 해뒀슴메도
+    // if (eventBlock !== 0) return STATIC_STATE(vel);
 
     // 서버 위치 보정
     const distanceToServer = Math.sqrt(

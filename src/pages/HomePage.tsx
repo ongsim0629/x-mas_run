@@ -4,8 +4,9 @@ import { GameScreen } from '../types/game';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import { Canvas } from '@react-three/fiber';
 import { AnimatedRabbit } from '../models/AnimatedRabbit';
-import { OrbitControls } from '@react-three/drei';
 import { AnimatedGhost } from '../models/AnimatedGhost';
+import { AnimatedSanta } from '../models/AnimatedSanta';
+import { OrbitControls } from '@react-three/drei';
 import { useState } from 'react';
 import useSocket from '../hooks/useSocket';
 
@@ -69,13 +70,12 @@ const HomePage = () => {
                   nickName=" "
                 />
               )}
-              {/* 여기에 산타 넣으면 될거같아유 */}
               {currentCharIndex === 1 && (
-                <AnimatedGhost
-                  scale={0.8}
-                  animation="CharacterArmature|Fast_Flying"
+                <AnimatedSanta
+                  scale={0.7}
+                  animation="Armature|happy Idle"
                   position={[0, -2, 0]}
-                  charColor="gray"
+                  charColor=" "
                   nickName=" "
                 />
               )}
@@ -118,7 +118,7 @@ const HomePage = () => {
         </div>
       </div>
       <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-opacity-50 text-sm">
-        캐릭터를 선택해주세요 🐰🎅🏻🧌
+        캐릭터를 선택해주세요 🐰🎅🏻👻
       </div>
     </div>
   );
