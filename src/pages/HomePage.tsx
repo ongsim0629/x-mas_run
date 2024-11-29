@@ -4,7 +4,7 @@ import { GameScreen } from '../types/game';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import { Canvas } from '@react-three/fiber';
 import { AnimatedRabbit } from '../models/AnimatedRabbit';
-import { AnimatedGhost } from '../models/AnimatedGhost';
+import { AnimatedGhost } from '../hooks/AnimatedGhost';
 import { AnimatedSanta } from '../models/AnimatedSanta';
 import { OrbitControls } from '@react-three/drei';
 import { useState } from 'react';
@@ -37,14 +37,14 @@ const HomePage = () => {
         alt="background"
         className="absolute w-full h-full object-cover blur-sm"
       />
-      <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-around">
+      <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-between">
         <div className="flex items-center gap-2 m-4">
           <span className="flex flex-col justify-center items-center w-64 h-20 rounded-xl text-white border-6-pinkish-ivory border-4 bg-4-purple-light">
             <p className="text-lg font-semibold">{nickname}</p>
             <small>메리 크리스마스🎅🏻</small>
           </span>
         </div>
-        <div className="relative flex items-center justify-center w-full">
+        <div className="relative flex items-center justify-center w-full h-full">
           <button
             onClick={prevCharacter}
             className="absolute left-4 z-20 p-4 rounded-full hover:scale-110 transition-all outline-none bg-5-purple-deep"
@@ -57,44 +57,42 @@ const HomePage = () => {
             />
           </button>
 
-          <div className="flex w-full h-[50rem] -mt-32">
-            <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
-              <ambientLight intensity={0.5} />
-              <directionalLight position={[0, 5, 6]} intensity={1} />
-              {currentCharIndex === 0 && (
-                <AnimatedRabbit
-                  scale={0.8}
-                  animation="CharacterArmature|Yes"
-                  position={[0, -2, 0]}
-                  charColor="pink"
-                  nickName=" "
-                />
-              )}
-              {currentCharIndex === 1 && (
-                <AnimatedSanta
-                  scale={0.7}
-                  animation="Armature|happy Idle"
-                  position={[0, -2, 0]}
-                  charColor=" "
-                  nickName=" "
-                />
-              )}
-              {currentCharIndex === 2 && (
-                <AnimatedGhost
-                  scale={0.8}
-                  animation="CharacterArmature|Fast_Flying"
-                  position={[0, -2, 0]}
-                  charColor="gray"
-                  nickName=" "
-                />
-              )}
-              <OrbitControls
-                enableZoom={false}
-                maxPolarAngle={Math.PI / 2}
-                minPolarAngle={Math.PI / 3}
+          <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[0, 5, 6]} intensity={1} />
+            {currentCharIndex === 0 && (
+              <AnimatedRabbit
+                scale={0.8}
+                animation="CharacterArmature|Yes"
+                position={[0, -2, 0]}
+                charColor="pink"
+                nickName=" "
               />
-            </Canvas>
-          </div>
+            )}
+            {currentCharIndex === 1 && (
+              <AnimatedSanta
+                scale={0.7}
+                animation="Armature|happy Idle"
+                position={[0, -2, 0]}
+                charColor=" "
+                nickName=" "
+              />
+            )}
+            {currentCharIndex === 2 && (
+              <AnimatedGhost
+                scale={0.8}
+                animation="CharacterArmature|Fast_Flying"
+                position={[0, -2, 0]}
+                charColor="gray"
+                nickName=" "
+              />
+            )}
+            <OrbitControls
+              enableZoom={false}
+              maxPolarAngle={Math.PI / 2}
+              minPolarAngle={Math.PI / 3}
+            />
+          </Canvas>
 
           <button
             onClick={nextCharacter}

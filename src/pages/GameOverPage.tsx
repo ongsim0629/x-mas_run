@@ -39,7 +39,7 @@ const GameOverPage = () => {
   };
 
   const handlePlayAgain = () => {
-    setGameScreen(GameScreen.MATCHING);
+    setGameScreen(GameScreen.HOME);
   };
 
   return (
