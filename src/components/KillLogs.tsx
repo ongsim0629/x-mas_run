@@ -16,10 +16,10 @@ const KillLogs = () => {
           return (
             <div
               key={`combo-log-${index}`}
-              className="text-5xl animate-slideIn font-extrabold"
+              className="flex justify-center w-screen gap-2 text-5xl animate-slideIn font-extrabold"
             >
               <span
-                className="text-1-xmas-green"
+                className="flex text-1-xmas-green"
                 style={{
                   textShadow: `
       2px 2px 0 white, 
@@ -29,10 +29,10 @@ const KillLogs = () => {
     `,
                 }}
               >
-                {nickName}의{' '}
+                {nickName}의
               </span>
               <span
-                className="text-2-xmas-red"
+                className="flex text-2-xmas-red"
                 style={{
                   textShadow: `
       2px 2px 0 white, 

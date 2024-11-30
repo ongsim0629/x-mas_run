@@ -35,3 +35,5 @@ export const playerInfoAtom = atomWithStorage<PlayerInfo>(
   { id: null, nickname: '' },
   createJSONStorage(() => sessionStorage),
 );
+
+export const playerRotationAtom = atom(0);

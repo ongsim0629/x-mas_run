@@ -6,7 +6,11 @@ import { Position } from '../types/player';
 import { lerpAngle } from '../utils/movementCalc';
 import useCharacterAnimation from './useCharacterAnimation';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
+import {
+  playerInfoAtom,
+  playerRotationAtom,
+  playersAtom,
+} from '../atoms/PlayerAtoms';
 import useKeyControl from './useKeyControl';
 
 type CharType = 1 | 2 | 3;
@@ -69,6 +73,7 @@ const useCharacterControl = ({
 
   const setPlayers = useSetAtom(playersAtom);
   const { id } = useAtomValue(playerInfoAtom);
+  const setPlayerRoation = useSetAtom(playerRotationAtom);
   const getControls = useKeyControl();
   const controls = getControls();
 
@@ -183,6 +188,7 @@ const useCharacterControl = ({
         characterRotationTarget.current,
         0.1,
       );
+      setPlayerRoation(rotationTarget.current + character.current.rotation.y);
     }
 
     if (container.current) {
