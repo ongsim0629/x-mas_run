@@ -57,7 +57,7 @@ const HomePage = () => {
             />
           </button>
 
-          <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
+          <Canvas camera={{ position: [0, 1, 5], fov: 45 }} className="-mt-10">
             <ambientLight intensity={0.5} />
             <directionalLight position={[0, 5, 6]} intensity={1} />
             {currentCharIndex === 0 && (

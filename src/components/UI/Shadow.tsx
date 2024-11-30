@@ -4,8 +4,9 @@ import { Group, Vector3 } from 'three';
 
 type CircleShadowProps = {
   target: RefObject<Group>;
+  isSkillActive?: boolean;
 };
-const CircleShadow = ({ target }: CircleShadowProps) => {
+const CircleShadow = ({ target, isSkillActive }: CircleShadowProps) => {
   const [shadowSize, setShadowSize] = useState(1);
   const [shadowPosition, setShadowPosition] = useState<
     [number, number, number]
@@ -13,10 +14,14 @@ const CircleShadow = ({ target }: CircleShadowProps) => {
   const vector = useMemo(() => new Vector3(), []);
   useFrame(() => {
     if (target.current) {
-      const pos = target.current.getWorldPosition(vector);
-      const size = Math.max(0.2, 0.8 - pos.y * 0.1);
-      setShadowSize(size);
-      setShadowPosition([pos.x, 0.01, pos.z]);
+      if (!isSkillActive) {
+        const pos = target.current.getWorldPosition(vector);
+        const size = Math.max(0.2, 0.8 - pos.y * 0.1);
+        setShadowSize(size);
+        setShadowPosition([pos.x, 0.01, pos.z]);
+      } else {
+        setShadowSize(0);
+      }
     }
   });
 

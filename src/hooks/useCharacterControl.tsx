@@ -84,7 +84,18 @@ const useCharacterControl = ({
     const isOnGround = Math.abs(rb.linvel().y) < 0.1;
 
     if (isSkillActive) {
-      rb.setTranslation(position, true);
+      console.log('지금 궁 발생중', isSkillActive);
+      switch (charType) {
+        case 1:
+          rb.setTranslation(position, true);
+          break;
+        case 2:
+          break;
+        case 3:
+          break;
+        default:
+          break;
+      }
     }
 
     // 빼앗기는 상태 처리

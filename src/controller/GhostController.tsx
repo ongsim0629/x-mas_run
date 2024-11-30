@@ -185,7 +185,7 @@ const GhostController = ({
         <ProtectEffect duration={protectMotion} radius={2.2} />
         <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
       </RigidBody>
-      <CircleShadow target={character} />
+      <CircleShadow target={character} isSkillActive={isSkillActive} />
     </>
   );
 };
