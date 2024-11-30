@@ -6,7 +6,11 @@ import { Position } from '../types/player';
 import { lerpAngle } from '../utils/movementCalc';
 import useCharacterAnimation from './useCharacterAnimation';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
+import {
+  playerInfoAtom,
+  playerRotationAtom,
+  playersAtom,
+} from '../atoms/PlayerAtoms';
 import useKeyControl from './useKeyControl';
 
 type CharType = 1 | 2 | 3;
@@ -51,8 +55,8 @@ const useCharacterControl = ({
   container,
   eventBlock,
   isSkillActive,
-  totalSkillCooldown,
-  currentSkillCooldown,
+  // totalSkillCooldown,
+  // currentSkillCooldown,
   speedMultiplier = 1,
 }: CharacterControlConfig) => {
   const { updateAnimation, playJumpAnimation, playPunchAnimation } =
@@ -70,6 +74,7 @@ const useCharacterControl = ({
 
   const setPlayers = useSetAtom(playersAtom);
   const { id } = useAtomValue(playerInfoAtom);
+  const setPlayerRoation = useSetAtom(playerRotationAtom);
   const getControls = useKeyControl();
   const controls = getControls();
 
@@ -79,8 +84,18 @@ const useCharacterControl = ({
     const isOnGround = Math.abs(rb.linvel().y) < 0.1;
 
     if (isSkillActive) {
-      rb.setTranslation(position, true);
-      return;
+      console.log('지금 궁 발생중', isSkillActive);
+      switch (charType) {
+        case 1:
+          rb.setTranslation(position, true);
+          break;
+        case 2:
+          break;
+        case 3:
+          break;
+        default:
+          break;
+      }
     }
 
     // 빼앗기는 상태 처리
@@ -186,6 +201,7 @@ const useCharacterControl = ({
         characterRotationTarget.current,
         0.1,
       );
+      setPlayerRoation(rotationTarget.current + character.current.rotation.y);
     }
 
     if (container.current) {

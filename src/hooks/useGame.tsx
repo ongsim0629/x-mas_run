@@ -13,7 +13,20 @@ const useGame = () => {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['playerInfo'] }),
   });
-  return { registerPlayerQuery };
+
+  const { mutateAsync: winnerQuery } = useMutation({
+    mutationFn: (roomId: string) => game.getTotalGameResult(roomId),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['winnerInfo'] }),
+  });
+
+  const { mutateAsync: myGameResultQuery } = useMutation({
+    mutationFn: ({ roomId, userId }: { roomId: string; userId: string }) =>
+      game.getMyGameResult(roomId, userId),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['myGameInfo'] }),
+  });
+  return { registerPlayerQuery, winnerQuery, myGameResultQuery };
 };
 
 export default useGame;

@@ -36,7 +36,6 @@ const HomePage = () => {
         src={import.meta.env.VITE_HOME_IMAGE_URL}
         alt="background"
         className="absolute w-full h-full object-cover blur-sm"
-        fetchPriority="high"
       />
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-between">
         <div className="flex items-center gap-2 m-4">
@@ -58,7 +57,7 @@ const HomePage = () => {
             />
           </button>
 
-          <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
+          <Canvas camera={{ position: [0, 1, 5], fov: 45 }} className="-mt-10">
             <ambientLight intensity={0.5} />
             <directionalLight position={[0, 5, 6]} intensity={1} />
             {currentCharIndex === 0 && (

@@ -2,7 +2,7 @@ import { atom } from 'jotai';
 import { AudioInstance, BGMAudioType, GameScreen } from '../types/game';
 import { SocketService } from '../apis/SocketService';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
-import { KillLogInfo } from '../types/player';
+import { KillComboLogsInfo, KillLogInfo } from '../types/player';
 
 export const gameScreenAtom = atomWithStorage<GameScreen>(
   'gameScreen',
@@ -10,7 +10,11 @@ export const gameScreenAtom = atomWithStorage<GameScreen>(
   createJSONStorage(() => sessionStorage),
 );
 
-export const winnerAtom = atom<string>('');
+export const roomIdAtom = atomWithStorage<string>(
+  'roomId',
+  '',
+  createJSONStorage(() => sessionStorage),
+);
 
 // Socket
 export const socketServiceAtom = atom<SocketService | null>(null);
@@ -85,3 +89,4 @@ export const playAudioAtom = atom(
 );
 
 export const killLogsAtom = atom<KillLogInfo[]>([]);
+export const KillComboLogsAtom = atom<KillComboLogsInfo[]>([]);

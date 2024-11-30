@@ -10,6 +10,7 @@ export enum GameScreen {
   MATCHING = 'matching',
   GAME = 'game',
   GAME_OVER = 'gameover',
+  GAME_LOGS = 'gamelogs',
 }
 
 export interface RoomInfo {
@@ -24,8 +25,14 @@ export interface GameData {
   characters: Character[];
 }
 
+export type Winner = {
+  id: string;
+  nickName: string;
+  charColor: string;
+  charType: number;
+};
 export interface WinnerData {
-  winner: { nickName: string };
+  character: Winner;
 }
 
 export type BGMAudioType = 'bgm' | 'lobby' | 'gameover';

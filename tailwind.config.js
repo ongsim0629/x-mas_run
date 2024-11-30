@@ -53,12 +53,21 @@ export default {
             transform: 'translate(-50%) scale(1.5)',
           },
         },
+        fall: {
+          '0%': {
+            transform: 'translateY(-10vh) translateX(-10px)',
+          },
+          '100%': {
+            transform: 'translateY(100vh) translateX(10px)',
+          },
+        },
       },
       animation: {
         twinkle: 'twinkle linear infinite',
         'shooting-star': 'shooting-star 2s linear forwards',
         'key-shine': 'key-shine 2s ease-in-out infinite',
         'timer-scale': 'timer-scale 1s ease-in-out infinite',
+        fall: 'fall linear infinite',
       },
     },
   },

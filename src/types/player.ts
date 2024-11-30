@@ -14,10 +14,6 @@ export interface Character {
   charColor: string;
   velocity: Position;
   giftCnt: number;
-  // steal: boolean;
-  // isBeingStolen: boolean;
-  // skill: boolean;
-  // protect: number;
   stealMotion: boolean;
   stolenMotion: boolean;
   protectMotion: number;
@@ -41,4 +37,42 @@ export interface PlayerInfo {
 export interface KillLogInfo {
   actor: { id: string; nickName: string };
   victim: { id: string; nickName: string };
+}
+
+type StealComboType = 'double' | 'triple';
+export interface KillComboLogsInfo {
+  actor: { id: string; nickName: string; combo: StealComboType };
+}
+
+export interface MyGameResult {
+  character: {
+    id: string;
+    nickName: string;
+    charType: number;
+    charColor: string;
+  };
+  badges: [
+    {
+      label: string;
+      img: string;
+    },
+  ];
+  summary: [
+    {
+      label: string;
+      value: number;
+    },
+    {
+      label: string;
+      value: number;
+    },
+    {
+      label: string;
+      value: number;
+    },
+    {
+      label: string;
+      value: number;
+    },
+  ];
 }
