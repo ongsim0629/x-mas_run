@@ -15,7 +15,7 @@ const MiniMap = () => {
   const scale = 0.005;
 
   return (
-    <div className="absolute bottom-4 right-4 bg-black/40 rounded-lg p-2">
+    <div className="absolute bottom-4 left-4 bg-black/40 rounded-lg p-2">
       <div className="relative w-[200px] h-[200px] border-2 border-white/30 rounded-lg overflow-hidden bg-black/20">
         {players
           .filter((player) => player.id === id || player.giftCnt > 0)
