@@ -18,6 +18,7 @@ import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
 import { Model as Portal } from '../models/Portal';
 import * as THREE from 'three';
+import CircleShadow from '../components/UI/Shadow';
 
 interface RabbitControllerProps {
   player: Character;
@@ -202,6 +203,7 @@ const RabbitController = ({
         <ProtectEffect duration={protectMotion} radius={2.2} />
         <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
       </RigidBody>
+      <CircleShadow target={character} />
       {isSkillActive && <Portal position={portalPosition} />}
     </>
   );

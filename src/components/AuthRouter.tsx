@@ -12,6 +12,7 @@ import GameOverPage from '../pages/GameOverPage';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import KillLogs from './KillLogs';
 import GameLogsPage from '../pages/GameLogsPage';
+import MiniMap from './MiniMap';
 
 const AuthRouter = () => {
   const [gameScreen] = useAtom(gameScreenAtom);
@@ -39,6 +40,7 @@ const AuthRouter = () => {
             <color attach="background" args={['#0D1B2A']} />
             <Scene />
           </Canvas>
+          <MiniMap />
           <KillLogs />
         </div>
       )}
