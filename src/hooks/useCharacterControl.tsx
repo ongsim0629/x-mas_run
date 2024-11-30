@@ -57,6 +57,7 @@ const useCharacterControl = ({
   isSkillActive,
   // totalSkillCooldown,
   // currentSkillCooldown,
+  speedMultiplier = 1,
 }: CharacterControlConfig) => {
   const { updateAnimation, playJumpAnimation, playPunchAnimation } =
     useCharacterAnimation({
@@ -171,7 +172,9 @@ const useCharacterControl = ({
 
       // 속도 계산 (선물 개수에 따른 감속 포함)
       const speedReduction = Math.max(0.5, 1 - giftCnt * 0.1);
-      const currentSpeed = import.meta.env.VITE_INGAME_SPEED * speedReduction;
+      const baseSpeed = import.meta.env.VITE_INGAME_SPEED;
+      const currentSpeed = baseSpeed * speedReduction * speedMultiplier;
+
       vel.x =
         Math.sin(rotationTarget.current + characterRotationTarget.current) *
         currentSpeed;

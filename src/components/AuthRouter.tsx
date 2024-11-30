@@ -13,6 +13,7 @@ import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import KillLogs from './KillLogs';
 import GameLogsPage from '../pages/GameLogsPage';
 import MiniMap from './MiniMap';
+import SkillCooldownIndicator from './UI/SkillCooldownIndicator';
 
 const AuthRouter = () => {
   const [gameScreen] = useAtom(gameScreenAtom);
@@ -42,6 +43,7 @@ const AuthRouter = () => {
           </Canvas>
           <MiniMap />
           <KillLogs />
+          <SkillCooldownIndicator />
         </div>
       )}
       {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
