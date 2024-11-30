@@ -55,8 +55,8 @@ const useCharacterControl = ({
   container,
   eventBlock,
   isSkillActive,
-  totalSkillCooldown,
-  currentSkillCooldown,
+  // totalSkillCooldown,
+  // currentSkillCooldown,
 }: CharacterControlConfig) => {
   const { updateAnimation, playJumpAnimation, playPunchAnimation } =
     useCharacterAnimation({

@@ -4,7 +4,6 @@ import { AnimatedSanta, SantaActionName } from '../models/AnimatedSanta';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
-import useKeyControl from '../hooks/useKeyControl';
 import useCharacterControl from '../hooks/useCharacterControl';
 import useCharacterAnimation from '../hooks/useCharacterAnimation';
 import useCamera from '../hooks/useCamera';
@@ -18,6 +17,7 @@ import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
 import { Model as Sleigh } from '../models/Sleigh';
+import CircleShadow from '../components/UI/Shadow';
 
 interface SantaControllerProps {
   player: Character;
@@ -47,8 +47,6 @@ const SantaController = ({
     'Armature|happy Idle',
   );
 
-  const [isSleighActive, setIsSleighActive] = useState(false);
-
   const { rb, container, character, currentPosition, currentVelocity } =
     useCharacterRefs(position, velocity);
 
@@ -66,12 +64,10 @@ const SantaController = ({
     ];
   }, [rb, container]);
 
-  const sleighPosition = useMemo(() => {
+  const sleighPosition = useMemo((): [number, number, number] => {
     if (!isSkillActive) return [0, 0, 0];
     return getSleighPosition();
   }, [isSkillActive, getSleighPosition]);
-
-  const getControls = useKeyControl();
 
   const {
     mouseControlRef,
@@ -171,7 +167,6 @@ const SantaController = ({
   useGameLoop({
     isLocalPlayer,
     rb,
-    getControls,
     updateMovement,
     updatePlayerState,
     updateCamera,
@@ -205,6 +200,7 @@ const SantaController = ({
         <ProtectEffect duration={protectMotion} radius={2.2} />
         <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
       </RigidBody>
+      <CircleShadow target={character} />
       {isSkillActive && (
         <RigidBody type="fixed" position={sleighPosition}>
           <Sleigh

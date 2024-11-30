@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { GameData, RoomInfo, WinnerData } from '../types/game';
+import { GameData, RoomInfo } from '../types/game';
 import {
   KillComboLogsInfo,
   KillLogInfo,

@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
-import useKeyControl from '../hooks/useKeyControl';
 import useCharacterControl from '../hooks/useCharacterControl';
 import useCharacterAnimation from '../hooks/useCharacterAnimation';
 import useCamera from '../hooks/useCamera';
@@ -17,6 +16,7 @@ import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
 import { AnimatedGhost, GhostActionName } from '../hooks/AnimatedGhost';
+import CircleShadow from '../components/UI/Shadow';
 
 interface GhostControllerProps {
   player: Character;
@@ -74,8 +74,6 @@ const GhostController = ({
     stolenAnimationTimer,
     isCurrentlyStolen,
   } = useAnimationRefs();
-
-  const getControls = useKeyControl();
 
   const { updateMovement } = useCharacterControl({
     charType: 3,
@@ -147,7 +145,6 @@ const GhostController = ({
   useGameLoop({
     isLocalPlayer,
     rb,
-    getControls,
     updateMovement,
     updatePlayerState,
     updateCamera,
@@ -157,36 +154,39 @@ const GhostController = ({
   });
 
   return (
-    <RigidBody colliders={false} lockRotations ref={rb}>
-      {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
-      <group ref={container}>
-        {isLocalPlayer && (
-          <>
-            <group ref={cameraTarget} position-z={6} />
-            <group ref={cameraPosition} position-y={10} position-z={-15} />
-          </>
-        )}
-        <group ref={character}>
-          <AnimatedGhost
-            nickName={nickName}
-            animation={animation}
-            charColor={charColor}
-            isTransparent={isSkillActive}
-            isLocalPlayer={isLocalPlayer}
-          />
-          {Array.from({ length: giftCnt }).map((_, index) => (
-            <Present
-              index={index}
-              key={id + index}
+    <>
+      <RigidBody colliders={false} lockRotations ref={rb}>
+        {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
+        <group ref={container}>
+          {isLocalPlayer && (
+            <>
+              <group ref={cameraTarget} position-z={6} />
+              <group ref={cameraPosition} position-y={10} position-z={-15} />
+            </>
+          )}
+          <group ref={character}>
+            <AnimatedGhost
+              nickName={nickName}
+              animation={animation}
+              charColor={charColor}
               isTransparent={isSkillActive}
               isLocalPlayer={isLocalPlayer}
             />
-          ))}
+            {Array.from({ length: giftCnt }).map((_, index) => (
+              <Present
+                index={index}
+                key={id + index}
+                isTransparent={isSkillActive}
+                isLocalPlayer={isLocalPlayer}
+              />
+            ))}
+          </group>
         </group>
-      </group>
-      <ProtectEffect duration={protectMotion} radius={2.2} />
-      <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
-    </RigidBody>
+        <ProtectEffect duration={protectMotion} radius={2.2} />
+        <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
+      </RigidBody>
+      <CircleShadow target={character} />
+    </>
   );
 };
 

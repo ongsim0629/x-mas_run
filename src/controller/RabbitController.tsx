@@ -95,7 +95,7 @@ const RabbitController = ({
     ];
   }, [rb, container]);
 
-  const portalPosition = useMemo(() => {
+  const portalPosition = useMemo((): [number, number, number] => {
     if (!isSkillActive) return [0, 0, 0];
     return getPortalPosition();
   }, [isSkillActive, getPortalPosition]);
