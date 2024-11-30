@@ -85,7 +85,6 @@ const useCharacterControl = ({
 
     if (isSkillActive) {
       rb.setTranslation(position, true);
-      return;
     }
 
     // 빼앗기는 상태 처리
