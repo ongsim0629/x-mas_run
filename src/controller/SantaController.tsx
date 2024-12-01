@@ -1,7 +1,7 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { AnimatedSanta, SantaActionName } from '../models/AnimatedSanta';
-import { PointerLockControls, useGLTF } from '@react-three/drei';
+import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
 import useCharacterControl from '../hooks/useCharacterControl';
@@ -16,45 +16,13 @@ import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
 import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
-import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
+import { Model as Sleigh } from '../models/Sleigh'; // Sleigh 모델 import
 import CircleShadow from '../components/UI/Shadow';
 
 interface SantaControllerProps {
   player: Character;
   isLocalPlayer?: boolean;
 }
-
-const SleighModel = ({ rotation, scale, position }) => {
-  const { scene } = useGLTF('/models/Sleigh.glb');
-
-  useMemo(() => {
-    scene.traverse((child) => {
-      if (child.isMesh) {
-        if (child.name === 'sleigh_black_0') {
-          child.material = new THREE.MeshStandardMaterial({ color: 'black' });
-        } else if (child.name === 'sleigh_gold_0') {
-          child.material = new THREE.MeshStandardMaterial({ color: 'gold' });
-        } else if (child.name === 'sleigh_red_0') {
-          child.material = new THREE.MeshStandardMaterial({ color: 'red' });
-        } else {
-          child.material = new THREE.MeshStandardMaterial({ color: 'white' });
-        }
-      }
-    });
-  }, [scene]);
-
-  return (
-    <primitive
-      object={scene}
-      position={position}
-      rotation={rotation}
-      scale={scale}
-    />
-  );
-};
-
-useGLTF.preload('/models/Sleigh.glb');
 
 const SantaController = ({
   player: {
@@ -78,8 +46,6 @@ const SantaController = ({
   const [animation, setAnimation] = useState<SantaActionName>(
     'Armature|happy Idle',
   );
-
-  const [sleighPos, setSleighPos] = useState([0, 0, 0]);
 
   const { rb, container, character, currentPosition, currentVelocity } =
     useCharacterRefs(position, velocity);
@@ -172,21 +138,6 @@ const SantaController = ({
     cameraLookAt,
   });
 
-  useFrame(() => {
-    if (isSkillActive && container.current) {
-      // lerp를 사용해 부드럽게 이동
-      const targetX = position.x;
-      const targetY = position.y - 1;
-      const targetZ = position.z;
-
-      setSleighPos([
-        THREE.MathUtils.lerp(sleighPos[0], targetX, 0.5),
-        THREE.MathUtils.lerp(sleighPos[1], targetY, 0.5),
-        THREE.MathUtils.lerp(sleighPos[2], targetZ, 0.5),
-      ]);
-    }
-  });
-
   useMouseRotation({
     mouseControlRef,
     rotationTarget,
@@ -217,6 +168,17 @@ const SantaController = ({
             </>
           )}
           <group ref={character}>
+            {isSkillActive && (
+              <Sleigh
+                position={[0, -1.5, 0]}
+                rotation={[
+                  0,
+                  (container.current?.rotation.y ?? 0) - Math.PI, // π(180도) 빼기
+                  0,
+                ]}
+                scale={[2, 2, 2]}
+              />
+            )}
             <AnimatedSanta
               nickName={nickName}
               animation={animation}
@@ -231,13 +193,6 @@ const SantaController = ({
         <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
       </RigidBody>
       <CircleShadow target={character} />
-      {isSkillActive && (
-        <SleighModel
-          scale={[2, 2, 2]}
-          position={sleighPos}
-          rotation={container.current?.rotation.y ?? 0}
-        />
-      )}
     </>
   );
 };
