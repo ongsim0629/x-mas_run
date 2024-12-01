@@ -9,6 +9,7 @@ import { AnimatedSanta } from '../models/AnimatedSanta';
 import { OrbitControls } from '@react-three/drei';
 import { useState } from 'react';
 import useSocket from '../hooks/useSocket';
+import SkillBadge from '../components/UI/SkillBadge';
 
 const HomePage = () => {
   const { nickname } = useAtomValue(playerInfoAtom);
@@ -56,7 +57,6 @@ const HomePage = () => {
               className="w-8 h-8"
             />
           </button>
-
           <Canvas camera={{ position: [0, 1, 5], fov: 45 }} className="-mt-10">
             <ambientLight intensity={0.5} />
             <directionalLight position={[0, 5, 6]} intensity={1} />
@@ -93,7 +93,30 @@ const HomePage = () => {
               minPolarAngle={Math.PI / 3}
             />
           </Canvas>
-
+          {currentCharIndex === 0 && (
+            <SkillBadge
+              img="portal"
+              name="토끼의 발자국"
+              desc1="점프! 점프! 어디서 나타났지?"
+              desc2="워프를 통해 눈 깜짝할 사이에 순간이동해보세요!🐰"
+            />
+          )}
+          {currentCharIndex === 1 && (
+            <SkillBadge
+              img="rudolph"
+              name="루돌프의 질주"
+              desc1="눈길 따윈 걱정 없어요!"
+              desc2="루돌프 썰매를 타고 1.5배 더 빠르게 질주해보세요!🎅🏻"
+            />
+          )}
+          {currentCharIndex === 2 && (
+            <SkillBadge
+              img="ghost"
+              name="소리 없는 날갯짓"
+              desc1="쉿… 바람 소리만 남기고 사라지세요."
+              desc2="5초간 아무도 당신이 어디 있는지 모릅니다!👻"
+            />
+          )}
           <button
             onClick={nextCharacter}
             className="absolute right-4 z-20 p-4 rounded-full hover:scale-110 transition-all outline-none bg-5-purple-deep"
