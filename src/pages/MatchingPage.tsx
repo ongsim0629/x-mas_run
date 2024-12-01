@@ -110,23 +110,49 @@ const MatchingPage = () => {
         </div>
       ))}
 
-      <div className="relative z-10 flex flex-col gap-10 text-white justify-center items-center w-full h-full">
-        <KeyboardGuide />
+      <KeyboardGuide />
+      <div className="relative z-10 flex gap-10 text-white text-opacity-80 justify-center items-center w-full h-full text-xl">
+        <div>
+          <p>
+            1️⃣ <b>선물을 많이 모으세요!</b>
+          </p>
+          <small className="mb-2">
+            가장 많은 선물을 가진 플레이어가 우승해요!🎁
+          </small>
+        </div>
+        <div>
+          <p>
+            2️⃣ <b>스킬을 활용하세요!</b>
+          </p>
+          <small className="mb-1">
+            다른 플레이어의 선물을 빼앗아 승리하세요.🎅🏻
+          </small>
+        </div>
+        <div>
+          <p>
+            3️⃣ <b>연속 캐치 보너스!</b>
+          </p>
+          <small className="mb-1">
+            연속으로 빼앗으면 보너스! 동점 땐 이게 승부수!🎯
+          </small>
+        </div>
+      </div>
+      {/* <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-opacity-50 text-sm">
+        {nickname}님 클릭해서 별똥별을 만들어보세요 ✨
+      </div> */}
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 text-white text-opacity-80 flex flex-col gap-5">
         <div className="flex items-center">
           {isStarting ? (
-            <span className="animate-pulse text-3xl">곧 게임이 시작돼요👻</span>
+            <span className="animate-pulse text-4xl">곧 게임이 시작돼요👻</span>
           ) : (
             <>
-              <span className="font-semibold text-3xl rounded-full bg-white w-12 h-12 flex items-center justify-center text-black">
+              <span className="font-semibold text-4xl rounded-full bg-white w-14 h-14 flex items-center justify-center text-black">
                 {playerCount}
               </span>
-              <span className="ml-2 text-3xl">명 접속중🐰</span>
+              <span className="ml-2 text-4xl">명 접속중🐰</span>
             </>
           )}
         </div>
-      </div>
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-opacity-50 text-sm">
-        {nickname}님 클릭해서 별똥별을 만들어보세요 ✨
       </div>
     </div>
   );
