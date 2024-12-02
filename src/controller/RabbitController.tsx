@@ -81,17 +81,23 @@ const RabbitController = ({
   const getPortalPosition = useCallback((): [number, number, number] => {
     if (!rb.current || !container.current) return [0, 0, 0];
 
-    const forwardDirection = new THREE.Vector3(0, 0, -1);
-    forwardDirection.applyQuaternion(container.current.quaternion);
+    const forwardDirection = new THREE.Vector3();
+    container.current.getWorldDirection(forwardDirection);
     forwardDirection.normalize();
+
+    const rotationOffset = new THREE.Euler(0, THREE.MathUtils.degToRad(60), 0); // Y축을 기준으로 -30도 회전
+    const quaternionOffset = new THREE.Quaternion().setFromEuler(
+      rotationOffset,
+    );
+    forwardDirection.applyQuaternion(quaternionOffset);
 
     const playerPosition = rb.current.translation();
     if (!playerPosition) return [0, 0, 0];
 
     return [
-      playerPosition.x + forwardDirection.x * 2,
+      playerPosition.x + forwardDirection.x * 3,
       playerPosition.y + forwardDirection.y + 1,
-      playerPosition.z + forwardDirection.z * 2,
+      playerPosition.z + forwardDirection.z * -3,
     ];
   }, [rb, container]);
 
