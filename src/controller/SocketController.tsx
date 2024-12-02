@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import { KillComboLogsInfo, KillLogInfo, Position } from '../types/player';
 import {
+  gameItemsAtom,
   gameTimeAtom,
   KillComboLogsAtom,
   killLogsAtom,
@@ -19,6 +20,7 @@ const SocketController = () => {
   const isInitialized = useRef(false);
   const [, setKillLogs] = useAtom(killLogsAtom);
   const [, setComboKillLogs] = useAtom(KillComboLogsAtom);
+  const setGameItems = useSetAtom(gameItemsAtom);
 
   const getControls = useKeyControl();
 
@@ -32,9 +34,10 @@ const SocketController = () => {
       console.log('Hello');
     });
     const unsubscribeCharacters = socket.onCharactersUpdate(
-      ({ characters: updatedPlayers, remainRunningTime }) => {
+      ({ characters: updatedPlayers, remainRunningTime, mapItems }) => {
         setTimer(remainRunningTime);
         setPlayers(updatedPlayers);
+        setGameItems(mapItems);
       },
     );
     const unsubscribeDisconnect = socket.onDisconnect(() => {

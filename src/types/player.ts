@@ -1,3 +1,5 @@
+import { ItemType } from './game';
+
 export type Directions = {
   up: boolean;
   down: boolean;
@@ -21,6 +23,10 @@ export interface Character {
   isSkillActive: boolean;
   totalSkillCooldown: number;
   currentSkillCooldown: number;
+  speed: number;
+  items: ItemType[];
+  itemDuration: { boost: number; shield: number };
+  thunderEffect: number[];
 }
 
 export interface PlayerMovement {

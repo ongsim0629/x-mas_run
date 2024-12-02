@@ -1,4 +1,4 @@
-import { Character } from './player';
+import { Character, Position } from './player';
 
 export interface RandomNicknameResponse {
   nickName: string;
@@ -20,9 +20,23 @@ export interface RoomInfo {
   maxPlayerCnt: number;
 }
 
+export enum ItemType {
+  BOOST = 1,
+  SHIELD = 2,
+  THUNDER = 3,
+  GIFT = 4,
+}
+
+export type GameItem = {
+  id: string;
+  type: ItemType;
+  position: Position;
+};
+
 export interface GameData {
   remainRunningTime: number;
   characters: Character[];
+  mapItems: GameItem[];
 }
 
 export type Winner = {

@@ -1,5 +1,10 @@
 import { atom } from 'jotai';
-import { AudioInstance, BGMAudioType, GameScreen } from '../types/game';
+import {
+  AudioInstance,
+  BGMAudioType,
+  GameItem,
+  GameScreen,
+} from '../types/game';
 import { SocketService } from '../apis/SocketService';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 import { KillComboLogsInfo, KillLogInfo } from '../types/player';
@@ -90,3 +95,5 @@ export const playAudioAtom = atom(
 
 export const killLogsAtom = atom<KillLogInfo[]>([]);
 export const KillComboLogsAtom = atom<KillComboLogsInfo[]>([]);
+
+export const gameItemsAtom = atom<GameItem[]>([]);

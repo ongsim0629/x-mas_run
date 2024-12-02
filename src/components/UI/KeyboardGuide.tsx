@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import cls from 'classnames';
 
 type KeyboardMapProps = {
@@ -8,6 +8,7 @@ type KeyboardMapProps = {
   steal: string;
   skill: string;
 };
+
 const KeyboardMap = ({
   getKeyClass,
   keyMap,
@@ -50,13 +51,8 @@ const KeyboardMap = ({
       <div className="flex flex-col justify-center items-center gap-2">
         <div className="flex gap-2">
           <div className={cls(`w-20 h-10 ${getKeyClass(keyMap[4])}`)}>
-            {steal[0] === 'Mouse' ? '🖱️' : steal}
+            {steal}
           </div>
-          <div className="flex items-center text-2xl text-white/50 mx-2">
-            or
-          </div>
-
-          <div className={cls(`w-16 h-10 ${getKeyClass('KeyE')}`)}>E</div>
         </div>
         <span className="text-sm text-white/70">선물 훔치기</span>
       </div>
@@ -66,6 +62,10 @@ const KeyboardMap = ({
         </div>
         <span className="text-sm text-white/70">스킬</span>
       </div>
+      <div className="flex flex-col justify-center items-center gap-2">
+        <div className={cls(`w-16 h-10 ${getKeyClass('KeyE')}`)}>E</div>
+        <span className="text-sm text-white/70">아이템</span>
+      </div>
     </div>
   );
 };
@@ -73,6 +73,7 @@ const KeyboardMap = ({
 const KeyboardGuide = () => {
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [isMouseDown, setIsMouseDown] = useState(false);
+  const [mode, setMode] = useState<'keyboard' | 'mouse'>('mouse'); // 현재 모드 상태
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -117,30 +118,61 @@ const KeyboardGuide = () => {
 
   return (
     <div
-      className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col gap-10 w-full"
+      className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col gap-10 w-full text-white z-50"
       aria-label="key-control-guide"
     >
-      <KeyboardMap
-        getKeyClass={getKeyClass}
-        keyMap={['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Mouse', 'KeyQ']}
-        movement={['W', 'A', 'S', 'D']}
-        steal="Mouse"
-        skill="Q"
-      />
-      <KeyboardMap
-        getKeyClass={getKeyClass}
-        keyMap={[
-          'ArrowUp',
-          'ArrowLeft',
-          'ArrowDown',
-          'ArrowRight',
-          'ShiftLeft',
-          'ControlLeft',
-        ]}
-        movement={['↑', '←', '↓', '→']}
-        steal="Shift"
-        skill="Ctrl"
-      />
+      <div className="flex justify-center gap-4 mb-4">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setMode('mouse');
+          }}
+          className={cls(
+            'px-4 py-2 rounded-lg font-bold outline-none',
+            mode === 'mouse' ? 'bg-3-xmas-gold text-white' : 'bg-gray-300/30',
+          )}
+        >
+          마우스 모드
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setMode('keyboard');
+          }}
+          className={cls(
+            'px-4 py-2 rounded-lg font-bold outline-none',
+            mode === 'keyboard'
+              ? 'bg-3-xmas-gold text-white'
+              : 'bg-gray-300/30',
+          )}
+        >
+          키보드 모드
+        </button>
+      </div>
+      {mode === 'mouse' ? (
+        <KeyboardMap
+          getKeyClass={getKeyClass}
+          keyMap={['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyE', 'KeyQ']}
+          movement={['W', 'A', 'S', 'D']}
+          steal="Shift"
+          skill="Q"
+        />
+      ) : (
+        <KeyboardMap
+          getKeyClass={getKeyClass}
+          keyMap={[
+            'ArrowUp',
+            'ArrowLeft',
+            'ArrowDown',
+            'ArrowRight',
+            'Mouse',
+            'KeyQ',
+          ]}
+          movement={['↑', '←', '↓', '→']}
+          steal="Click"
+          skill="Q"
+        />
+      )}
     </div>
   );
 };
