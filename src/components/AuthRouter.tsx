@@ -22,7 +22,10 @@ const AuthRouter = () => {
   const { id } = useAtomValue(playerInfoAtom);
   const players = useAtomValue(playersAtom);
 
-  const currentPlayer = useMemo(() => players.find((p) => p.id === id), []);
+  const currentPlayer = useMemo(
+    () => players.find((p) => p.id === id),
+    [players, id],
+  );
   const playerItems = currentPlayer?.items || [];
 
   if (!id) {

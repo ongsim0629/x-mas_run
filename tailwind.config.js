@@ -61,6 +61,20 @@ export default {
             transform: 'translateY(100vh) translateX(10px)',
           },
         },
+        appear: {
+          '0%': {
+            opacity: '0',
+            transform: 'scale(0.5) translateY(20px)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'scale(1) translateY(0)',
+          },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-5px)' },
+        },
       },
       animation: {
         twinkle: 'twinkle linear infinite',
@@ -68,6 +82,8 @@ export default {
         'key-shine': 'key-shine 2s ease-in-out infinite',
         'timer-scale': 'timer-scale 1s ease-in-out infinite',
         fall: 'fall linear infinite',
+        appear: 'appear 0.3s ease-out',
+        float: 'float 3s ease-in-out infinite',
       },
     },
   },

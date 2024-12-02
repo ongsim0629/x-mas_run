@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
 import { Position } from '../types/player';
+import { useState, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -16,64 +18,129 @@ type GLTFResult = GLTF & {
     ['Material.003']: THREE.MeshStandardMaterial;
   };
 };
+
 type Props = {
   position: Position;
   color: string;
+  isDisappearing?: boolean;
 } & Omit<JSX.IntrinsicElements['group'], 'position'>;
 
-export function ItemBox({ position, color, ...props }: Props) {
-  const { nodes, materials } = useGLTF('/models/ItemBox.glb') as GLTFResult;
+export function ItemBox({
+  position,
+  color,
+  isDisappearing = false,
+  ...props
+}: Props) {
+  const { nodes } = useGLTF('/models/ItemBox.glb') as GLTFResult;
+  const groupRef = useRef<THREE.Group>(null);
+  const [scale] = useState(2);
+  const [emissiveIntensity] = useState(0);
+  const [opacity] = useState(1);
+
   const positionArray: [number, number, number] = [
     position.x,
     position.y,
     position.z,
   ];
+
+  // 호버링 효과
+  useFrame((state) => {
+    if (groupRef.current && !isDisappearing) {
+      groupRef.current.position.y =
+        position.y + Math.sin(state.clock.elapsedTime * 2) * 0.1;
+      groupRef.current.rotation.y += 0.01;
+    }
+  });
+
   return (
-    <group {...props} dispose={null} position={positionArray} scale={2}>
+    <group
+      ref={groupRef}
+      {...props}
+      dispose={null}
+      position={positionArray}
+      scale={scale}
+    >
       <group rotation={[-Math.PI / 2, 0, 0]} scale={0.082}>
         <group rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
           <mesh
             geometry={nodes.Cube002_Material002_0.geometry}
-            material={materials['Material.002']}
             rotation={[-Math.PI / 2, 0, 0.556]}
             scale={412.961}
           >
-            <meshStandardMaterial color="white" />
+            <meshStandardMaterial
+              color="white"
+              transparent
+              opacity={opacity}
+              emissive="white"
+              emissiveIntensity={emissiveIntensity}
+            />
           </mesh>
           <mesh
             geometry={nodes.Cube001_Material003_0.geometry}
-            material={materials['Material.003']}
             rotation={[-Math.PI / 2, 0, 0.556]}
             scale={412.961}
           >
-            <meshStandardMaterial color={color} />
+            <meshStandardMaterial
+              color={color}
+              transparent
+              opacity={opacity}
+              emissive={color}
+              emissiveIntensity={emissiveIntensity}
+            />
           </mesh>
           <mesh
             geometry={nodes.Cube003_Material002_0.geometry}
-            material={materials['Material.002']}
             rotation={[-Math.PI / 2, 0, 0.556]}
             scale={412.961}
           >
-            <meshStandardMaterial color="white" />
+            <meshStandardMaterial
+              color="white"
+              transparent
+              opacity={opacity}
+              emissive="white"
+              emissiveIntensity={emissiveIntensity}
+            />
           </mesh>
           <mesh
             geometry={nodes.Cube005_Material002_0.geometry}
-            material={materials['Material.002']}
             rotation={[-Math.PI / 2, 0, 0.556]}
             scale={412.961}
           >
-            <meshStandardMaterial color="white" />
+            <meshStandardMaterial
+              color="white"
+              transparent
+              opacity={opacity}
+              emissive="white"
+              emissiveIntensity={emissiveIntensity}
+            />
           </mesh>
           <mesh
             geometry={nodes.Cube006_Material002_0.geometry}
-            material={materials['Material.002']}
             rotation={[-Math.PI / 2, 0, 0.556]}
             scale={412.961}
           >
-            <meshStandardMaterial color="white" />
+            <meshStandardMaterial
+              color="white"
+              transparent
+              opacity={opacity}
+              emissive="white"
+              emissiveIntensity={emissiveIntensity}
+            />
           </mesh>
         </group>
       </group>
+
+      {!isDisappearing && (
+        <mesh scale={1}>
+          <sphereGeometry args={[1, 32, 32]} />
+          <meshBasicMaterial
+            color={color}
+            transparent
+            opacity={0.1}
+            side={THREE.BackSide}
+          />
+        </mesh>
+      )}
     </group>
   );
 }

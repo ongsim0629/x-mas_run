@@ -20,14 +20,13 @@ export default function Scene() {
       <ambientLight intensity={0.3} />
       <Physics>
         <Map scale={0.1} position={[0, 0, 0]} model={`/maps/map.glb`} />
-        {gameItems &&
-          gameItems.map((item, index) => (
-            <ItemBox
-              key={item.id}
-              position={item.position}
-              color={colors[index % colors.length]}
-            />
-          ))}
+        {gameItems.map((item, index) => (
+          <ItemBox
+            key={item.id}
+            position={item.position}
+            color={colors[index % colors.length]}
+          />
+        ))}
         {players.map((player) => {
           if (player.charType === 1)
             return (
