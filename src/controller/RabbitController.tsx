@@ -19,6 +19,7 @@ import ProtectEffect from '../components/effect/ProtectEffect';
 import { Model as Portal } from '../models/Portal';
 import * as THREE from 'three';
 import CircleShadow from '../components/UI/Shadow';
+import { Lightning } from '../models/Lightning';
 
 interface RabbitControllerProps {
   player: Character;
@@ -41,6 +42,10 @@ const RabbitController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
+    speed,
+    items,
+    itemDuration: { boost, shield },
+    thunderEffect,
   },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
@@ -187,6 +192,9 @@ const RabbitController = ({
   return (
     <>
       <RigidBody colliders={false} lockRotations ref={rb}>
+        {thunderEffect.length > 0 && (
+          <Lightning thunderEffect={thunderEffect} />
+        )}
         {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
         <group ref={container}>
           {isLocalPlayer && (
