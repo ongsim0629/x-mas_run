@@ -76,17 +76,22 @@ const SocketController = () => {
     const controls = getControls();
     const wantsToSteal = controls.catch;
     const wantsToUseSkill = controls.skill;
+    const wantsToUseItem = controls.item;
+
     const shouldUpdatePosition =
       hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
       wantsToSteal ||
-      wantsToUseSkill;
+      wantsToUseSkill ||
+      wantsToUseItem;
 
     if (shouldUpdatePosition) {
+      console.log(wantsToUseItem);
       if (wantsToSteal && !stealCooldown.current) {
         socket.updateMovement({
           character: currentPlayer,
           steal: true,
           skill: false,
+          item: false,
         });
         stealCooldown.current = true;
         if (stealCooldownTimer.current)
@@ -101,12 +106,22 @@ const SocketController = () => {
           character: currentPlayer,
           steal: false,
           skill: true,
+          item: false,
+        });
+      } else if (wantsToUseItem) {
+        console.log(currentPlayer);
+        socket.updateMovement({
+          character: currentPlayer,
+          steal: false,
+          skill: false,
+          item: true,
         });
       } else {
         socket.updateMovement({
           character: currentPlayer,
           steal: false,
           skill: false,
+          item: false,
         });
       }
 

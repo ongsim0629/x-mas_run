@@ -32,6 +32,7 @@ export interface Character {
 export interface PlayerMovement {
   steal: boolean;
   skill: boolean;
+  item: Boolean;
   character: Pick<Character, 'id' | 'position' | 'velocity'>;
 }
 

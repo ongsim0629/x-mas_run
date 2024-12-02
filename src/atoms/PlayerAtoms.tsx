@@ -5,6 +5,7 @@ import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 export const playerMovementAtom = atom<PlayerMovement>({
   steal: false,
   skill: false,
+  item: false,
   character: {
     id: '',
     position: { x: 0, y: 0, z: 0 },
