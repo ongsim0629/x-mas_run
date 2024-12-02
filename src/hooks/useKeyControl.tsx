@@ -1,7 +1,15 @@
 import { useKeyboardControls } from '@react-three/drei';
 import { useEffect, useState } from 'react';
 
-type Controls = 'forward' | 'backward' | 'left' | 'right' | 'jump' | 'catch' | 'skill';
+type Controls =
+  | 'forward'
+  | 'backward'
+  | 'left'
+  | 'right'
+  | 'jump'
+  | 'catch'
+  | 'skill'
+  | 'item';
 
 const useKeyControl = () => {
   const [, get] = useKeyboardControls<Controls>();

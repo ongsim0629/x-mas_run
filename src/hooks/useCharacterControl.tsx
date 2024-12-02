@@ -12,6 +12,7 @@ import {
   playersAtom,
 } from '../atoms/PlayerAtoms';
 import useKeyControl from './useKeyControl';
+import { ItemType } from '../types/game';
 
 type CharType = 1 | 2 | 3;
 type CharacterControlConfig = {
@@ -35,6 +36,10 @@ type CharacterControlConfig = {
   isSkillActive: boolean;
   totalSkillCooldown: number;
   currentSkillCooldown: number;
+  speed: number;
+  items: ItemType[];
+  itemDuration: { boost: number; shield: number };
+  thunderEffect: number[];
 };
 
 const useCharacterControl = ({
@@ -58,7 +63,16 @@ const useCharacterControl = ({
   // totalSkillCooldown,
   // currentSkillCooldown,
   speedMultiplier = 1,
+  items,
+  itemDuration,
+  thunderEffect,
 }: CharacterControlConfig) => {
+  const STATIC_STATE = (vel: { x: number; y: number; z: number }) => ({
+    velocity: vel,
+    movement: { x: 0, y: 0, z: 0 },
+    isMoving: false,
+  });
+
   const { updateAnimation, playJumpAnimation, playPunchAnimation } =
     useCharacterAnimation({
       charType,
