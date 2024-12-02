@@ -39,6 +39,10 @@ const GhostController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
+    speed,
+    items,
+    itemDuration,
+    thunderEffect,
   },
   isLocalPlayer,
 }: GhostControllerProps): JSX.Element => {
@@ -95,6 +99,10 @@ const GhostController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
+    speed,
+    items,
+    itemDuration,
+    thunderEffect,
   });
 
   const { updateAnimation } = useCharacterAnimation({

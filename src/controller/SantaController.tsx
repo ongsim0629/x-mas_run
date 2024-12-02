@@ -40,6 +40,10 @@ const SantaController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
+    speed,
+    items,
+    itemDuration,
+    thunderEffect,
   },
   isLocalPlayer,
 }: SantaControllerProps): JSX.Element => {
@@ -96,8 +100,10 @@ const SantaController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
-    // 썰매 탑승 시 이동속도 증가
-    speedMultiplier: isSkillActive ? 20 / import.meta.env.VITE_INGAME_SPEED : 1,
+    speed,
+    items,
+    itemDuration,
+    thunderEffect,
   });
 
   const { updateAnimation } = useCharacterAnimation({

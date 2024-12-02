@@ -41,6 +41,10 @@ const RabbitController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
+    speed,
+    items,
+    itemDuration,
+    thunderEffect,
   },
   isLocalPlayer,
 }: RabbitControllerProps): JSX.Element => {
@@ -126,6 +130,10 @@ const RabbitController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
+    speed,
+    items,
+    itemDuration,
+    thunderEffect,
   });
 
   const { updateAnimation } = useCharacterAnimation({
