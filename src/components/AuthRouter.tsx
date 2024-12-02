@@ -9,15 +9,21 @@ import { GameTimer } from '../components/UI/GameTimer';
 import { Canvas } from '@react-three/fiber';
 import Scene from './Scene';
 import GameOverPage from '../pages/GameOverPage';
-import { playerInfoAtom } from '../atoms/PlayerAtoms';
+import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import KillLogs from './KillLogs';
 import GameLogsPage from '../pages/GameLogsPage';
 import MiniMap from './MiniMap';
 import SkillCooldownIndicator from './UI/SkillCooldownIndicator';
+import ItemCard from './ItemCard';
+import { useMemo } from 'react';
 
 const AuthRouter = () => {
   const [gameScreen] = useAtom(gameScreenAtom);
   const { id } = useAtomValue(playerInfoAtom);
+  const players = useAtomValue(playersAtom);
+
+  const currentPlayer = useMemo(() => players.find((p) => p.id === id), []);
+  const playerItems = currentPlayer?.items || [];
 
   if (!id) {
     return <LoginPage />;
@@ -44,6 +50,7 @@ const AuthRouter = () => {
           <MiniMap />
           <KillLogs />
           <SkillCooldownIndicator />
+          <ItemCard itemType={playerItems} />
         </div>
       )}
       {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}

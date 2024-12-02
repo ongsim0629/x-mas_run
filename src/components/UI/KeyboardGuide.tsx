@@ -53,10 +53,6 @@ const KeyboardMap = ({
           <div className={cls(`w-20 h-10 ${getKeyClass(keyMap[4])}`)}>
             {steal}
           </div>
-          <div className="flex items-center text-2xl text-white/50 mx-2">
-            or
-          </div>
-          <div className={cls(`w-16 h-10 ${getKeyClass('KeyE')}`)}>E</div>
         </div>
         <span className="text-sm text-white/70">선물 훔치기</span>
       </div>
@@ -65,6 +61,10 @@ const KeyboardMap = ({
           {skill}
         </div>
         <span className="text-sm text-white/70">스킬</span>
+      </div>
+      <div className="flex flex-col justify-center items-center gap-2">
+        <div className={cls(`w-16 h-10 ${getKeyClass('KeyE')}`)}>E</div>
+        <span className="text-sm text-white/70">아이템</span>
       </div>
     </div>
   );

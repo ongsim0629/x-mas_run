@@ -27,6 +27,10 @@ export const playersAtom = atom<Character[]>([
     isSkillActive: false,
     totalSkillCooldown: 0,
     currentSkillCooldown: 0,
+    speed: 0,
+    items: [],
+    itemDuration: { boost: 0, shield: 0 },
+    thunderEffect: [],
   },
 ]);
 
