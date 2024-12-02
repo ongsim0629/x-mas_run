@@ -85,7 +85,6 @@ const SocketController = () => {
       wantsToUseItem;
 
     if (shouldUpdatePosition) {
-      console.log(wantsToUseItem);
       if (wantsToSteal && !stealCooldown.current) {
         socket.updateMovement({
           character: currentPlayer,
@@ -109,7 +108,6 @@ const SocketController = () => {
           item: false,
         });
       } else if (wantsToUseItem) {
-        console.log(currentPlayer);
         socket.updateMovement({
           character: currentPlayer,
           steal: false,
