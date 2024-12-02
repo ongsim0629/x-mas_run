@@ -1,50 +1,31 @@
 import * as THREE from 'three';
-import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
+import { useGLTF } from '@react-three/drei';
 
-type GLTFResult = GLTF & {
-  nodes: {
-    sleigh_gold_0: THREE.Mesh;
-    sleigh_black_0: THREE.Mesh;
-    sleigh_Snow001_0: THREE.Mesh;
-    sleigh_red_0: THREE.Mesh;
-  };
-  materials: {
-    gold: THREE.MeshStandardMaterial;
-    black: THREE.MeshStandardMaterial;
-    ['Snow.001']: THREE.MeshStandardMaterial;
-    material: THREE.MeshStandardMaterial;
-  };
-};
+type ModelProps = JSX.IntrinsicElements['group'];
 
-export function Model(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/models/Sleigh.glb') as GLTFResult;
+export function Model(props: ModelProps) {
+  const { scene } = useGLTF('/models/Sleigh.glb') as GLTF;
+
+  const materials: Record<string, THREE.MeshStandardMaterial> = {
+    sleigh_red_0: new THREE.MeshStandardMaterial({ color: 'red' }),
+    sleigh_gold_0: new THREE.MeshStandardMaterial({ color: 'gold' }),
+    sleigh_black_0: new THREE.MeshStandardMaterial({ color: 'black' }),
+    sleigh_Snow001_0: new THREE.MeshStandardMaterial({ color: 'white' }),
+  };
+
+  scene.traverse((child: THREE.Object3D) => {
+    if (child instanceof THREE.Mesh) {
+      const material = materials[child.name];
+      if (material) {
+        child.material = material;
+      }
+    }
+  });
+
   return (
     <group {...props} dispose={null}>
-      <group scale={0.01}>
-        <group
-          position={[-109.301, 194.531, 0]}
-          rotation={[-Math.PI / 2, 0.175, 0]}
-          scale={100}
-        >
-          <mesh
-            geometry={nodes.sleigh_gold_0.geometry}
-            material={materials.gold}
-          />
-          <mesh
-            geometry={nodes.sleigh_black_0.geometry}
-            material={materials.black}
-          />
-          <mesh
-            geometry={nodes.sleigh_Snow001_0.geometry}
-            material={materials['Snow.001']}
-          />
-          <mesh
-            geometry={nodes.sleigh_red_0.geometry}
-            material={materials.material}
-          />
-        </group>
-      </group>
+      <primitive object={scene} />
     </group>
   );
 }
