@@ -84,7 +84,6 @@ const useCharacterControl = ({
     const isOnGround = Math.abs(rb.linvel().y) < 0.1;
 
     if (isSkillActive) {
-      console.log('지금 궁 발생중', isSkillActive);
       switch (charType) {
         case 1:
           rb.setTranslation(position, true);

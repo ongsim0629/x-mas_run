@@ -6,21 +6,29 @@ import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import Map from './map/Map';
+import { gameItemsAtom } from '../atoms/GameAtoms';
+import { ItemBox } from '../models/ItemBox';
 
 export default function Scene() {
   const players = useAtomValue(playersAtom);
+  const gameItems = useAtomValue(gameItemsAtom);
   const { id } = useAtomValue(playerInfoAtom);
-
+  const colors = ['red', 'green', 'gold'];
   return (
     <>
       <Environment files={import.meta.env.VITE_INGAME_MAP_FILE} />
       <ambientLight intensity={0.3} />
       <Physics>
         <Map scale={0.1} position={[0, 0, 0]} model={`/maps/map.glb`} />
+        {gameItems &&
+          gameItems.map((item, index) => (
+            <ItemBox
+              key={item.id}
+              position={item.position}
+              color={colors[index % colors.length]}
+            />
+          ))}
         {players.map((player) => {
-          if (player.isSkillActive) {
-            // console.log(players);
-          }
           if (player.charType === 1)
             return (
               <RabbitController

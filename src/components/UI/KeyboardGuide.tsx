@@ -73,7 +73,7 @@ const KeyboardMap = ({
 const KeyboardGuide = () => {
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [isMouseDown, setIsMouseDown] = useState(false);
-  const [mode, setMode] = useState<'keyboard' | 'mouse'>('keyboard'); // 현재 모드 상태
+  const [mode, setMode] = useState<'keyboard' | 'mouse'>('mouse'); // 현재 모드 상태
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -125,29 +125,31 @@ const KeyboardGuide = () => {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setMode('keyboard');
-          }}
-          className={cls(
-            'px-4 py-2 rounded-lg font-bold outline-none',
-            mode === 'keyboard' ? 'bg-2-xmas-red text-white' : 'bg-gray-300/30',
-          )}
-        >
-          키보드 모드
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
             setMode('mouse');
           }}
           className={cls(
             'px-4 py-2 rounded-lg font-bold outline-none',
-            mode === 'mouse' ? 'bg-2-xmas-red text-white' : 'bg-gray-300/30',
+            mode === 'mouse' ? 'bg-3-xmas-gold text-white' : 'bg-gray-300/30',
           )}
         >
           마우스 모드
         </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setMode('keyboard');
+          }}
+          className={cls(
+            'px-4 py-2 rounded-lg font-bold outline-none',
+            mode === 'keyboard'
+              ? 'bg-3-xmas-gold text-white'
+              : 'bg-gray-300/30',
+          )}
+        >
+          키보드 모드
+        </button>
       </div>
-      {mode === 'keyboard' ? (
+      {mode === 'mouse' ? (
         <KeyboardMap
           getKeyClass={getKeyClass}
           keyMap={['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyE', 'KeyQ']}
