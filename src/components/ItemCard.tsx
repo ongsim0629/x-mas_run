@@ -27,11 +27,13 @@ const ItemCard = ({ itemType }: Props) => {
 
   return (
     <div className="absolute top-20 left-10 z-30">
-      {/* 두 번째 카드를 먼저 렌더링하고 첫 번째 카드가 그 위에 오도록 배치 */}
       {itemType[1] && (
-        <div className="absolute left-8 -top-2 animate-appear w-20 h-20 rounded-lg overflow-hidden opacity-70 scale-90">
+        <div
+          data-item-index="1"
+          className="absolute left-8 -top-2 w-20 h-20 rounded-lg overflow-hidden opacity-70 scale-90"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-500/20 animate-pulse" />
-          <div className="absolute inset-0 border-2 border-blue-400/50 rounded-lg shadow-[inset_0_0_15px_rgba(168,85,247,0.5)]" />
+          <div className="absolute inset-0 border-2 border-blue-400/50 rounded-lg shadow-xl" />
           <div className="relative w-full h-full p-2 bg-gray-900/70 flex items-center justify-center">
             <img
               src={`/images/${getTypeImage(itemType[1])}`}
@@ -43,9 +45,12 @@ const ItemCard = ({ itemType }: Props) => {
       )}
 
       {itemType[0] && (
-        <div className="animate-appear relative w-20 h-20 rounded-lg overflow-hidden">
+        <div
+          data-item-index="0"
+          className="relative w-20 h-20 rounded-lg overflow-hidden"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-500/20 animate-pulse" />
-          <div className="absolute inset-0 border-2 border-blue-300 rounded-lg shadow-[inset_0_0_15px_rgba(59,130,246,0.5)]" />
+          <div className="absolute inset-0 border-2 border-blue-300 rounded-lg shadow-xl" />
           <div className="relative w-full h-full p-2 bg-gray-900/70 flex items-center justify-center">
             <img
               src={`/images/${getTypeImage(itemType[0])}`}
