@@ -154,7 +154,7 @@ const KeyboardGuide = () => {
           getKeyClass={getKeyClass}
           keyMap={['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyE', 'KeyQ']}
           movement={['W', 'A', 'S', 'D']}
-          steal="Shift"
+          steal="Click"
           skill="Q"
         />
       ) : (
@@ -169,7 +169,7 @@ const KeyboardGuide = () => {
             'KeyQ',
           ]}
           movement={['↑', '←', '↓', '→']}
-          steal="Click"
+          steal="Shift"
           skill="Q"
         />
       )}
