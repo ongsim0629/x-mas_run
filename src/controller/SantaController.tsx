@@ -18,6 +18,7 @@ import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
 import { Model as Sleigh } from '../models/Sleigh'; // Sleigh 모델 import
 import CircleShadow from '../components/UI/Shadow';
+import { Lightning } from '../models/Lightning';
 
 interface SantaControllerProps {
   player: Character;
@@ -40,6 +41,10 @@ const SantaController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
+    speed,
+    items,
+    itemDuration: { boost, shield },
+    thunderEffect,
   },
   isLocalPlayer,
 }: SantaControllerProps): JSX.Element => {
@@ -159,6 +164,9 @@ const SantaController = ({
   return (
     <>
       <RigidBody colliders={false} lockRotations ref={rb}>
+        {thunderEffect.length > 0 && (
+          <Lightning thunderEffect={thunderEffect} />
+        )}
         {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
         <group ref={container}>
           {isLocalPlayer && (
