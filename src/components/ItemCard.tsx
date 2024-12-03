@@ -30,14 +30,14 @@ const ItemCard = ({ itemType }: Props) => {
       {itemType[1] && (
         <div
           data-item-index="1"
-          className="absolute left-8 -top-2 w-20 h-20 rounded-lg overflow-hidden opacity-70 scale-90"
+          className="absolute left-20 top-9 w-14 h-16 rounded-lg overflow-hidden opacity-70 scale-90"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-500/20 animate-pulse" />
-          <div className="absolute inset-0 border-2 border-blue-400/50 rounded-lg shadow-xl" />
+          <div className="absolute inset-0 border-2 border-blue-300/50 rounded-lg shadow-xl" />
           <div className="relative w-full h-full p-2 bg-gray-900/70 flex items-center justify-center">
             <img
               src={`/images/${getTypeImage(itemType[1])}`}
-              className="w-12 h-12 animate-float"
+              className="w-9 h-9"
               alt={getTypeImage(itemType[1])}
             />
           </div>
@@ -47,7 +47,7 @@ const ItemCard = ({ itemType }: Props) => {
       {itemType[0] && (
         <div
           data-item-index="0"
-          className="relative w-20 h-20 rounded-lg overflow-hidden"
+          className="relative w-20 h-24 rounded-lg overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-500/20 animate-pulse" />
           <div className="absolute inset-0 border-2 border-blue-300 rounded-lg shadow-xl" />

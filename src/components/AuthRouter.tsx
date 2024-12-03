@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from 'jotai';
-import { gameScreenAtom } from '../atoms/GameAtoms';
+import { gameScreenAtom, playAudioAtom } from '../atoms/GameAtoms';
 import { GameScreen } from '../types/game';
 import SocketController from '../controller/SocketController';
 import LoginPage from '../pages/LoginPage';
@@ -15,18 +15,28 @@ import GameLogsPage from '../pages/GameLogsPage';
 import MiniMap from './MiniMap';
 import SkillCooldownIndicator from './UI/SkillCooldownIndicator';
 import ItemCard from './ItemCard';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 const AuthRouter = () => {
   const [gameScreen] = useAtom(gameScreenAtom);
   const { id } = useAtomValue(playerInfoAtom);
   const players = useAtomValue(playersAtom);
+  const [, playAudio] = useAtom(playAudioAtom);
+  const prevItemsRef = useRef(0);
 
   const currentPlayer = useMemo(
     () => players.find((p) => p.id === id),
     [players, id],
   );
   const playerItems = currentPlayer?.items || [];
+
+  useEffect(() => {
+    const currentItemCount = playerItems.length;
+    if (currentItemCount > prevItemsRef.current) {
+      playAudio('item');
+    }
+    prevItemsRef.current = currentItemCount;
+  }, [playerItems, playAudio]);
 
   if (!id) {
     return <LoginPage />;

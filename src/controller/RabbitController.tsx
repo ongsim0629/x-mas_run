@@ -19,6 +19,7 @@ import ProtectEffect from '../components/effect/ProtectEffect';
 import { Model as Portal } from '../models/Portal';
 import * as THREE from 'three';
 import CircleShadow from '../components/UI/Shadow';
+import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
 
 interface RabbitControllerProps {
@@ -196,6 +197,9 @@ const RabbitController = ({
   return (
     <>
       <RigidBody colliders={false} lockRotations ref={rb}>
+        {thunderEffect.length > 0 && (
+          <Lightning thunderEffect={thunderEffect} />
+        )}
         {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
         <group ref={container}>
           {isLocalPlayer && (

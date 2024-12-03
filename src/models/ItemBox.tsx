@@ -67,13 +67,13 @@ export function ItemBox({
             rotation={[-Math.PI / 2, 0, 0.556]}
             scale={412.961}
           >
-            <meshStandardMaterial
-              color="white"
-              transparent
-              opacity={opacity}
-              emissive="white"
-              emissiveIntensity={emissiveIntensity}
-            />
+          <meshStandardMaterial
+            color="white"
+            transparent
+            opacity={opacity}
+            emissive="white"
+            emissiveIntensity={emissiveIntensity}
+          />
           </mesh>
           <mesh
             geometry={nodes.Cube001_Material003_0.geometry}
