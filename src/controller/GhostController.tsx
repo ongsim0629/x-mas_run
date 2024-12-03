@@ -17,6 +17,8 @@ import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
 import { AnimatedGhost, GhostActionName } from '../hooks/AnimatedGhost';
 import CircleShadow from '../components/UI/Shadow';
+import BoostEffect from '../components/effect/BoostEffect';
+import * as THREE from 'three';
 
 interface GhostControllerProps {
   player: Character;
@@ -173,6 +175,13 @@ const GhostController = ({
             </>
           )}
           <group ref={character}>
+            {itemDuration.boost > 0 && (
+              <BoostEffect
+                targetPosition={
+                  character.current?.position || new THREE.Vector3()
+                }
+              />
+            )}
             <AnimatedGhost
               nickName={nickName}
               animation={animation}

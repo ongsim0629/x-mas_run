@@ -18,6 +18,8 @@ import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
 import { Model as Sleigh } from '../models/Sleigh'; // Sleigh 모델 import
 import CircleShadow from '../components/UI/Shadow';
+import BoostEffect from '../components/effect/BoostEffect';
+import * as THREE from 'three';
 
 interface SantaControllerProps {
   player: Character;
@@ -174,6 +176,13 @@ const SantaController = ({
             </>
           )}
           <group ref={character}>
+            {itemDuration.boost > 0 && (
+              <BoostEffect
+                targetPosition={
+                  character.current?.position || new THREE.Vector3()
+                }
+              />
+            )}
             {isSkillActive && (
               <Sleigh
                 position={[0, -1.5, 0]}
