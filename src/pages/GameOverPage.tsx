@@ -62,7 +62,7 @@ const RotatingWinner = ({
 const GameOverPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const roomId = useAtomValue(roomIdAtom);
-  const { winnerQuery } = useGame();
+  const { winnerQuery, isPendingWinnerQuery } = useGame();
   const [winner, setWinner] = useState<Winner>({
     id: '',
     nickName: '',
@@ -94,25 +94,41 @@ const GameOverPage = () => {
         className="absolute w-full h-full object-cover"
       />
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-around">
-        <div className="flex flex-col items-center gap-2 mt-10">
-          <span className="w-full flex flex-col justify-center items-center text-white text-4xl font-bold">
-            {winner.nickName}
-          </span>
-          <span className="w-full flex justify-center items-center text-white text-8xl font-bold">
-            <p>우승</p>
-            <img
-              src="/images/exclamation.svg"
-              alt="exclamation Mark"
-              className="w-20 h-20"
-            />
-          </span>
-        </div>
-        <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
-          <RotatingWinner
-            charColor={winner.charColor}
-            charType={winner.charType}
-          />
-        </Canvas>
+        {winner.nickName && (
+          <>
+            <div className="flex flex-col items-center gap-2 mt-10">
+              <span className="w-full flex flex-col justify-center items-center text-white text-4xl font-bold">
+                {winner.nickName}
+              </span>
+              <span className="w-full flex justify-center items-center text-white text-8xl font-bold">
+                <p>우승</p>
+                <img
+                  src="/images/exclamation.svg"
+                  alt="exclamation Mark"
+                  className="w-20 h-20"
+                />
+              </span>
+            </div>
+            <Canvas camera={{ position: [0, 1, 5], fov: 45 }}>
+              <RotatingWinner
+                charColor={winner.charColor}
+                charType={winner.charType}
+              />
+            </Canvas>
+          </>
+        )}
+        {isPendingWinnerQuery && (
+          <div className="flex flex-col items-center gap-2 mt-10">
+            <span className="w-full flex justify-center items-center text-white text-8xl font-bold">
+              <p>과연 우승자는...?!</p>
+              <img
+                src="/images/exclamation.svg"
+                alt="exclamation Mark"
+                className="w-20 h-20"
+              />
+            </span>
+          </div>
+        )}
         <div className="flex justify-between">
           <button
             onClick={handlePlayAgain}

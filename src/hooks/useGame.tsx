@@ -14,19 +14,27 @@ const useGame = () => {
       queryClient.invalidateQueries({ queryKey: ['playerInfo'] }),
   });
 
-  const { mutateAsync: winnerQuery } = useMutation({
-    mutationFn: (roomId: string) => game.getTotalGameResult(roomId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ['winnerInfo'] }),
-  });
+  const { mutateAsync: winnerQuery, isPending: isPendingWinnerQuery } =
+    useMutation({
+      mutationFn: (roomId: string) => game.getTotalGameResult(roomId),
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: ['winnerInfo'] }),
+    });
 
-  const { mutateAsync: myGameResultQuery } = useMutation({
-    mutationFn: ({ roomId, userId }: { roomId: string; userId: string }) =>
-      game.getMyGameResult(roomId, userId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ['myGameInfo'] }),
-  });
-  return { registerPlayerQuery, winnerQuery, myGameResultQuery };
+  const { mutateAsync: myGameResultQuery, isPending: isPendingResultQuery } =
+    useMutation({
+      mutationFn: ({ roomId, userId }: { roomId: string; userId: string }) =>
+        game.getMyGameResult(roomId, userId),
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: ['myGameInfo'] }),
+    });
+  return {
+    registerPlayerQuery,
+    winnerQuery,
+    isPendingWinnerQuery,
+    myGameResultQuery,
+    isPendingResultQuery,
+  };
 };
 
 export default useGame;
