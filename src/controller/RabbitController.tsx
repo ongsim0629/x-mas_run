@@ -20,6 +20,7 @@ import { Model as Portal } from '../models/Portal';
 import * as THREE from 'three';
 import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
+import BoostEffect from '../components/effect/BoostEffect';
 
 interface RabbitControllerProps {
   player: Character;
@@ -44,7 +45,7 @@ const RabbitController = ({
     currentSkillCooldown,
     speed,
     items,
-    itemDuration: { boost, shield },
+    itemDuration,
     thunderEffect,
   },
   isLocalPlayer,
@@ -131,6 +132,10 @@ const RabbitController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
+    speed,
+    items,
+    itemDuration,
+    thunderEffect,
   });
 
   const { updateAnimation } = useCharacterAnimation({
@@ -204,6 +209,13 @@ const RabbitController = ({
             </>
           )}
           <group ref={character}>
+            {itemDuration.boost > 0 && (
+              <BoostEffect
+                targetPosition={
+                  character.current?.position || new THREE.Vector3()
+                }
+              />
+            )}
             <AnimatedRabbit
               nickName={nickName}
               animation={animation}

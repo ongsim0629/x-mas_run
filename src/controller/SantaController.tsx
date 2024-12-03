@@ -19,6 +19,8 @@ import ProtectEffect from '../components/effect/ProtectEffect';
 import { Model as Sleigh } from '../models/Sleigh'; // Sleigh 모델 import
 import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
+import BoostEffect from '../components/effect/BoostEffect';
+import * as THREE from 'three';
 
 interface SantaControllerProps {
   player: Character;
@@ -43,7 +45,7 @@ const SantaController = ({
     currentSkillCooldown,
     speed,
     items,
-    itemDuration: { boost, shield },
+    itemDuration,
     thunderEffect,
   },
   isLocalPlayer,
@@ -101,8 +103,10 @@ const SantaController = ({
     isSkillActive,
     totalSkillCooldown,
     currentSkillCooldown,
-    // 썰매 탑승 시 이동속도 증가
-    speedMultiplier: isSkillActive ? 20 / import.meta.env.VITE_INGAME_SPEED : 1,
+    speed,
+    items,
+    itemDuration,
+    thunderEffect,
   });
 
   const { updateAnimation } = useCharacterAnimation({
@@ -176,6 +180,13 @@ const SantaController = ({
             </>
           )}
           <group ref={character}>
+            {itemDuration.boost > 0 && (
+              <BoostEffect
+                targetPosition={
+                  character.current?.position || new THREE.Vector3()
+                }
+              />
+            )}
             {isSkillActive && (
               <Sleigh
                 position={[0, -1.5, 0]}

@@ -60,9 +60,7 @@ const useCharacterControl = ({
   container,
   eventBlock,
   isSkillActive,
-  // totalSkillCooldown,
-  // currentSkillCooldown,
-  speedMultiplier = 1,
+  speed, 
   items,
   itemDuration,
   thunderEffect,
@@ -88,7 +86,7 @@ const useCharacterControl = ({
 
   const setPlayers = useSetAtom(playersAtom);
   const { id } = useAtomValue(playerInfoAtom);
-  const setPlayerRoation = useSetAtom(playerRotationAtom);
+  const setPlayerRotation = useSetAtom(playerRotationAtom);
   const getControls = useKeyControl();
   const controls = getControls();
 
@@ -195,8 +193,7 @@ const useCharacterControl = ({
 
       // 속도 계산 (선물 개수에 따른 감속 포함)
       const speedReduction = Math.max(0.5, 1 - giftCnt * 0.1);
-      const baseSpeed = import.meta.env.VITE_INGAME_SPEED;
-      const currentSpeed = baseSpeed * speedReduction * speedMultiplier;
+      const currentSpeed = speed * speedReduction;
 
       vel.x =
         Math.sin(rotationTarget.current + characterRotationTarget.current) *
@@ -214,7 +211,7 @@ const useCharacterControl = ({
         characterRotationTarget.current,
         0.1,
       );
-      setPlayerRoation(rotationTarget.current + character.current.rotation.y);
+      setPlayerRotation(rotationTarget.current + character.current.rotation.y);
     }
 
     if (container.current) {
