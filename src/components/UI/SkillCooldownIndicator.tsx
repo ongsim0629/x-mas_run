@@ -102,7 +102,7 @@ const SkillCooldownIndicator = () => {
         {isReady ? '사용 가능' : `${remainingPercent}%`}
       </div>
 
-      <div className="mt-1 px-2 py-0.5 bg-gray-800 rounded text-xs text-gray-300">
+      <div className="mt-1 px-2 py-0.5 bg-gray-800 rounded text-sm text-gray-300">
         Q 버튼
       </div>
     </div>
