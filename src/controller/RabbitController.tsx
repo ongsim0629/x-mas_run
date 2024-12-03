@@ -1,5 +1,5 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
@@ -21,6 +21,7 @@ import * as THREE from 'three';
 import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
+import DizzyEffect from '../components/effect/DizzyEffect';
 
 interface RabbitControllerProps {
   player: Character;
@@ -54,6 +55,8 @@ const RabbitController = ({
     'CharacterArmature|Idle',
   );
 
+  const [showDizzy, setShowDizzy] = useState(false);
+
   const { rb, container, character, currentPosition, currentVelocity } =
     useCharacterRefs(position, velocity);
 
@@ -82,6 +85,13 @@ const RabbitController = ({
     stolenAnimationTimer,
     isCurrentlyStolen,
   } = useAnimationRefs();
+
+  useEffect(() => {
+    if (thunderEffect.length === 1) {
+      setShowDizzy(true);
+      setTimeout(() => setShowDizzy(false), 4000);
+    }
+  }, [thunderEffect]);
 
   // 포탈 위치 계산
   const getPortalPosition = useCallback((): [number, number, number] => {
@@ -197,8 +207,13 @@ const RabbitController = ({
   return (
     <>
       <RigidBody colliders={false} lockRotations ref={rb}>
-        {thunderEffect.length > 0 && (
-          <Lightning thunderEffect={thunderEffect} />
+        {(thunderEffect.length > 0 || showDizzy) && (
+          <>
+            {thunderEffect.length > 0 && (
+              <Lightning thunderEffect={thunderEffect} />
+            )}
+            {showDizzy && <DizzyEffect position={[0, 4, 0]} />}
+          </>
         )}
         {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
         <group ref={container}>
