@@ -29,7 +29,7 @@ export function Lightning({ thunderEffect, ...props }: LightningProps) {
   const lightningOpacity = useRef(1);
   const lightningFlashSpeed = 0.1;
   const [, playAudio] = useAtom(playAudioAtom);
-  const isThunderActive = thunderEffect[0] === 5; // 해당 인덱스의 값이 0인지 확인
+  const isThunderActive = thunderEffect[0] === 3; // 해당 인덱스의 값이 0인지 확인
 
   useFrame((state) => {
     // 번개 깜빡임 애니메이션 (번개가 활성화된 경우에만)

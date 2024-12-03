@@ -83,7 +83,7 @@ export const playAudioAtom = atom(
 
     // 연속으로 재생되는거 막음
     const lastPlayed = get(lastAudioPlayedAtom);
-    if (!force && new Date().getTime() - lastPlayed < 100) {
+    if (!force && new Date().getTime() - lastPlayed < 300) {
       return;
     }
 
