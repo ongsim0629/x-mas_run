@@ -182,16 +182,12 @@ const useCharacterControl = ({
       // 캐릭터 회전
       characterRotationTarget.current = Math.atan2(movement.x, movement.z);
 
-      // 속도 계산 (선물 개수에 따른 감속 포함)
-      const speedReduction = Math.max(0.5, 1 - giftCnt * 0.1);
-      const currentSpeed = speed * speedReduction;
-
       vel.x =
         Math.sin(rotationTarget.current + characterRotationTarget.current) *
-        currentSpeed;
+        speed;
       vel.z =
         Math.cos(rotationTarget.current + characterRotationTarget.current) *
-        currentSpeed;
+        speed;
     }
 
     updateAnimation(vel);
