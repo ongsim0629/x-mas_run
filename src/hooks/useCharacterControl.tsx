@@ -60,17 +60,8 @@ const useCharacterControl = ({
   container,
   eventBlock,
   isSkillActive,
-  speed, 
-  items,
-  itemDuration,
-  thunderEffect,
+  speed,
 }: CharacterControlConfig) => {
-  const STATIC_STATE = (vel: { x: number; y: number; z: number }) => ({
-    velocity: vel,
-    movement: { x: 0, y: 0, z: 0 },
-    isMoving: false,
-  });
-
   const { updateAnimation, playJumpAnimation, playPunchAnimation } =
     useCharacterAnimation({
       charType,
