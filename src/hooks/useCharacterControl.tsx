@@ -91,7 +91,7 @@ const useCharacterControl = ({
       thunderEffect.length > 0 && thunderEffect[0] < 3;
 
     if (isThunderDropActive && !isOnGround) {
-      const THUNDER_GRAVITY_MULTIPLIER = 2.5;
+      const THUNDER_GRAVITY_MULTIPLIER = 17;
       vel.y =
         -import.meta.env.VITE_INGAME_JUMP_FORCE * THUNDER_GRAVITY_MULTIPLIER;
       rb.setLinvel(vel, true);

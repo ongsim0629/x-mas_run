@@ -1,4 +1,4 @@
-import { Winner, WinnerData } from '../types/game';
+import { GameRankData } from '../types/game';
 import { MyGameResult, PlayerInfo } from '../types/player';
 import HttpClient from './HttpClient';
 
@@ -12,13 +12,13 @@ export default class GameService {
     return response.userId;
   }
 
-  async getTotalGameResult(roomId: string): Promise<Winner> {
-    const response = await this.httpClient.get<WinnerData>(
-      '/game/summary/total',
+  async getTotalGameResult(roomId: string): Promise<GameRankData> {
+    const response = await this.httpClient.get<GameRankData>(
+      '/game/summary/total-rank',
       {},
       { roomId },
     );
-    return response.character;
+    return response;
   }
 
   async getMyGameResult(roomId: string, userId: string): Promise<MyGameResult> {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" version="1.1">
+  <circle cx="50" cy="50" r="40" fill="#8E44AD"/>
+  <g transform="translate(50,50) rotate(15) translate(-50,-50)">
+    <rect x="35" y="35" width="30" height="30" fill="#FFD700"/>
+    <rect x="35" y="45" width="30" height="4" fill="#E74C3C"/>
+    <rect x="48" y="35" width="4" height="30" fill="#E74C3C"/>
+  </g>
+  <path d="M65 35 Q75 33 80 30" fill="none" stroke="white" stroke-width="2" opacity="0.8"/>
+  <path d="M67 45 Q77 43 85 40" fill="none" stroke="white" stroke-width="2" opacity="0.8"/>
+  <path d="M65 55 Q75 53 82 50" fill="none" stroke="white" stroke-width="2" opacity="0.8"/>
+  <circle cx="30" cy="40" r="2" fill="white"/>
+  <circle cx="25" cy="50" r="2" fill="white"/>
+  <path d="M40 55 Q50 60 60 55" stroke="white" stroke-width="2" fill="none"/>
+  <circle cx="40" cy="45" r="2" fill="white"/>
+  <circle cx="60" cy="45" r="2" fill="white"/>
+</svg>
