@@ -38,17 +38,8 @@ const GameOverPage = () => {
   }) => (
     <div className="relative inline-block w-14 h-14 bg-white rounded-lg">
       <Canvas camera={{ position: [0, 1, 5], fov: 25 }} className="">
-        {rank === 1 ? (
-          <>
-            <ambientLight intensity={0.8} />
-            <directionalLight position={[0, 5, 6]} intensity={1.5} />
-          </>
-        ) : (
-          <>
-            <ambientLight intensity={0.01} />
-            <directionalLight position={[0, 5, 6]} intensity={0.5} />
-          </>
-        )}
+        <ambientLight intensity={0.8} />
+        <directionalLight position={[0, 5, 6]} intensity={1.5} />
         {characterType === 1 && (
           <AnimatedRabbit
             scale={0.8}
