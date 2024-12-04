@@ -1,5 +1,5 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatedSanta, SantaActionName } from '../models/AnimatedSanta';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
@@ -21,6 +21,7 @@ import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
 import * as THREE from 'three';
+import DizzyEffect from '../components/effect/DizzyEffect';
 
 interface SantaControllerProps {
   player: Character;
@@ -54,6 +55,8 @@ const SantaController = ({
     'Armature|happy Idle',
   );
 
+  const [showDizzy, setShowDizzy] = useState(false);
+
   const { rb, container, character, currentPosition, currentVelocity } =
     useCharacterRefs(position, velocity);
 
@@ -82,6 +85,13 @@ const SantaController = ({
     stolenAnimationTimer,
     isCurrentlyStolen,
   } = useAnimationRefs();
+
+  useEffect(() => {
+    if (thunderEffect.length === 1) {
+      setShowDizzy(true);
+      setTimeout(() => setShowDizzy(false), 4000);
+    }
+  }, [thunderEffect]);
 
   const { updateMovement } = useCharacterControl({
     charType: 2,
@@ -168,8 +178,13 @@ const SantaController = ({
   return (
     <>
       <RigidBody colliders={false} lockRotations ref={rb}>
-        {thunderEffect.length > 0 && (
-          <Lightning thunderEffect={thunderEffect} />
+        {(thunderEffect.length > 0 || showDizzy) && (
+          <>
+            {thunderEffect.length > 0 && (
+              <Lightning thunderEffect={thunderEffect} />
+            )}
+            {showDizzy && <DizzyEffect position={[0, 4, 0]} />}
+          </>
         )}
         {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
         <group ref={container}>
