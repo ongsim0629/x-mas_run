@@ -17,7 +17,7 @@ interface Meteor {
 }
 
 const MatchingPage = () => {
-  const [playerCount, setPlayerCount] = useState<number>(1);
+  const [playerCount, setPlayerCount] = useState<number>(0);
   const [meteors, setMeteors] = useState<Meteor[]>([]);
   const [isStarting, setIsStarting] = useState(false);
   const [, setGameScreen] = useAtom(gameScreenAtom);

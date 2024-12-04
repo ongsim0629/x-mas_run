@@ -12,7 +12,7 @@ const KillLogs = () => {
           let message = '';
           if (combo === 'double') message = '더블';
           else if (combo === 'triple') message = '트리플';
-          else message = '미쳐버린';
+          else if (combo === 'multiple') message = '미쳐버린';
           return (
             <div
               key={`combo-log-${index}`}

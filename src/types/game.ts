@@ -38,7 +38,36 @@ export interface GameData {
   characters: Character[];
   mapItems: GameItem[];
 }
+export interface GameRankData {
+  columns: Column[];
+  rows: Row[];
+}
 
+export interface Column {
+  field: string;
+  headerName: string;
+  textAlign: string;
+}
+
+export interface Row {
+  accSteals: number;
+  badges: Badge[];
+  charcterType: number;
+  doubleCombos: number;
+  gifts: number;
+  multipleCombos: number;
+  nickName: string;
+  rank: number;
+  tripleCombos: number;
+  userId: string;
+}
+
+export interface Badge {
+  img: string;
+  label: string;
+}
+
+// 밑에 타입 삭제 필요
 export type Winner = {
   id: string;
   nickName: string;

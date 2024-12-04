@@ -14,9 +14,30 @@ const MiniMap = () => {
   const mapSize = 200;
   const scale = 0.005;
 
+  const generateHexadecagonPoints = () => {
+    const points = [];
+    for (let i = 0; i < 16; i++) {
+      const angle = (i * 2 * Math.PI) / 16;
+      const x = 50 + 48 * Math.cos(angle);
+      const y = 50 + 48 * Math.sin(angle);
+      points.push(`${x}% ${y}%`);
+    }
+    return points.join(', ');
+  };
+
   return (
-    <div className="absolute bottom-4 left-4 bg-black/40 rounded-lg p-2">
-      <div className="relative w-[200px] h-[200px] border-2 border-white/30 rounded-lg overflow-hidden bg-black/20">
+    <div
+      className="absolute bottom-4 left-4 bg-black/40 rounded-lg p-2"
+      style={{
+        clipPath: `polygon(${generateHexadecagonPoints()})`,
+      }}
+    >
+      <div
+        className="relative w-[200px] h-[200px] border-2 border-white/30 rounded-lg overflow-hidden bg-black/20"
+        style={{
+          clipPath: `polygon(${generateHexadecagonPoints()})`,
+        }}
+      >
         {players
           .filter((player) => player.id === id || player.giftCnt > 0)
           .map((player) => {

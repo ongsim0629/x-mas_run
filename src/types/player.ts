@@ -46,7 +46,7 @@ export interface KillLogInfo {
   victim: { id: string; nickName: string };
 }
 
-type StealComboType = 'double' | 'triple';
+type StealComboType = 'double' | 'triple' | 'multiple';
 export interface KillComboLogsInfo {
   actor: { id: string; nickName: string; combo: StealComboType };
 }

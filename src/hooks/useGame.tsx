@@ -14,11 +14,11 @@ const useGame = () => {
       queryClient.invalidateQueries({ queryKey: ['playerInfo'] }),
   });
 
-  const { mutateAsync: winnerQuery, isPending: isPendingWinnerQuery } =
+  const { mutateAsync: gameRankQuery, isPending: isPendingRankQuery } =
     useMutation({
       mutationFn: (roomId: string) => game.getTotalGameResult(roomId),
       onSuccess: () =>
-        queryClient.invalidateQueries({ queryKey: ['winnerInfo'] }),
+        queryClient.invalidateQueries({ queryKey: ['rankInfo'] }),
     });
 
   const { mutateAsync: myGameResultQuery, isPending: isPendingResultQuery } =
@@ -30,8 +30,8 @@ const useGame = () => {
     });
   return {
     registerPlayerQuery,
-    winnerQuery,
-    isPendingWinnerQuery,
+    gameRankQuery,
+    isPendingRankQuery,
     myGameResultQuery,
     isPendingResultQuery,
   };

@@ -61,6 +61,7 @@ const useCharacterControl = ({
   eventBlock,
   isSkillActive,
   speed,
+  thunderEffect,
 }: CharacterControlConfig) => {
   const { updateAnimation, playJumpAnimation, playPunchAnimation } =
     useCharacterAnimation({
@@ -85,6 +86,29 @@ const useCharacterControl = ({
     const vel = rb.linvel();
     const pos = rb.translation();
     const isOnGround = Math.abs(rb.linvel().y) < 0.1;
+
+    const isThunderDropActive =
+      thunderEffect.length > 0 && thunderEffect[0] < 3;
+
+    if (isThunderDropActive && !isOnGround) {
+      const THUNDER_GRAVITY_MULTIPLIER = 17;
+      vel.y =
+        -import.meta.env.VITE_INGAME_JUMP_FORCE * THUNDER_GRAVITY_MULTIPLIER;
+      rb.setLinvel(vel, true);
+
+      setPlayers((prev) =>
+        prev.map((player) =>
+          player.id === id
+            ? {
+                ...player,
+                position: { x: pos.x, y: pos.y, z: pos.z },
+                velocity: { ...vel },
+              }
+            : player,
+        ),
+      );
+      return;
+    }
 
     if (isSkillActive) {
       switch (charType) {

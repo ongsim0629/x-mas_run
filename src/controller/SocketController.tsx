@@ -9,7 +9,7 @@ import {
   killLogsAtom,
 } from '../atoms/GameAtoms';
 import useSocket from '../hooks/useSocket';
-import useKeyControl from '../hooks/useKeyControl'; // 새로 만든 훅 import
+import useKeyControl from '../hooks/useKeyControl';
 
 const SocketController = () => {
   const { socket } = useSocket();
@@ -23,6 +23,7 @@ const SocketController = () => {
   const setGameItems = useSetAtom(gameItemsAtom);
 
   const getControls = useKeyControl();
+  const lastControls = useRef<ReturnType<typeof getControls>>();
 
   // steal 쿨타임 관리 ref
   const stealCooldown = useRef(false);
@@ -65,27 +66,24 @@ const SocketController = () => {
     if (!currentPlayer) return;
 
     const now = Date.now();
-    if (now - lastSentTime.current < import.meta.env.VITE_SEND_INTERVAL) return;
-
-    if (!isInitialized.current) {
-      prevPosition.current = currentPlayer.position;
-      isInitialized.current = true;
-      return;
-    }
-
     const controls = getControls();
-    const wantsToSteal = controls.catch;
-    const wantsToUseSkill = controls.skill;
-    const wantsToUseItem = controls.item;
 
+    // 중요 키 입력(스킬, 아이템 사용 등) 감지
+    const hasImportantInput =
+      (controls.skill &&
+        (!lastControls.current || !lastControls.current.skill)) ||
+      (controls.item &&
+        (!lastControls.current || !lastControls.current.item)) ||
+      (controls.catch && !stealCooldown.current);
+
+    // 일반 이동은 기존 인터벌로 처리
     const shouldUpdatePosition =
-      hasSignificantMovement(currentPlayer.position, prevPosition.current) ||
-      wantsToSteal ||
-      wantsToUseSkill ||
-      wantsToUseItem;
+      (now - lastSentTime.current >= import.meta.env.VITE_SEND_INTERVAL &&
+        hasSignificantMovement(currentPlayer.position, prevPosition.current)) ||
+      hasImportantInput;
 
     if (shouldUpdatePosition) {
-      if (wantsToSteal && !stealCooldown.current) {
+      if (controls.catch && !stealCooldown.current) {
         socket.updateMovement({
           character: currentPlayer,
           steal: true,
@@ -99,15 +97,14 @@ const SocketController = () => {
           () => (stealCooldown.current = false),
           1000,
         );
-      } else if (wantsToUseSkill) {
-        // 스킬 사용 요청만 전송 (쿨타임은 서버에서 관리)
+      } else if (controls.skill) {
         socket.updateMovement({
           character: currentPlayer,
           steal: false,
           skill: true,
           item: false,
         });
-      } else if (wantsToUseItem) {
+      } else if (controls.item) {
         socket.updateMovement({
           character: currentPlayer,
           steal: false,
@@ -126,6 +123,8 @@ const SocketController = () => {
       prevPosition.current = currentPlayer.position;
       lastSentTime.current = now;
     }
+
+    lastControls.current = controls;
   }, [player.id, socket, players, getControls]);
 
   const hasSignificantMovement = useCallback(
