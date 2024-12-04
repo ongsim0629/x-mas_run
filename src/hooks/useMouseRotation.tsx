@@ -46,7 +46,7 @@ const useMouseRotation = (props: MouseControlProps) => {
         const isOnGround = Math.abs(props.velocity.y) < 0.1;
         const minY = isOnGround ? -0.5 : -1;
         props.rotationTargetY.current = MathUtils.clamp(
-          props.rotationTargetY.current -
+          props.rotationTargetY.current +
             event.movementY * import.meta.env.VITE_INGAME_MOUSE_SPEED,
           minY,
           0.5,
