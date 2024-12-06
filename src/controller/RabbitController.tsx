@@ -87,9 +87,9 @@ const RabbitController = ({
   } = useAnimationRefs();
 
   useEffect(() => {
-    if (thunderEffect.length === 1) {
+    if (thunderEffect[0] === 1) {
       setShowDizzy(true);
-      setTimeout(() => setShowDizzy(false), 4000);
+      setTimeout(() => setShowDizzy(false), 2000);
     }
   }, [thunderEffect]);
 
