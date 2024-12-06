@@ -82,14 +82,19 @@ const SocketController = () => {
         hasSignificantMovement(currentPlayer.position, prevPosition.current)) ||
       hasImportantInput;
 
-    if (shouldUpdatePosition) {
-      if (controls.catch && !stealCooldown.current) {
-        socket.updateMovement({
-          character: currentPlayer,
-          steal: true,
-          skill: false,
-          item: false,
-        });
+    const moveData = {
+      character: currentPlayer,
+      steal: false,
+      skill: false,
+      item: false,
+      teleportAck: false,
+    };
+
+    if (currentPlayer.isAwaitingTeleportAck || shouldUpdatePosition) {
+      if (currentPlayer.isAwaitingTeleportAck) {
+        moveData.teleportAck = true;
+      } else if (controls.catch && !stealCooldown.current) {
+        moveData.steal = true;
         stealCooldown.current = true;
         if (stealCooldownTimer.current)
           clearTimeout(stealCooldownTimer.current);
@@ -98,27 +103,12 @@ const SocketController = () => {
           1000,
         );
       } else if (controls.skill) {
-        socket.updateMovement({
-          character: currentPlayer,
-          steal: false,
-          skill: true,
-          item: false,
-        });
+        moveData.skill = true;
       } else if (controls.item) {
-        socket.updateMovement({
-          character: currentPlayer,
-          steal: false,
-          skill: false,
-          item: true,
-        });
-      } else {
-        socket.updateMovement({
-          character: currentPlayer,
-          steal: false,
-          skill: false,
-          item: false,
-        });
+        moveData.item = true;
       }
+
+      socket.updateMovement(moveData);
 
       prevPosition.current = currentPlayer.position;
       lastSentTime.current = now;
