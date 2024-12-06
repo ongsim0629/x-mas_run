@@ -190,7 +190,9 @@ const SantaController = ({
             {thunderEffect.length > 0 && (
               <Lightning thunderEffect={thunderEffect} />
             )}
-            {showDizzy && <DizzyEffect position={[0, 4, 0]} />}
+            {showDizzy && itemDuration.shield === 0 && (
+              <DizzyEffect position={[0, 4, 0]} />
+            )}
           </>
         )}
         {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
@@ -226,7 +228,11 @@ const SantaController = ({
             ))}
           </group>
         </group>
-        <ProtectEffect duration={protectMotion} radius={2.2} />
+        <ProtectEffect
+          duration={protectMotion}
+          radius={2.2}
+          color={itemDuration.shield > 0 ? '#58ACFA' : '#FFE31A'}
+        />
         <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
       </RigidBody>
       <CircleShadow target={character} />
