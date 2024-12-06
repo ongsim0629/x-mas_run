@@ -1,5 +1,5 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AnimatedSanta, SantaActionName } from '../models/AnimatedSanta';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
@@ -22,6 +22,8 @@ import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
 import * as THREE from 'three';
 import DizzyEffect from '../components/effect/DizzyEffect';
+import { playerRotationAtom } from '../atoms/PlayerAtoms';
+import { useAtomValue } from 'jotai';
 
 interface SantaControllerProps {
   player: Character;
@@ -56,6 +58,11 @@ const SantaController = ({
   );
 
   const [showDizzy, setShowDizzy] = useState(false);
+
+  const rotation = useAtomValue(playerRotationAtom);
+  const characterRotation = useMemo(() => {
+    return new THREE.Euler(0, rotation, 0, 'XYZ');
+  }, [rotation]);
 
   const { rb, container, character, currentPosition, currentVelocity } =
     useCharacterRefs(position, velocity);
@@ -204,12 +211,8 @@ const SantaController = ({
             )}
             {isSkillActive && (
               <Sleigh
+                velocity={characterRotation}
                 position={[0, -1.5, 0]}
-                rotation={[
-                  0,
-                  (container.current?.rotation.y ?? 0) - Math.PI, // π(180도) 빼기
-                  0,
-                ]}
                 scale={[2, 2, 2]}
               />
             )}
