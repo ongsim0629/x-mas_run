@@ -18,21 +18,8 @@ export default defineConfig({
     postcss: './postcss.config.js',
   },
   build: {
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        dead_code: true,
-        unused: true,
-        drop_console: true,
-        if_return: true,
-        pure_funcs: ['console.log'],
-        collapse_vars: true,
-        reduce_vars: true,
-      },
-      format: {
-        comments: false,
-      },
-    },
+    minify: 'esbuild',
+    target: 'esnext',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -56,8 +43,6 @@ export default defineConfig({
         assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
       },
     },
-    // 추가 빌드 옵션
-    target: 'es2015', // 호환성 타겟
     sourcemap: false, // 프로덕션 빌드시 소스맵 비활성화
   },
 });
