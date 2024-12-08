@@ -70,7 +70,7 @@ export default function AnimatedGhost({
     return () => {
       actions[animation]?.fadeOut(0.5);
     };
-  }, [animation]);
+  }, [animation])
 
   useFrame(({ camera, clock }) => {
     if (nicknameRef.current) {
