@@ -11,6 +11,7 @@ export const playerMovementAtom = atom<PlayerMovement>({
     position: { x: 0, y: 0, z: 0 },
     velocity: { x: 0, y: 0, z: 0 },
   },
+  teleportAck: false,
 });
 export const playersAtom = atom<Character[]>([
   {
@@ -32,6 +33,7 @@ export const playersAtom = atom<Character[]>([
     items: [],
     itemDuration: { boost: 0, shield: 0 },
     thunderEffect: [],
+    isAwaitingTeleportAck: false,
   },
 ]);
 

@@ -1,6 +1,6 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
-import { useState, useEffect } from 'react';
 import AnimatedSanta, { SantaActionName } from '../models/AnimatedSanta';
+import { useState, useEffect, useMemo } from 'react';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
@@ -20,8 +20,11 @@ import { Model as Sleigh } from '../models/Sleigh'; // Sleigh 모델 import
 import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
-import { Vector3 } from 'three';
+import { Euler, Vector3 } from 'three';
 import DizzyEffect from '../components/effect/DizzyEffect';
+import { playerRotationAtom } from '../atoms/PlayerAtoms';
+import { useAtomValue } from 'jotai';
+import { useControls } from 'leva';
 
 interface SantaControllerProps {
   player: Character;
@@ -56,6 +59,14 @@ const SantaController = ({
   );
 
   const [showDizzy, setShowDizzy] = useState(false);
+  const { MOUSE_SPEED } = useControls('', {
+    MOUSE_SPEED: { value: 0.025, min: 0.005, max: 0.03, step: 0.005 },
+  });
+
+  const rotation = useAtomValue(playerRotationAtom);
+  const characterRotation = useMemo(() => {
+    return new Euler(0, rotation, 0, 'XYZ');
+  }, [rotation]);
 
   const { rb, container, character, currentPosition, currentVelocity } =
     useCharacterRefs(position, velocity);
@@ -87,9 +98,9 @@ const SantaController = ({
   } = useAnimationRefs();
 
   useEffect(() => {
-    if (thunderEffect.length === 1) {
+    if (thunderEffect[0] === 1) {
       setShowDizzy(true);
-      setTimeout(() => setShowDizzy(false), 4000);
+      setTimeout(() => setShowDizzy(false), 2000);
     }
   }, [thunderEffect]);
 
@@ -162,6 +173,7 @@ const SantaController = ({
     rotationTarget,
     rotationTargetY,
     velocity,
+    mouseSpeed: MOUSE_SPEED,
   });
 
   useGameLoop({
@@ -183,7 +195,9 @@ const SantaController = ({
             {thunderEffect.length > 0 && (
               <Lightning thunderEffect={thunderEffect} />
             )}
-            {showDizzy && <DizzyEffect position={[0, 4, 0]} />}
+            {showDizzy && itemDuration.shield === 0 && (
+              <DizzyEffect position={[0, 4, 0]} />
+            )}
           </>
         )}
         {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
@@ -202,12 +216,8 @@ const SantaController = ({
             )}
             {isSkillActive && (
               <Sleigh
+                velocity={characterRotation}
                 position={[0, -1.5, 0]}
-                rotation={[
-                  0,
-                  (container.current?.rotation.y ?? 0) - Math.PI, // π(180도) 빼기
-                  0,
-                ]}
                 scale={[2, 2, 2]}
               />
             )}
@@ -221,7 +231,11 @@ const SantaController = ({
             ))}
           </group>
         </group>
-        <ProtectEffect duration={protectMotion} radius={2.2} />
+        <ProtectEffect
+          duration={protectMotion}
+          radius={2.2}
+          color={itemDuration.shield > 0 ? '#58ACFA' : '#FFE31A'}
+        />
         <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
       </RigidBody>
       <CircleShadow target={character} />

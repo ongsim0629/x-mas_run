@@ -27,6 +27,7 @@ export interface Character {
   items: ItemType[];
   itemDuration: { boost: number; shield: number };
   thunderEffect: number[];
+  isAwaitingTeleportAck: boolean;
 }
 
 export interface PlayerMovement {
@@ -34,6 +35,7 @@ export interface PlayerMovement {
   skill: boolean;
   item: Boolean;
   character: Pick<Character, 'id' | 'position' | 'velocity'>;
+  teleportAck: boolean;
 }
 
 export interface PlayerInfo {
