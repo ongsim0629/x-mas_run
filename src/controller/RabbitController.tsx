@@ -22,6 +22,7 @@ import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
 import DizzyEffect from '../components/effect/DizzyEffect';
+import { useControls } from 'leva';
 
 interface RabbitControllerProps {
   player: Character;
@@ -56,6 +57,9 @@ const RabbitController = ({
   );
 
   const [showDizzy, setShowDizzy] = useState(false);
+  const { MOUSE_SPEED } = useControls('', {
+    MOUSE_SPEED: { value: 0.025, min: 0.005, max: 0.03, step: 0.005 },
+  });
 
   const { rb, container, character, currentPosition, currentVelocity } =
     useCharacterRefs(position, velocity);
@@ -191,6 +195,7 @@ const RabbitController = ({
     rotationTarget,
     rotationTargetY,
     velocity,
+    mouseSpeed: MOUSE_SPEED,
   });
 
   useGameLoop({

@@ -24,6 +24,7 @@ import * as THREE from 'three';
 import DizzyEffect from '../components/effect/DizzyEffect';
 import { playerRotationAtom } from '../atoms/PlayerAtoms';
 import { useAtomValue } from 'jotai';
+import { useControls } from 'leva';
 
 interface SantaControllerProps {
   player: Character;
@@ -58,6 +59,9 @@ const SantaController = ({
   );
 
   const [showDizzy, setShowDizzy] = useState(false);
+  const { MOUSE_SPEED } = useControls('', {
+    MOUSE_SPEED: { value: 0.025, min: 0.005, max: 0.03, step: 0.005 },
+  });
 
   const rotation = useAtomValue(playerRotationAtom);
   const characterRotation = useMemo(() => {
@@ -169,6 +173,7 @@ const SantaController = ({
     rotationTarget,
     rotationTargetY,
     velocity,
+    mouseSpeed: MOUSE_SPEED,
   });
 
   useGameLoop({

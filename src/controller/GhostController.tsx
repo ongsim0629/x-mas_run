@@ -21,6 +21,7 @@ import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
 import * as THREE from 'three';
 import DizzyEffect from '../components/effect/DizzyEffect';
+import { useControls } from 'leva';
 
 interface GhostControllerProps {
   player: Character;
@@ -55,6 +56,9 @@ const GhostController = ({
   );
 
   const [showDizzy, setShowDizzy] = useState(false);
+  const { MOUSE_SPEED } = useControls('', {
+    MOUSE_SPEED: { value: 0.025, min: 0.005, max: 0.03, step: 0.005 },
+  });
 
   const { rb, container, character, currentPosition, currentVelocity } =
     useCharacterRefs(position, velocity);
@@ -161,6 +165,7 @@ const GhostController = ({
     rotationTarget,
     rotationTargetY,
     velocity,
+    mouseSpeed: MOUSE_SPEED,
   });
 
   useGameLoop({

@@ -7,6 +7,7 @@ type MouseControlProps = {
   rotationTarget: MutableRefObject<number>;
   rotationTargetY: MutableRefObject<number>;
   velocity: Position;
+  mouseSpeed: number;
 };
 
 const useMouseRotation = (props: MouseControlProps) => {
@@ -41,13 +42,11 @@ const useMouseRotation = (props: MouseControlProps) => {
   useEffect(() => {
     const onMouseMove = (event: MouseEvent) => {
       if (props.mouseControlRef.current?.isLocked) {
-        props.rotationTarget.current -=
-          event.movementX * import.meta.env.VITE_INGAME_MOUSE_SPEED;
+        props.rotationTarget.current -= event.movementX * props.mouseSpeed;
         const isOnGround = Math.abs(props.velocity.y) < 0.1;
         const minY = isOnGround ? -0.5 : -1;
         props.rotationTargetY.current = MathUtils.clamp(
-          props.rotationTargetY.current +
-            event.movementY * import.meta.env.VITE_INGAME_MOUSE_SPEED,
+          props.rotationTargetY.current + event.movementY * props.mouseSpeed,
           minY,
           0.5,
         );
@@ -56,7 +55,7 @@ const useMouseRotation = (props: MouseControlProps) => {
 
     document.addEventListener('mousemove', onMouseMove);
     return () => document.removeEventListener('mousemove', onMouseMove);
-  }, [import.meta.env.VITE_INGAME_MOUSE_SPEED, props.velocity.y]);
+  }, [props.mouseSpeed, props.velocity.y]);
 };
 
 export default useMouseRotation;
