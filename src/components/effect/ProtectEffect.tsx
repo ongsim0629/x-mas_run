@@ -1,13 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh, MeshBasicMaterial } from 'three';
+import { Mesh, MeshBasicMaterial, Color } from 'three';
 
 interface ProtectEffectProps {
   duration: number;
   radius: number;
+  color?: string; // 동적으로 전달될 색상
 }
 
-const ProtectEffect = ({ duration, radius }: ProtectEffectProps) => {
+const ProtectEffect = ({
+  duration,
+  radius,
+  color = '#FFE31A',
+}: ProtectEffectProps) => {
   const meshRef = useRef<Mesh>(null);
   const materialRef = useRef<MeshBasicMaterial>(null);
   const activeRef = useRef<boolean>(false);
@@ -15,7 +20,12 @@ const ProtectEffect = ({ duration, radius }: ProtectEffectProps) => {
   // protect 상태가 변경될 때마다 활성화 상태 업데이트
   useEffect(() => {
     activeRef.current = duration > 0;
-  }, [duration]);
+
+    // 색상 업데이트
+    if (materialRef.current) {
+      materialRef.current.color = new Color(color);
+    }
+  }, [duration, color]);
 
   useFrame(() => {
     if (!meshRef.current || !materialRef.current || !activeRef.current) return;
@@ -41,7 +51,7 @@ const ProtectEffect = ({ duration, radius }: ProtectEffectProps) => {
         ref={materialRef}
         transparent
         opacity={0.3}
-        color="#FFE31A"
+        color={color}
       />
     </mesh>
   );

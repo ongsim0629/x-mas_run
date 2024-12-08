@@ -22,6 +22,7 @@ import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
 import DizzyEffect from '../components/effect/DizzyEffect';
+import { useControls } from 'leva';
 
 interface RabbitControllerProps {
   player: Character;
@@ -56,6 +57,9 @@ const RabbitController = ({
   );
 
   const [showDizzy, setShowDizzy] = useState(false);
+  const { MOUSE_SPEED } = useControls('', {
+    MOUSE_SPEED: { value: 0.025, min: 0.005, max: 0.03, step: 0.005 },
+  });
 
   const { rb, container, character, currentPosition, currentVelocity } =
     useCharacterRefs(position, velocity);
@@ -87,9 +91,9 @@ const RabbitController = ({
   } = useAnimationRefs();
 
   useEffect(() => {
-    if (thunderEffect.length === 1) {
+    if (thunderEffect[0] === 1) {
       setShowDizzy(true);
-      setTimeout(() => setShowDizzy(false), 4000);
+      setTimeout(() => setShowDizzy(false), 2000);
     }
   }, [thunderEffect]);
 
@@ -191,6 +195,7 @@ const RabbitController = ({
     rotationTarget,
     rotationTargetY,
     velocity,
+    mouseSpeed: MOUSE_SPEED,
   });
 
   useGameLoop({
@@ -212,7 +217,9 @@ const RabbitController = ({
             {thunderEffect.length > 0 && (
               <Lightning thunderEffect={thunderEffect} />
             )}
-            {showDizzy && <DizzyEffect position={[0, 4, 0]} />}
+            {showDizzy && itemDuration.shield === 0 && (
+              <DizzyEffect position={[0, 4, 0]} />
+            )}
           </>
         )}
         {isLocalPlayer && <PointerLockControls ref={mouseControlRef} />}
@@ -241,7 +248,11 @@ const RabbitController = ({
             ))}
           </group>
         </group>
-        <ProtectEffect duration={protectMotion} radius={2.2} />
+        <ProtectEffect
+          duration={protectMotion}
+          radius={2.2}
+          color={itemDuration.shield > 0 ? '#58ACFA' : '#FFE31A'}
+        />
         <CapsuleCollider args={[0.7, 0.6]} position={[0, 1.3, 0]} />
       </RigidBody>
       <CircleShadow target={character} />
