@@ -1,11 +1,5 @@
-import {
-  BackSide,
-  Group,
-  Mesh,
-  MeshStandardMaterial,
-  MeshBasicMaterial,
-} from 'three';
-import { useGLTF, LOD } from '@react-three/drei';
+import { BackSide, Group, Mesh, MeshStandardMaterial } from 'three';
+import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
 import { Position } from '../types/player';
 import { useState, useRef } from 'react';
@@ -29,15 +23,12 @@ type Props = {
   position: Position;
   color: string;
   isDisappearing?: boolean;
-  isSimplified?: boolean; // 단순화된 버전인지
-  isVerySimplified?: boolean; // 매우 단순화된 버전인지
-  lodLevel?: number; // LOD 레벨
 } & Omit<JSX.IntrinsicElements['group'], 'position'>;
 
 export function ItemBox({
   position,
   color,
-  isDisappearing = false,isSimplified, isVerySimplified, lodLevel
+  isDisappearing = false,
   ...props
 }: Props) {
   const { nodes } = useGLTF('/models/ItemBox.glb') as GLTFResult;
@@ -57,41 +48,9 @@ export function ItemBox({
     if (groupRef.current && !isDisappearing) {
       groupRef.current.position.y =
         position.y + Math.sin(state.clock.elapsedTime * 2) * 0.1;
-      groupRef.current.rotation.y += isVerySimplified
-        ? 0.002
-        : isSimplified
-          ? 0.005
-          : 0.01;
+      groupRef.current.rotation.y += 0.01;
     }
   });
-
-  // 매우 단순화된 버전
-  if (isVerySimplified) {
-    return (
-      <mesh position={positionArray} scale={scale}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshBasicMaterial color={color} opacity={0.8} transparent />
-      </mesh>
-    );
-  }
-
-  if (isSimplified) {
-    return (
-      <group ref={groupRef} position={positionArray} scale={scale}>
-        <mesh>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial 
-            color={color} 
-            emissive={color}
-            emissiveIntensity={0.2}
-            opacity={0.9} 
-            transparent 
-          />
-        </mesh>
-      </group>
-    );
-  }
-
 
   return (
     <group
