@@ -39,7 +39,7 @@ type AnimatedSantaProps = {
   nickName: string;
 } & JSX.IntrinsicElements['group'];
 
-export function AnimatedSanta({
+export default function AnimatedSanta({
   animation,
   charColor = 'red',
   nickName = 'TUTTIN',

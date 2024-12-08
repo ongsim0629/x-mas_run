@@ -66,7 +66,7 @@ type AnimatedRabbitProps = {
   nickName: string;
 } & JSX.IntrinsicElements['group'];
 
-export function AnimatedRabbit({
+export default function AnimatedRabbit({
   animation,
   charColor = 'gold',
   nickName = 'ONGSIM',

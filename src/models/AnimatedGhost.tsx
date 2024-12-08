@@ -48,7 +48,7 @@ type AnimatedGhostProps = {
   isLocalPlayer?: boolean;
 } & JSX.IntrinsicElements['group'];
 
-export function AnimatedGhost({
+export default function AnimatedGhost({
   animation,
   charColor,
   nickName,

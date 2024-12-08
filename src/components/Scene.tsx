@@ -1,13 +1,14 @@
+import { lazy } from 'react';
 import { Environment } from '@react-three/drei';
-import RabbitController from '../controller/RabbitController';
-import SantaController from '../controller/SantaController';
-import GhostController from '../controller/GhostController';
 import { Physics } from '@react-three/rapier';
 import { useAtomValue } from 'jotai';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import Map from './map/Map';
 import { gameItemsAtom } from '../atoms/GameAtoms';
 import { ItemBox } from '../models/ItemBox';
+const RabbitController = lazy(() => import('../controller/RabbitController'));
+const SantaController = lazy(() => import('../controller/SantaController'));
+const GhostController = lazy(() => import('../controller/GhostController'));
 
 export default function Scene() {
   const players = useAtomValue(playersAtom);

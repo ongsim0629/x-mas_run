@@ -1,6 +1,6 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
+import AnimatedRabbit, { RabbitActionName } from '../models/AnimatedRabbit';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';

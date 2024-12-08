@@ -1,15 +1,15 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { gameScreenAtom, roomIdAtom } from '../atoms/GameAtoms';
-import { useEffect, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import useGame from '../hooks/useGame';
 import { MyGameResult } from '../types/player';
-import { AnimatedRabbit } from '../models/AnimatedRabbit';
-import { AnimatedSanta } from '../models/AnimatedSanta';
-import { AnimatedGhost } from '../hooks/AnimatedGhost';
 import { GameScreen } from '../types/game';
 import { Canvas } from '@react-three/fiber';
 import Snow from '../components/UI/Snow';
+const AnimatedRabbit = lazy(() => import('../models/AnimatedRabbit'));
+const AnimatedSanta = lazy(() => import('../models/AnimatedSanta'));
+const AnimatedGhost = lazy(() => import('../models/AnimatedGhost'));
 const RotatingWinner = ({
   charType,
   charColor,

@@ -1,6 +1,6 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
 import { useState, useEffect } from 'react';
-import { AnimatedSanta, SantaActionName } from '../models/AnimatedSanta';
+import AnimatedSanta, { SantaActionName } from '../models/AnimatedSanta';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
