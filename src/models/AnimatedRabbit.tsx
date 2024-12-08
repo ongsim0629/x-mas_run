@@ -1,4 +1,10 @@
-import * as THREE from 'three';
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from 'three';
 import React, { useEffect, useRef } from 'react';
 import { useFrame, useGraph } from '@react-three/fiber';
 import { useGLTF, useAnimations, Text } from '@react-three/drei';
@@ -24,32 +30,32 @@ export type RabbitActionName =
   | 'CharacterArmature|Wave'
   | 'CharacterArmature|Yes';
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: RabbitActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Body_2: THREE.SkinnedMesh;
-    Body_3: THREE.SkinnedMesh;
-    Body_4: THREE.SkinnedMesh;
-    Ears: THREE.SkinnedMesh;
-    Head_2: THREE.SkinnedMesh;
-    Head_3: THREE.SkinnedMesh;
-    Head_4: THREE.SkinnedMesh;
-    Head_5: THREE.SkinnedMesh;
-    Head_6: THREE.SkinnedMesh;
-    Arms_1: THREE.SkinnedMesh;
-    Arms_2: THREE.SkinnedMesh;
-    Root: THREE.Bone;
+    Body_2: SkinnedMesh;
+    Body_3: SkinnedMesh;
+    Body_4: SkinnedMesh;
+    Ears: SkinnedMesh;
+    Head_2: SkinnedMesh;
+    Head_3: SkinnedMesh;
+    Head_4: SkinnedMesh;
+    Head_5: SkinnedMesh;
+    Head_6: SkinnedMesh;
+    Arms_1: SkinnedMesh;
+    Arms_2: SkinnedMesh;
+    Root: Bone;
   };
   materials: {
-    Main: THREE.MeshStandardMaterial;
-    Main_Light: THREE.MeshStandardMaterial;
-    Main2: THREE.MeshStandardMaterial;
-    EyeColor: THREE.MeshStandardMaterial;
-    White: THREE.MeshStandardMaterial;
-    Black: THREE.MeshStandardMaterial;
+    Main: MeshStandardMaterial;
+    Main_Light: MeshStandardMaterial;
+    Main2: MeshStandardMaterial;
+    EyeColor: MeshStandardMaterial;
+    White: MeshStandardMaterial;
+    Black: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
@@ -66,12 +72,12 @@ export function AnimatedRabbit({
   nickName = 'ONGSIM',
   ...props
 }: AnimatedRabbitProps) {
-  const group = React.useRef<THREE.Group>(null);
+  const group = React.useRef<Group>(null);
   const { scene, animations } = useGLTF('/models/AnimatedRabbit.glb');
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
-  const nicknameRef = useRef<THREE.Group>(null);
+  const nicknameRef = useRef<Group>(null);
 
   useEffect(() => {
     actions[animation]?.reset().fadeIn(0.5).play();

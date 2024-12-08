@@ -1,33 +1,33 @@
-import * as THREE from 'three';
+import { Mesh, MeshStandardMaterial } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
 
 type GLTFResult = GLTF & {
   nodes: {
-    fruit001: THREE.Mesh;
-    fruit002: THREE.Mesh;
-    fruit003: THREE.Mesh;
-    fruit004: THREE.Mesh;
-    fruit005: THREE.Mesh;
-    fruit006: THREE.Mesh;
-    fruit007: THREE.Mesh;
-    Object_4: THREE.Mesh;
-    Object_5: THREE.Mesh;
-    Object_6: THREE.Mesh;
-    Object_7: THREE.Mesh;
+    fruit001: Mesh;
+    fruit002: Mesh;
+    fruit003: Mesh;
+    fruit004: Mesh;
+    fruit005: Mesh;
+    fruit006: Mesh;
+    fruit007: Mesh;
+    Object_4: Mesh;
+    Object_5: Mesh;
+    Object_6: Mesh;
+    Object_7: Mesh;
   };
   materials: {
-    ['fruit.001']: THREE.MeshStandardMaterial;
-    ['fruit.002']: THREE.MeshStandardMaterial;
-    ['fruit.003']: THREE.MeshStandardMaterial;
-    ['fruit.004']: THREE.MeshStandardMaterial;
-    ['fruit.005']: THREE.MeshStandardMaterial;
-    ['fruit.006']: THREE.MeshStandardMaterial;
-    ['fruit.007']: THREE.MeshStandardMaterial;
-    portal: THREE.MeshStandardMaterial;
-    Rock: THREE.MeshStandardMaterial;
-    ['Rock.001']: THREE.MeshStandardMaterial;
-    plant: THREE.MeshStandardMaterial;
+    ['fruit.001']: MeshStandardMaterial;
+    ['fruit.002']: MeshStandardMaterial;
+    ['fruit.003']: MeshStandardMaterial;
+    ['fruit.004']: MeshStandardMaterial;
+    ['fruit.005']: MeshStandardMaterial;
+    ['fruit.006']: MeshStandardMaterial;
+    ['fruit.007']: MeshStandardMaterial;
+    portal: MeshStandardMaterial;
+    Rock: MeshStandardMaterial;
+    ['Rock.001']: MeshStandardMaterial;
+    plant: MeshStandardMaterial;
   };
 };
 

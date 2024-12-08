@@ -1,5 +1,12 @@
 import { GLTF } from 'three-stdlib';
-import * as THREE from 'three';
+import {
+  Blending,
+  Mesh,
+  MeshStandardMaterial,
+  Sprite,
+  Texture,
+  Vector3,
+} from 'three';
 
 export interface EffectConfig {
   COUNT: number;
@@ -18,16 +25,16 @@ export interface EffectConfig {
 }
 
 export interface CreateSpriteProps {
-  texture: THREE.Texture;
+  texture: Texture;
   color?: string;
   opacity?: number;
-  blending?: THREE.Blending;
+  blending?: Blending;
 }
 
 export interface AnimateSpriteProps {
-  sprite: THREE.Sprite;
-  startPosition: THREE.Vector3;
-  endPosition: THREE.Vector3;
+  sprite: Sprite;
+  startPosition: Vector3;
+  endPosition: Vector3;
   startScale: number;
   endScale: number;
   duration: number;
@@ -50,43 +57,43 @@ export const GIFT_COLORS: readonly GiftColor[] = [
 
 export type GLTFGiftResult = GLTF & {
   nodes: {
-    Cube_Material002_0: THREE.Mesh;
-    Cube001_Material008_0: THREE.Mesh;
-    Cube003_Material009_0: THREE.Mesh;
-    Cube002_Material010_0: THREE.Mesh;
-    Cube004_Material011_0: THREE.Mesh;
-    Cube005_Material012_0: THREE.Mesh;
-    Sphere_Material023_0: THREE.Mesh;
-    Sphere001_Material021_0: THREE.Mesh;
-    Sphere002_Material020_0: THREE.Mesh;
-    Sphere003_Material019_0: THREE.Mesh;
-    Sphere004_Material024_0: THREE.Mesh;
-    Sphere005_Material022_0: THREE.Mesh;
-    Sphere006_Material015_0: THREE.Mesh;
-    Sphere007_Material016_0: THREE.Mesh;
-    Sphere008_Material013_0: THREE.Mesh;
-    Sphere009_Material014_0: THREE.Mesh;
-    Sphere010_Material018_0: THREE.Mesh;
-    Sphere011_Material017_0: THREE.Mesh;
+    Cube_Material002_0: Mesh;
+    Cube001_Material008_0: Mesh;
+    Cube003_Material009_0: Mesh;
+    Cube002_Material010_0: Mesh;
+    Cube004_Material011_0: Mesh;
+    Cube005_Material012_0: Mesh;
+    Sphere_Material023_0: Mesh;
+    Sphere001_Material021_0: Mesh;
+    Sphere002_Material020_0: Mesh;
+    Sphere003_Material019_0: Mesh;
+    Sphere004_Material024_0: Mesh;
+    Sphere005_Material022_0: Mesh;
+    Sphere006_Material015_0: Mesh;
+    Sphere007_Material016_0: Mesh;
+    Sphere008_Material013_0: Mesh;
+    Sphere009_Material014_0: Mesh;
+    Sphere010_Material018_0: Mesh;
+    Sphere011_Material017_0: Mesh;
   };
   materials: {
-    ['Material.002']: THREE.MeshStandardMaterial;
-    ['Material.008']: THREE.MeshStandardMaterial;
-    ['Material.009']: THREE.MeshStandardMaterial;
-    ['Material.010']: THREE.MeshStandardMaterial;
-    ['Material.011']: THREE.MeshStandardMaterial;
-    ['Material.012']: THREE.MeshStandardMaterial;
-    ['Material.023']: THREE.MeshStandardMaterial;
-    ['Material.021']: THREE.MeshStandardMaterial;
-    ['Material.020']: THREE.MeshStandardMaterial;
-    ['Material.019']: THREE.MeshStandardMaterial;
-    ['Material.024']: THREE.MeshStandardMaterial;
-    ['Material.022']: THREE.MeshStandardMaterial;
-    ['Material.015']: THREE.MeshStandardMaterial;
-    ['Material.016']: THREE.MeshStandardMaterial;
-    ['Material.013']: THREE.MeshStandardMaterial;
-    ['Material.014']: THREE.MeshStandardMaterial;
-    ['Material.018']: THREE.MeshStandardMaterial;
-    ['Material.017']: THREE.MeshStandardMaterial;
+    ['Material.002']: MeshStandardMaterial;
+    ['Material.008']: MeshStandardMaterial;
+    ['Material.009']: MeshStandardMaterial;
+    ['Material.010']: MeshStandardMaterial;
+    ['Material.011']: MeshStandardMaterial;
+    ['Material.012']: MeshStandardMaterial;
+    ['Material.023']: MeshStandardMaterial;
+    ['Material.021']: MeshStandardMaterial;
+    ['Material.020']: MeshStandardMaterial;
+    ['Material.019']: MeshStandardMaterial;
+    ['Material.024']: MeshStandardMaterial;
+    ['Material.022']: MeshStandardMaterial;
+    ['Material.015']: MeshStandardMaterial;
+    ['Material.016']: MeshStandardMaterial;
+    ['Material.013']: MeshStandardMaterial;
+    ['Material.014']: MeshStandardMaterial;
+    ['Material.018']: MeshStandardMaterial;
+    ['Material.017']: MeshStandardMaterial;
   };
 };

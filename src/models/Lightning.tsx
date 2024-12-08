@@ -1,4 +1,13 @@
-import * as THREE from 'three';
+import {
+  BufferAttribute,
+  BufferGeometry,
+  DoubleSide,
+  Material,
+  MathUtils,
+  Mesh,
+  MeshStandardMaterial,
+  Points,
+} from 'three';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
 import { useFrame } from '@react-three/fiber';
@@ -8,14 +17,14 @@ import { useAtom } from 'jotai';
 
 type GLTFResult = GLTF & {
   nodes: {
-    ['Node-Mesh']: THREE.Mesh;
-    ['Node-Mesh_1']: THREE.Mesh;
-    ['Node-Mesh_2']: THREE.Mesh;
+    ['Node-Mesh']: Mesh;
+    ['Node-Mesh_1']: Mesh;
+    ['Node-Mesh_2']: Mesh;
   };
   materials: {
-    mat21: THREE.MeshStandardMaterial;
-    mat12: THREE.MeshStandardMaterial;
-    mat4: THREE.MeshStandardMaterial;
+    mat21: MeshStandardMaterial;
+    mat12: MeshStandardMaterial;
+    mat4: MeshStandardMaterial;
   };
 };
 
@@ -25,7 +34,7 @@ type LightningProps = {
 
 export function Lightning({ thunderEffect, ...props }: LightningProps) {
   const { nodes, materials } = useGLTF('/models/Lightning.glb') as GLTFResult;
-  const lightningRef = useRef<THREE.Mesh>(null);
+  const lightningRef = useRef<Mesh>(null);
   const lightningOpacity = useRef(1);
   const lightningFlashSpeed = 0.1;
   const [, playAudio] = useAtom(playAudioAtom);
@@ -37,20 +46,20 @@ export function Lightning({ thunderEffect, ...props }: LightningProps) {
       playAudio('lightning');
       lightningOpacity.current +=
         Math.sin(state.clock.elapsedTime * 5) * lightningFlashSpeed;
-      lightningOpacity.current = THREE.MathUtils.clamp(
+      lightningOpacity.current = MathUtils.clamp(
         lightningOpacity.current,
         0.3,
         1,
       );
 
-      if (lightningRef.current.material instanceof THREE.Material) {
+      if (lightningRef.current.material instanceof Material) {
         lightningRef.current.material.opacity = lightningOpacity.current;
       }
     }
   });
 
   const raindropCount = 100;
-  const rainGeometry = new THREE.BufferGeometry();
+  const rainGeometry = new BufferGeometry();
   const rainPositions = new Float32Array(raindropCount * 3);
 
   for (let i = 0; i < raindropCount; i++) {
@@ -59,11 +68,8 @@ export function Lightning({ thunderEffect, ...props }: LightningProps) {
     rainPositions[i * 3 + 2] = Math.random() - 0.5;
   }
 
-  rainGeometry.setAttribute(
-    'position',
-    new THREE.BufferAttribute(rainPositions, 3),
-  );
-  const rainRef = useRef<THREE.Points>(null);
+  rainGeometry.setAttribute('position', new BufferAttribute(rainPositions, 3));
+  const rainRef = useRef<Points>(null);
 
   return (
     <group {...props} dispose={null} scale={4} position={[0, 5, 0]}>
@@ -73,7 +79,7 @@ export function Lightning({ thunderEffect, ...props }: LightningProps) {
           color="gray"
           transparent
           opacity={0.7}
-          side={THREE.DoubleSide}
+          side={DoubleSide}
         />
       </mesh>
 

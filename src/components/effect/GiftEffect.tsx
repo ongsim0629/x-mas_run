@@ -1,5 +1,16 @@
 import React, { useRef, useEffect, useMemo, useCallback } from 'react';
-import * as THREE from 'three';
+import {
+  AdditiveBlending,
+  CanvasTexture,
+  Color,
+  Group,
+  MathUtils,
+  NormalBlending,
+  Sprite,
+  SpriteMaterial,
+  TextureLoader,
+  Vector3,
+} from 'three';
 import gsap from 'gsap';
 import {
   EffectConfig,
@@ -46,16 +57,16 @@ const createCircleTexture = () => {
   ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
   ctx.fill();
 
-  const texture = new THREE.CanvasTexture(canvas);
+  const texture = new CanvasTexture(canvas);
   texture.needsUpdate = true;
   return texture;
 };
 
 const GiftEffect: React.FC = () => {
   const [, playAudio] = useAtom(playAudioAtom);
-  const effectGroup = useRef<THREE.Group>(null);
-  const sprites = useRef<THREE.Sprite[]>([]);
-  const loader = useMemo(() => new THREE.TextureLoader(), []);
+  const effectGroup = useRef<Group>(null);
+  const sprites = useRef<Sprite[]>([]);
+  const loader = useMemo(() => new TextureLoader(), []);
   const hasPlayedSound = useRef(false);
   const soundTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -64,16 +75,16 @@ const GiftEffect: React.FC = () => {
       texture,
       color = '#ffffff',
       opacity = 1,
-      blending = THREE.NormalBlending,
-    }: CreateSpriteProps): THREE.Sprite => {
-      const material = new THREE.SpriteMaterial({
+      blending = NormalBlending,
+    }: CreateSpriteProps): Sprite => {
+      const material = new SpriteMaterial({
         map: texture,
-        color: new THREE.Color(color),
+        color: new Color(color),
         opacity,
         blending,
         transparent: true,
       });
-      return new THREE.Sprite(material);
+      return new Sprite(material);
     },
     [],
   );
@@ -154,10 +165,10 @@ const GiftEffect: React.FC = () => {
         texture: circleTexture,
         color: EFFECTS.LIGHTS.COLOR,
         opacity: 0.8,
-        blending: THREE.AdditiveBlending,
+        blending: AdditiveBlending,
       });
 
-      const startPos = new THREE.Vector3(
+      const startPos = new Vector3(
         Math.cos(angle) * radius,
         height,
         Math.sin(angle) * radius,
@@ -167,7 +178,7 @@ const GiftEffect: React.FC = () => {
       const endPos = startPos
         .clone()
         .add(
-          new THREE.Vector3(
+          new Vector3(
             (Math.random() - 0.5) * wiggleRadius,
             0,
             (Math.random() - 0.5) * wiggleRadius,
@@ -180,7 +191,7 @@ const GiftEffect: React.FC = () => {
         endPosition: endPos,
         startScale: EFFECTS.LIGHTS.SCALE.START,
         endScale: EFFECTS.LIGHTS.SCALE.END,
-        duration: THREE.MathUtils.randFloat(
+        duration: MathUtils.randFloat(
           EFFECTS.LIGHTS.DURATION.MIN,
           EFFECTS.LIGHTS.DURATION.MAX,
         ),

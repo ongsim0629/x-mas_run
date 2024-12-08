@@ -20,7 +20,7 @@ import { Model as Sleigh } from '../models/Sleigh'; // Sleigh 모델 import
 import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 import DizzyEffect from '../components/effect/DizzyEffect';
 
 interface SantaControllerProps {
@@ -197,9 +197,7 @@ const SantaController = ({
           <group ref={character}>
             {itemDuration.boost > 0 && (
               <BoostEffect
-                targetPosition={
-                  character.current?.position || new THREE.Vector3()
-                }
+                targetPosition={character.current?.position || new Vector3()}
               />
             )}
             {isSkillActive && (

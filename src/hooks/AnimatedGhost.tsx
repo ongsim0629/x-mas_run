@@ -1,4 +1,11 @@
-import * as THREE from 'three';
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  MathUtils,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from 'three';
 import React, { useEffect, useRef, useState } from 'react';
 import { useFrame, useGraph } from '@react-three/fiber';
 import { useGLTF, useAnimations, Text } from '@react-three/drei';
@@ -14,21 +21,21 @@ export type GhostActionName =
   | 'CharacterArmature|Punch'
   | 'CharacterArmature|Yes';
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: GhostActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Ghost_1: THREE.SkinnedMesh;
-    Ghost_2: THREE.SkinnedMesh;
-    Ghost_3: THREE.SkinnedMesh;
-    Root: THREE.Bone;
+    Ghost_1: SkinnedMesh;
+    Ghost_2: SkinnedMesh;
+    Ghost_3: SkinnedMesh;
+    Root: Bone;
   };
   materials: {
-    Eye_White: THREE.MeshStandardMaterial;
-    Eye_Black: THREE.MeshStandardMaterial;
-    Ghost_Main: THREE.MeshStandardMaterial;
+    Eye_White: MeshStandardMaterial;
+    Eye_Black: MeshStandardMaterial;
+    Ghost_Main: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
@@ -49,12 +56,12 @@ export function AnimatedGhost({
   isLocalPlayer = false,
   ...props
 }: AnimatedGhostProps) {
-  const group = useRef<THREE.Group>(null);
+  const group = useRef<Group>(null);
   const { scene, animations } = useGLTF('/models/AnimatedGhost.glb');
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
-  const nicknameRef = useRef<THREE.Group>(null);
+  const nicknameRef = useRef<Group>(null);
   const [opacity, setOpacity] = useState(1);
   const time = useRef(0);
 
@@ -76,7 +83,7 @@ export function AnimatedGhost({
         : 0 // 스킬 사용 중: 로컬 플레이어는 0.5, 다른 플레이어는 0
       : 1; // 스킬 미사용 시 완전 불투명
     const lerpSpeed = 0.1;
-    setOpacity(THREE.MathUtils.lerp(opacity, targetOpacity, lerpSpeed));
+    setOpacity(MathUtils.lerp(opacity, targetOpacity, lerpSpeed));
   });
 
   return (
