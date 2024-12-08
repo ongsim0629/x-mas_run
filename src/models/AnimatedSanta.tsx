@@ -1,4 +1,10 @@
-import * as THREE from 'three';
+import {
+  AnimationClip,
+  Bone,
+  Group,
+  MeshStandardMaterial,
+  SkinnedMesh,
+} from 'three';
 import React, { useEffect, useRef } from 'react';
 import { useFrame, useGraph } from '@react-three/fiber';
 import { useGLTF, useAnimations, Text } from '@react-three/drei';
@@ -12,17 +18,17 @@ export type SantaActionName =
   | 'Armature|Run'
   | 'Armature|Run.001';
 
-interface GLTFAction extends THREE.AnimationClip {
+interface GLTFAction extends AnimationClip {
   name: SantaActionName;
 }
 
 type GLTFResult = GLTF & {
   nodes: {
-    Object_56: THREE.SkinnedMesh;
-    _rootJoint: THREE.Bone;
+    Object_56: SkinnedMesh;
+    _rootJoint: Bone;
   };
   materials: {
-    Santa2: THREE.MeshStandardMaterial;
+    Santa2: MeshStandardMaterial;
   };
   animations: GLTFAction[];
 };
@@ -33,18 +39,18 @@ type AnimatedSantaProps = {
   nickName: string;
 } & JSX.IntrinsicElements['group'];
 
-export function AnimatedSanta({
+export default function AnimatedSanta({
   animation,
   charColor = 'red',
   nickName = 'TUTTIN',
   ...props
 }: AnimatedSantaProps) {
-  const group = React.useRef<THREE.Group>(null);
+  const group = React.useRef<Group>(null);
   const { scene, animations } = useGLTF('/models/AnimatedSanta.glb');
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
-  const nicknameRef = useRef<THREE.Group>(null);
+  const nicknameRef = useRef<Group>(null);
 
   useEffect(() => {
     actions[animation]?.reset().fadeIn(0.5).play();
@@ -105,10 +111,7 @@ export function AnimatedSanta({
                       geometry={nodes.Object_56.geometry}
                       material={materials.Santa2}
                       skeleton={nodes.Object_56.skeleton}
-                    >
-                      {/* 너무 징그러워져서 일단 색 적용 안 했음 */}
-                      {/* <meshStandardMaterial color={charColor} /> */}
-                    </skinnedMesh>
+                    ></skinnedMesh>
                   </group>
                 </group>
                 <group name="Santa" />

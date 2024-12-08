@@ -1,74 +1,49 @@
-import { useAtom, useAtomValue } from 'jotai';
-import { gameScreenAtom, playAudioAtom } from '../atoms/GameAtoms';
+import { useAtom } from 'jotai';
+import { gameScreenAtom } from '../atoms/GameAtoms';
 import { GameScreen } from '../types/game';
-import SocketController from '../controller/SocketController';
-import LoginPage from '../pages/LoginPage';
-import HomePage from '../pages/HomePage';
-import MatchingPage from '../pages/MatchingPage';
-import { GameTimer } from '../components/UI/GameTimer';
-import { Canvas } from '@react-three/fiber';
-import Scene from './Scene';
-import GameOverPage from '../pages/GameOverPage';
-import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
-import KillLogs from './KillLogs';
-import GameLogsPage from '../pages/GameLogsPage';
-import MiniMap from './MiniMap';
-import SkillCooldownIndicator from './UI/SkillCooldownIndicator';
-import ItemCard from './ItemCard';
-import { useEffect, useMemo, useRef } from 'react';
+import { lazy, useEffect } from 'react';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRouter';
+
+const LoginPage = lazy(() => import('../pages/LoginPage'));
+const HomePage = lazy(() => import('../pages/HomePage'));
+const MatchingPage = lazy(() => import('../pages/MatchingPage'));
+const GamePage = lazy(() => import('../pages/GamePage'));
+const GameOverPage = lazy(() => import('../pages/GameOverPage'));
 
 const AuthRouter = () => {
   const [gameScreen] = useAtom(gameScreenAtom);
-  const { id } = useAtomValue(playerInfoAtom);
-  const players = useAtomValue(playersAtom);
-  const [, playAudio] = useAtom(playAudioAtom);
-  const prevItemsRef = useRef(0);
-
-  const currentPlayer = useMemo(
-    () => players.find((p) => p.id === id),
-    [players, id],
-  );
-  const playerItems = currentPlayer?.items || [];
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const currentItemCount = playerItems.length;
-    if (currentItemCount > prevItemsRef.current) {
-      playAudio('item');
+    switch (gameScreen) {
+      case GameScreen.HOME:
+        navigate('/home');
+        break;
+      case GameScreen.MATCHING:
+        navigate('/matching');
+        break;
+      case GameScreen.GAME:
+        navigate('/game');
+        break;
+      case GameScreen.GAME_OVER:
+        navigate('/game-over');
+        break;
     }
-    prevItemsRef.current = currentItemCount;
-  }, [playerItems, playAudio]);
-
-  if (!id) {
-    return <LoginPage />;
-  }
+  }, [gameScreen]);
 
   return (
-    <>
-      {gameScreen === GameScreen.HOME && <HomePage />}
-      <SocketController />
-      {gameScreen === GameScreen.MATCHING && <MatchingPage />}
-      {gameScreen === GameScreen.GAME && (
-        <div className="relative w-screen h-screen">
-          <GameTimer />
-          <Canvas
-            shadows
-            camera={{ position: [3, 3, 3], near: 0.1, fov: 60 }}
-            style={{ touchAction: 'none' }}
-            className="w-full h-full"
-            gl={{ failIfMajorPerformanceCaveat: true }}
-          >
-            <color attach="background" args={['#0D1B2A']} />
-            <Scene />
-          </Canvas>
-          <MiniMap />
-          <KillLogs />
-          <SkillCooldownIndicator />
-          <ItemCard itemType={playerItems} />
-        </div>
-      )}
-      {gameScreen === GameScreen.GAME_OVER && <GameOverPage />}
-      {gameScreen === GameScreen.GAME_LOGS && <GameLogsPage />}
-    </>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/matching" element={<MatchingPage />} />
+        <Route path="/game" element={<GamePage />} />
+        <Route path="/game-over" element={<GameOverPage />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
   );
 };
 

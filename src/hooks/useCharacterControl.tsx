@@ -41,6 +41,17 @@ type CharacterControlConfig = {
   itemDuration: { boost: number; shield: number };
   thunderEffect: number[];
 };
+const ROTATION_SPEED = degToRad(import.meta.env.VITE_INGAME_ROTATION_SPEED);
+const JUMP_FORCE = import.meta.env.VITE_INGAME_JUMP_FORCE;
+const MAX_HEIGHT = 30;
+const GRAVITY_FORCE =
+  import.meta.env.VITE_INGAME_GRAVITY *
+  0.016 *
+  import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
+const DISTANCE_THRESHOLD_SQ = Math.pow(
+  import.meta.env.VITE_DISTANCE_THRESHOLD,
+  2,
+);
 
 const useCharacterControl = ({
   charType,
@@ -84,7 +95,7 @@ const useCharacterControl = ({
   const updateMovement = (rb: RapierRigidBody) => {
     const vel = rb.linvel();
     const pos = rb.translation();
-    const isOnGround = Math.abs(rb.linvel().y) < 0.1;
+    const isOnGround = Math.abs(vel.y) < 0.1;
 
     if (isSkillActive) {
       switch (charType) {
@@ -118,11 +129,10 @@ const useCharacterControl = ({
     }
 
     // 서버 위치 보정
-    const distanceToServer = Math.sqrt(
-      Math.pow(position.x - pos.x, 2) + Math.pow(position.z - pos.z, 2),
-    );
+    const distanceSquared =
+      Math.pow(position.x - pos.x, 2) + Math.pow(position.z - pos.z, 2);
 
-    if (distanceToServer > import.meta.env.VITE_DISTANCE_THRESHOLD) {
+    if (distanceSquared > DISTANCE_THRESHOLD_SQ) {
       rb.setTranslation(position, true);
 
       const angle = Math.atan2(position.x - pos.x, position.z - pos.z);
@@ -154,26 +164,19 @@ const useCharacterControl = ({
 
     // 회전 처리
     if (movement.x !== 0 && !mouseControlRef.current?.isLocked) {
-      rotationTarget.current +=
-        degToRad(import.meta.env.VITE_INGAME_ROTATION_SPEED) * movement.x;
+      rotationTarget.current += ROTATION_SPEED * movement.x;
     }
 
     // 점프 처리
     if (controls.jump) {
-      if (pos.y >= 30) {
-        vel.y +=
-          import.meta.env.VITE_INGAME_GRAVITY *
-          0.016 *
-          import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
+      if (pos.y >= MAX_HEIGHT) {
+        vel.y += GRAVITY_FORCE;
       } else {
-        vel.y = import.meta.env.VITE_INGAME_JUMP_FORCE;
+        vel.y = JUMP_FORCE;
       }
       playJumpAnimation();
     } else if (!isOnGround) {
-      vel.y +=
-        import.meta.env.VITE_INGAME_GRAVITY *
-        0.016 *
-        import.meta.env.VITE_INGAME_EXTRA_GRAVITY;
+      vel.y += GRAVITY_FORCE;
     }
 
     // 이동 처리
@@ -181,13 +184,10 @@ const useCharacterControl = ({
     if (isMoving) {
       // 캐릭터 회전
       characterRotationTarget.current = Math.atan2(movement.x, movement.z);
-
-      vel.x =
-        Math.sin(rotationTarget.current + characterRotationTarget.current) *
-        speed;
-      vel.z =
-        Math.cos(rotationTarget.current + characterRotationTarget.current) *
-        speed;
+      const totalRotation =
+        rotationTarget.current + characterRotationTarget.current;
+      vel.x = Math.sin(totalRotation) * speed;
+      vel.z = Math.cos(totalRotation) * speed;
     }
 
     updateAnimation(vel);
@@ -210,17 +210,19 @@ const useCharacterControl = ({
     }
     rb.setLinvel(vel, true);
 
-    setPlayers((prev) =>
-      prev.map((player) =>
-        player.id === id
-          ? {
-              ...player,
-              position: { x: pos.x, y: pos.y, z: pos.z },
-              velocity: { ...vel },
-            }
-          : player,
-      ),
-    );
+    if (pos.x !== position.x || pos.y !== position.y || pos.z !== position.z) {
+      setPlayers((prev) =>
+        prev.map((player) =>
+          player.id === id
+            ? {
+                ...player,
+                position: { x: pos.x, y: pos.y, z: pos.z },
+                velocity: { ...vel },
+              }
+            : player,
+        ),
+      );
+    }
   };
   return { updateMovement };
 };

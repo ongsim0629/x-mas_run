@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useMemo } from 'react';
-import * as THREE from 'three';
+import { Group, NormalBlending, Sprite, SpriteMaterial, TextureLoader, Vector3 } from 'three';
 import gsap from 'gsap';
 
 interface BoostEffectProps {
-  targetPosition: THREE.Vector3;
+  targetPosition: Vector3;
 }
 
 const BoostEffect: React.FC<BoostEffectProps> = ({ targetPosition }) => {
@@ -15,25 +15,25 @@ const BoostEffect: React.FC<BoostEffectProps> = ({ targetPosition }) => {
     DURATION: { MIN: 5, MAX: 3 },
   };
 
-  const loader = useMemo(() => new THREE.TextureLoader(), []);
+  const loader = useMemo(() => new TextureLoader(), []);
 
   const texture = useMemo(() => loader.load(BOOST_CONFIG.TEXTURE), []);
 
-  const effectGroup = useRef<THREE.Group>(null);
-  const sprites = useRef<THREE.Sprite[]>([]);
+  const effectGroup = useRef<Group>(null);
+  const sprites = useRef<Sprite[]>([]);
 
-  const createSprite = (): THREE.Sprite => {
-    const material = new THREE.SpriteMaterial({
+  const createSprite = (): Sprite => {
+    const material = new SpriteMaterial({
       map: texture,
-      blending: THREE.NormalBlending,
+      blending: NormalBlending,
       depthTest: false,
       transparent: true,
     });
-    return new THREE.Sprite(material);
+    return new Sprite(material);
   };
 
   const animateSprite = (
-    sprite: THREE.Sprite,
+    sprite: Sprite,
     onComplete: () => void,
   ): void => {
     const x = (Math.random() - 1) * BOOST_CONFIG.RADIUS;

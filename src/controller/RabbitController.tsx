@@ -1,6 +1,6 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { AnimatedRabbit, RabbitActionName } from '../models/AnimatedRabbit';
+import AnimatedRabbit, { RabbitActionName } from '../models/AnimatedRabbit';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
@@ -17,7 +17,7 @@ import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
 import { Model as Portal } from '../models/Portal';
-import * as THREE from 'three';
+import { Euler, MathUtils, Quaternion, Vector3 } from 'three';
 import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
@@ -101,14 +101,12 @@ const RabbitController = ({
   const getPortalPosition = useCallback((): [number, number, number] => {
     if (!rb.current || !container.current) return [0, 0, 0];
 
-    const forwardDirection = new THREE.Vector3();
+    const forwardDirection = new Vector3();
     container.current.getWorldDirection(forwardDirection);
     forwardDirection.normalize();
 
-    const rotationOffset = new THREE.Euler(0, THREE.MathUtils.degToRad(60), 0); // Y축을 기준으로 -30도 회전
-    const quaternionOffset = new THREE.Quaternion().setFromEuler(
-      rotationOffset,
-    );
+    const rotationOffset = new Euler(0, MathUtils.degToRad(60), 0); // Y축을 기준으로 -30도 회전
+    const quaternionOffset = new Quaternion().setFromEuler(rotationOffset);
     forwardDirection.applyQuaternion(quaternionOffset);
 
     const playerPosition = rb.current.translation();
@@ -233,9 +231,7 @@ const RabbitController = ({
           <group ref={character}>
             {itemDuration.boost > 0 && (
               <BoostEffect
-                targetPosition={
-                  character.current?.position || new THREE.Vector3()
-                }
+                targetPosition={character.current?.position || new Vector3()}
               />
             )}
             <AnimatedRabbit

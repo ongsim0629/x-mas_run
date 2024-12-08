@@ -1,16 +1,16 @@
 import React, { useRef, useEffect, useMemo } from 'react';
-import * as THREE from 'three';
+import { DoubleSide, Group, Mesh, TextureLoader, Vector3 } from 'three';
 import gsap from 'gsap';
 
 type DizzyEffectProps = {
-  position: THREE.Vector3 | [number, number, number];
+  position: Vector3 | [number, number, number];
 };
 
 const DizzyEffect: React.FC<DizzyEffectProps> = ({ position }) => {
-  const orbitRef = useRef<THREE.Group>(null);
-  const ringRef = useRef<THREE.Mesh>(null);
+  const orbitRef = useRef<Group>(null);
+  const ringRef = useRef<Mesh>(null);
 
-  const loader = useMemo(() => new THREE.TextureLoader(), []);
+  const loader = useMemo(() => new TextureLoader(), []);
   const starTexture = useMemo(() => loader.load('/images/star.webp'), [loader]);
   const starCount = 3;
   const orbitRadius = 1;
@@ -60,7 +60,7 @@ const DizzyEffect: React.FC<DizzyEffectProps> = ({ position }) => {
           color="white"
           transparent
           opacity={0.8}
-          side={THREE.DoubleSide}
+          side={DoubleSide}
         />
       </mesh>
     </group>

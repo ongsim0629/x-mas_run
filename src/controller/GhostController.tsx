@@ -15,12 +15,12 @@ import useAnimationRefs from '../hooks/refs/useAnmiationRefs';
 import useGameLoop from '../hooks/useGameLoop';
 import useMouseRefs from '../hooks/refs/useMouseRefs';
 import ProtectEffect from '../components/effect/ProtectEffect';
-import { AnimatedGhost, GhostActionName } from '../hooks/AnimatedGhost';
 import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 import DizzyEffect from '../components/effect/DizzyEffect';
+import AnimatedGhost, { GhostActionName } from '../models/AnimatedGhost';
 import { useControls } from 'leva';
 
 interface GhostControllerProps {
@@ -203,9 +203,7 @@ const GhostController = ({
           <group ref={character}>
             {itemDuration.boost > 0 && (
               <BoostEffect
-                targetPosition={
-                  character.current?.position || new THREE.Vector3()
-                }
+                targetPosition={character.current?.position || new Vector3()}
               />
             )}
             <AnimatedGhost

@@ -152,7 +152,7 @@ const KeyboardGuide = () => {
       {mode === 'mouse' ? (
         <KeyboardMap
           getKeyClass={getKeyClass}
-          keyMap={['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyE', 'KeyQ']}
+          keyMap={['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Mouse', 'KeyQ']}
           movement={['W', 'A', 'S', 'D']}
           steal="Click"
           skill="Q"
@@ -165,7 +165,7 @@ const KeyboardGuide = () => {
             'ArrowLeft',
             'ArrowDown',
             'ArrowRight',
-            'Mouse',
+            'ShiftLeft',
             'KeyQ',
           ]}
           movement={['↑', '←', '↓', '→']}

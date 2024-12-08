@@ -1,29 +1,29 @@
+import { Euler, Group, Mesh, MeshStandardMaterial, Object3D } from 'three';
 import { useRef, useEffect } from 'react';
-import * as THREE from 'three';
 import { GLTF } from 'three-stdlib';
 import { useGLTF } from '@react-three/drei';
 
 type ModelProps = JSX.IntrinsicElements['group'] & {
-  rotation?: THREE.Euler;
-  velocity?: THREE.Euler;
+  rotation?: Euler;
+  velocity?: Euler;
 };
 
 export function Model({ rotation, ...props }: ModelProps) {
   const { scene } = useGLTF('/models/Sleigh.glb') as GLTF;
-  const sleighRef = useRef<THREE.Group>(null);
+  const sleighRef = useRef<Group>(null);
 
-  const materials: Record<string, THREE.MeshStandardMaterial> = {
-    sleigh_red_0: new THREE.MeshStandardMaterial({ color: 'red' }),
-    sleigh_gold_0: new THREE.MeshStandardMaterial({ color: 'gold' }),
-    sleigh_black_0: new THREE.MeshStandardMaterial({ color: 'black' }),
-    sleigh_Snow001_0: new THREE.MeshStandardMaterial({ color: 'white' }),
+  const materials: Record<string, MeshStandardMaterial> = {
+    sleigh_red_0: new MeshStandardMaterial({ color: 'red' }),
+    sleigh_gold_0: new MeshStandardMaterial({ color: 'gold' }),
+    sleigh_black_0: new MeshStandardMaterial({ color: 'black' }),
+    sleigh_Snow001_0: new MeshStandardMaterial({ color: 'white' }),
   };
 
   useEffect(() => {
     if (!scene) return;
 
-    scene.traverse((child: THREE.Object3D) => {
-      if (child instanceof THREE.Mesh) {
+    scene.traverse((child: Object3D) => {
+      if (child instanceof Mesh) {
         const material = materials[child.name];
         if (material) {
           child.material = material;

@@ -1,14 +1,14 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { gameScreenAtom, roomIdAtom } from '../atoms/GameAtoms';
 import { GameScreen, Row } from '../types/game';
-import { useEffect, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import useGame from '../hooks/useGame';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import cls from 'classnames';
 import { Canvas } from '@react-three/fiber';
-import { AnimatedRabbit } from '../models/AnimatedRabbit';
-import { AnimatedSanta } from '../models/AnimatedSanta';
-import { AnimatedGhost } from '../hooks/AnimatedGhost';
+const AnimatedRabbit = lazy(() => import('../models/AnimatedRabbit'));
+const AnimatedSanta = lazy(() => import('../models/AnimatedSanta'));
+const AnimatedGhost = lazy(() => import('../models/AnimatedGhost'));
 
 const GameOverPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);

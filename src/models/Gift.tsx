@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { MeshStandardMaterial } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { GLTFGiftResult } from '../types/gift';
 
@@ -17,7 +17,7 @@ export function Gift({ colors = {}, opacity = 1, ...props }: GiftProps) {
   // 모든 머티리얼을 복제하고 투명도 설정
   for (const [key, material] of Object.entries(originalMaterials)) {
     const clonedMaterial = material.clone();
-    if (clonedMaterial instanceof THREE.MeshStandardMaterial) {
+    if (clonedMaterial instanceof MeshStandardMaterial) {
       clonedMaterial.transparent = opacity < 1;
       clonedMaterial.opacity = opacity;
     }
@@ -27,7 +27,7 @@ export function Gift({ colors = {}, opacity = 1, ...props }: GiftProps) {
     if (materialName in materials) {
       const material =
         materials[materialName as keyof GLTFGiftResult['materials']];
-      if (material instanceof THREE.MeshStandardMaterial) {
+      if (material instanceof MeshStandardMaterial) {
         material.color.set(color);
       }
     }

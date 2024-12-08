@@ -1,6 +1,6 @@
 import { CapsuleCollider, RigidBody } from '@react-three/rapier';
+import AnimatedSanta, { SantaActionName } from '../models/AnimatedSanta';
 import { useState, useEffect, useMemo } from 'react';
-import { AnimatedSanta, SantaActionName } from '../models/AnimatedSanta';
 import { PointerLockControls } from '@react-three/drei';
 import { Character } from '../types/player';
 import { Present } from '../components/present';
@@ -20,7 +20,7 @@ import { Model as Sleigh } from '../models/Sleigh'; // Sleigh 모델 import
 import CircleShadow from '../components/UI/Shadow';
 import { Lightning } from '../models/Lightning';
 import BoostEffect from '../components/effect/BoostEffect';
-import * as THREE from 'three';
+import { Euler, Vector3 } from 'three';
 import DizzyEffect from '../components/effect/DizzyEffect';
 import { playerRotationAtom } from '../atoms/PlayerAtoms';
 import { useAtomValue } from 'jotai';
@@ -65,7 +65,7 @@ const SantaController = ({
 
   const rotation = useAtomValue(playerRotationAtom);
   const characterRotation = useMemo(() => {
-    return new THREE.Euler(0, rotation, 0, 'XYZ');
+    return new Euler(0, rotation, 0, 'XYZ');
   }, [rotation]);
 
   const { rb, container, character, currentPosition, currentVelocity } =
@@ -211,9 +211,7 @@ const SantaController = ({
           <group ref={character}>
             {itemDuration.boost > 0 && (
               <BoostEffect
-                targetPosition={
-                  character.current?.position || new THREE.Vector3()
-                }
+                targetPosition={character.current?.position || new Vector3()}
               />
             )}
             {isSkillActive && (

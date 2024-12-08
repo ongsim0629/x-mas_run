@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { BackSide, Group, Mesh, MeshStandardMaterial } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
 import { Position } from '../types/player';
@@ -7,15 +7,15 @@ import { useFrame } from '@react-three/fiber';
 
 type GLTFResult = GLTF & {
   nodes: {
-    Cube002_Material002_0: THREE.Mesh;
-    Cube001_Material003_0: THREE.Mesh;
-    Cube003_Material002_0: THREE.Mesh;
-    Cube005_Material002_0: THREE.Mesh;
-    Cube006_Material002_0: THREE.Mesh;
+    Cube002_Material002_0: Mesh;
+    Cube001_Material003_0: Mesh;
+    Cube003_Material002_0: Mesh;
+    Cube005_Material002_0: Mesh;
+    Cube006_Material002_0: Mesh;
   };
   materials: {
-    ['Material.002']: THREE.MeshStandardMaterial;
-    ['Material.003']: THREE.MeshStandardMaterial;
+    ['Material.002']: MeshStandardMaterial;
+    ['Material.003']: MeshStandardMaterial;
   };
 };
 
@@ -32,7 +32,7 @@ export function ItemBox({
   ...props
 }: Props) {
   const { nodes } = useGLTF('/models/ItemBox.glb') as GLTFResult;
-  const groupRef = useRef<THREE.Group>(null);
+  const groupRef = useRef<Group>(null);
   const [scale] = useState(2);
   const [emissiveIntensity] = useState(0);
   const [opacity] = useState(1);
@@ -67,13 +67,13 @@ export function ItemBox({
             rotation={[-Math.PI / 2, 0, 0.556]}
             scale={412.961}
           >
-          <meshStandardMaterial
-            color="white"
-            transparent
-            opacity={opacity}
-            emissive="white"
-            emissiveIntensity={emissiveIntensity}
-          />
+            <meshStandardMaterial
+              color="white"
+              transparent
+              opacity={opacity}
+              emissive="white"
+              emissiveIntensity={emissiveIntensity}
+            />
           </mesh>
           <mesh
             geometry={nodes.Cube001_Material003_0.geometry}
@@ -137,7 +137,7 @@ export function ItemBox({
             color={color}
             transparent
             opacity={0.1}
-            side={THREE.BackSide}
+            side={BackSide}
           />
         </mesh>
       )}
