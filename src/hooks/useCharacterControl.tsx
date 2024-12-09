@@ -109,6 +109,7 @@ const useCharacterControl = ({
         default:
           break;
       }
+      return;
     }
 
     // 빼앗기는 상태 처리
