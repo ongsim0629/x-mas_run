@@ -6,17 +6,23 @@ import {
   SkinnedMesh,
 } from 'three';
 import React, { useEffect, useRef } from 'react';
-import { useFrame, useGraph } from '@react-three/fiber';
+import { useGraph } from '@react-three/fiber';
 import { useGLTF, useAnimations, Text } from '@react-three/drei';
 import { GLTF, SkeletonUtils } from 'three-stdlib';
 
 export type SantaActionName =
-  | 'Armature|Armature.001|mixamo.com|Layer0'
+  | 'Armature|Duck'
   | 'Armature|Excited'
-  | 'Armature|happy Idle'
+  | 'Armature|Idle_Gun'
+  | 'Armature|Idle'
+  | 'Armature|Jump_Idle'
   | 'Armature|Jump'
+  | 'Armature|No'
+  | 'Armature|Punch_Object_5'
+  | 'Armature|Run_Gun'
   | 'Armature|Run'
-  | 'Armature|Run.001';
+  | 'Armature|Test_Object_5.001'
+  | 'Armature|Walk_Gun';
 
 interface GLTFAction extends AnimationClip {
   name: SantaActionName;
@@ -37,12 +43,14 @@ type AnimatedSantaProps = {
   animation: SantaActionName;
   charColor: string;
   nickName: string;
+  isInGame?: boolean;
 } & JSX.IntrinsicElements['group'];
 
 export default function AnimatedSanta({
   animation,
   charColor = 'red',
   nickName = 'TUTTIN',
+  isInGame = false,
   ...props
 }: AnimatedSantaProps) {
   const group = React.useRef<Group>(null);
@@ -51,19 +59,54 @@ export default function AnimatedSanta({
   const { nodes, materials } = useGraph(clone) as GLTFResult;
   const { actions } = useAnimations(animations, group);
   const nicknameRef = useRef<Group>(null);
+  const prevAction = useRef<(typeof actions)[keyof typeof actions]>(null);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    actions[animation]?.reset().fadeIn(0.5).play();
-    return () => {
-      actions[animation]?.fadeOut(0.5);
-    };
-  }, [animation]);
+    const currentAction = actions[animation];
+    if (!currentAction) return;
 
-  useFrame(({ camera }) => {
-    if (nicknameRef.current) {
-      nicknameRef.current.lookAt(camera.position);
+    if (isFirstRender.current) {
+      currentAction
+        .reset()
+        .setEffectiveTimeScale(1)
+        .setEffectiveWeight(1)
+        .play();
+
+      isFirstRender.current = false;
+      prevAction.current = currentAction;
+      return;
     }
-  });
+
+    if (prevAction.current && prevAction.current !== currentAction) {
+      prevAction.current.fadeOut(isInGame ? 0.1 : 0.2);
+    }
+
+    currentAction
+      .reset()
+      .setEffectiveTimeScale(1)
+      .setEffectiveWeight(1)
+      .fadeIn(isInGame ? 0.1 : 0.3)
+      .play();
+
+    prevAction.current = currentAction;
+
+    return () => {
+      if (!isFirstRender.current) {
+        currentAction.fadeOut(isInGame ? 0.1 : 0.2);
+      }
+    };
+  }, [animation, actions, isInGame]);
+
+  useEffect(() => {
+    return () => {
+      Object.values(actions).forEach((action) => {
+        if (action) {
+          action.stop();
+        }
+      });
+    };
+  }, [actions]);
 
   return (
     <group ref={group} {...props} dispose={null}>

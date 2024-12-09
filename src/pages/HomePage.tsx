@@ -73,10 +73,11 @@ const HomePage = () => {
             {characterCharIndex === 1 && (
               <AnimatedSanta
                 scale={0.7}
-                animation="Armature|happy Idle"
+                animation="Armature|Excited"
                 position={[0, -2, 0]}
                 charColor=" "
                 nickName=" "
+                isInGame={false}
               />
             )}
             {characterCharIndex === 2 && (

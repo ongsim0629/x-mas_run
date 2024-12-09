@@ -44,3 +44,19 @@ export const playerInfoAtom = atomWithStorage<PlayerInfo>(
 );
 
 export const playerRotationAtom = atom(0);
+
+export interface AnimationRefs {
+  isPunching: boolean;
+  punchAnimationTimer: NodeJS.Timeout | null;
+  isCurrentlyStolen: boolean;
+  stolenAnimationTimer: NodeJS.Timeout | null;
+  lastPunchTime: number;
+}
+
+export const animationRefsAtom = atom<AnimationRefs>({
+  isPunching: false,
+  punchAnimationTimer: null,
+  isCurrentlyStolen: false,
+  stolenAnimationTimer: null,
+  lastPunchTime: 0,
+});

@@ -54,10 +54,11 @@ const GameOverPage = () => {
         {characterType === 2 && (
           <AnimatedSanta
             scale={0.8}
-            animation={rank === 1 ? 'Armature|Excited' : 'Armature|happy Idle'}
+            animation={rank === 1 ? 'Armature|Excited' : 'Armature|No'}
             position={[0, -2.7, 0]}
             charColor="pink"
             nickName=" "
+            isInGame={false}
           />
         )}
         {characterType === 3 && (
