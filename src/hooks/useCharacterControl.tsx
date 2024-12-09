@@ -101,7 +101,7 @@ const useCharacterControl = ({
       switch (charType) {
         case 1:
           rb.setTranslation(position, true);
-          break;
+          return;
         case 2:
           break;
         case 3:
@@ -109,7 +109,6 @@ const useCharacterControl = ({
         default:
           break;
       }
-      return;
     }
 
     // 빼앗기는 상태 처리
