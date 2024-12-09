@@ -97,3 +97,5 @@ export const killLogsAtom = atom<KillLogInfo[]>([]);
 export const KillComboLogsAtom = atom<KillComboLogsInfo[]>([]);
 
 export const gameItemsAtom = atom<GameItem[]>([]);
+
+export const characterCharIndexAtom = atom(0);
