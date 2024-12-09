@@ -6,8 +6,9 @@ import {
   useEffect,
 } from 'react';
 import { Position } from '../types/player';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { playAudioAtom } from '../atoms/GameAtoms';
+import { animationRefsAtom } from '../atoms/PlayerAtoms';
 
 type CharType = 1 | 2 | 3;
 
@@ -67,6 +68,7 @@ const useCharacterAnimation = ({
   giftCnt,
   setAnimation,
 }: AnimationConfig) => {
+  const setAnimationRefs = useSetAtom(animationRefsAtom);
   const [, playAudio] = useAtom(playAudioAtom);
 
   const playJumpAnimation = useCallback(() => {
@@ -78,10 +80,24 @@ const useCharacterAnimation = ({
     playAudio('punch');
     isPunching.current = true;
     setAnimation(animationTable[charType].punch);
-    punchAnimationTimer.current = setTimeout(
-      () => (isPunching.current = false),
-      500,
-    );
+    const now = Date.now();
+    setAnimationRefs((prev) => ({
+      ...prev,
+      isPunching: true,
+      lastPunchTime: now,
+    }));
+
+    if (punchAnimationTimer.current) {
+      clearTimeout(punchAnimationTimer.current);
+    }
+
+    punchAnimationTimer.current = setTimeout(() => {
+      isPunching.current = false;
+      setAnimationRefs((prev) => ({
+        ...prev,
+        isPunching: false,
+      }));
+    }, 500);
   }, []);
 
   const updateAnimation = useCallback(
