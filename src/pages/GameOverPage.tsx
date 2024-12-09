@@ -32,9 +32,11 @@ const GameOverPage = () => {
   const CharacterWithMedal = ({
     characterType,
     rank,
+    characterColor,
   }: {
     characterType: number;
     rank: number;
+    characterColor: string;
   }) => (
     <div className="relative inline-block w-14 h-14 bg-white rounded-lg">
       <Canvas camera={{ position: [0, 1, 5], fov: 25 }} className="">
@@ -47,7 +49,7 @@ const GameOverPage = () => {
               rank === 1 ? 'CharacterArmature|Wave' : 'CharacterArmature|No'
             }
             position={[0, -2, 0]}
-            charColor="pink"
+            charColor={characterColor}
             nickName=" "
           />
         )}
@@ -56,7 +58,7 @@ const GameOverPage = () => {
             scale={0.8}
             animation={rank === 1 ? 'Armature|Excited' : 'Armature|happy Idle'}
             position={[0, -2.7, 0]}
-            charColor="pink"
+            charColor={characterColor}
             nickName=" "
           />
         )}
@@ -67,7 +69,7 @@ const GameOverPage = () => {
               rank === 1 ? 'CharacterArmature|Yes' : 'CharacterArmature|Punch'
             }
             position={[0, -2, 0]}
-            charColor="gray"
+            charColor={characterColor}
             nickName=" "
           />
         )}
@@ -153,6 +155,7 @@ const GameOverPage = () => {
                         <CharacterWithMedal
                           characterType={r.charcterType}
                           rank={r.rank}
+                          characterColor={r.charcterColor}
                         />
                       </td>
                       <td className="p-2 text-xl">{r.nickName}</td>
