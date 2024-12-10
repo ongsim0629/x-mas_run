@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAtom } from 'jotai';
-import { gameScreenAtom, playAudioAtom } from '../atoms/GameAtoms';
+import {
+  characterCharIndexAtom,
+  gameScreenAtom,
+  playAudioAtom,
+} from '../atoms/GameAtoms';
 import { GameScreen } from '../types/game';
 import useSocket from '../hooks/useSocket';
 import Star, { generateStars } from '../components/UI/Star';
@@ -23,9 +27,12 @@ const MatchingPage = () => {
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const [, playAudio] = useAtom(playAudioAtom);
   const { socket } = useSocket();
+  const [characterCharIndex] = useAtom(characterCharIndexAtom);
 
   useEffect(() => {
     if (!socket) return;
+    socket.enterRoom(characterCharIndex + 1);
+
     const unsubscribeRoomState = socket.onRoomStateChange(
       (roomInfo: RoomInfo) => {
         setPlayerCount(roomInfo.playerCnt);
@@ -44,13 +51,6 @@ const MatchingPage = () => {
       unsubscribeGameStart();
     };
   }, [socket, setGameScreen, setPlayerCount]);
-
-  // 추후 필요한지 다시 확인
-  // const handleLeave = useCallback(() => {
-  //   if (!socket) return;
-  //   socket.leaveRoom();
-  //   setGameScreen(GameScreen.HOME);
-  // }, [socket, setGameScreen]);
 
   const createMeteor = (e: React.MouseEvent<HTMLDivElement>) => {
     playAudio('twinkle');
@@ -135,9 +135,6 @@ const MatchingPage = () => {
           </small>
         </div>
       </div>
-      {/* <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-opacity-50 text-sm">
-        {nickname}님 클릭해서 별똥별을 만들어보세요 ✨
-      </div> */}
       <div className="absolute top-32 left-1/2 -translate-x-1/2 text-white text-opacity-80 flex flex-col gap-5">
         <div className="flex items-center">
           {isStarting ? (

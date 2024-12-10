@@ -1,10 +1,10 @@
 import { useAtomValue, useAtom } from 'jotai';
-import { gameScreenAtom } from '../atoms/GameAtoms';
+import { characterCharIndexAtom, gameScreenAtom } from '../atoms/GameAtoms';
 import { GameScreen } from '../types/game';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { lazy, useState } from 'react';
+import { lazy } from 'react';
 import useSocket from '../hooks/useSocket';
 import SkillBadge from '../components/UI/SkillBadge';
 const AnimatedRabbit = lazy(() => import('../models/AnimatedRabbit'));
@@ -14,21 +14,22 @@ const AnimatedGhost = lazy(() => import('../models/AnimatedGhost'));
 const HomePage = () => {
   const { nickname } = useAtomValue(playerInfoAtom);
   const [, setGameScreen] = useAtom(gameScreenAtom);
-  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const [characterCharIndex, setCharacterCharIndex] = useAtom(
+    characterCharIndexAtom,
+  );
   const { socket } = useSocket();
 
   const handleGameStart = () => {
     if (!socket) return;
-    socket.enterRoom(currentCharIndex + 1);
     setGameScreen(GameScreen.MATCHING);
   };
 
   const nextCharacter = () => {
-    setCurrentCharIndex((prev) => (prev + 1) % 3);
+    setCharacterCharIndex((prev) => (prev + 1) % 3);
   };
 
   const prevCharacter = () => {
-    setCurrentCharIndex((prev) => (prev - 1 + 3) % 3);
+    setCharacterCharIndex((prev) => (prev - 1 + 3) % 3);
   };
 
   return (
@@ -60,7 +61,7 @@ const HomePage = () => {
           <Canvas camera={{ position: [0, 1, 5], fov: 45 }} className="-mt-10">
             <ambientLight intensity={0.5} />
             <directionalLight position={[0, 5, 6]} intensity={1} />
-            {currentCharIndex === 0 && (
+            {characterCharIndex === 0 && (
               <AnimatedRabbit
                 scale={0.8}
                 animation="CharacterArmature|Yes"
@@ -69,7 +70,7 @@ const HomePage = () => {
                 nickName=" "
               />
             )}
-            {currentCharIndex === 1 && (
+            {characterCharIndex === 1 && (
               <AnimatedSanta
                 scale={0.7}
                 animation="Armature|Excited"
@@ -79,7 +80,7 @@ const HomePage = () => {
                 isInGame={false}
               />
             )}
-            {currentCharIndex === 2 && (
+            {characterCharIndex === 2 && (
               <AnimatedGhost
                 scale={0.8}
                 animation="CharacterArmature|Fast_Flying"
@@ -94,7 +95,7 @@ const HomePage = () => {
               minPolarAngle={Math.PI / 3}
             />
           </Canvas>
-          {currentCharIndex === 0 && (
+          {characterCharIndex === 0 && (
             <SkillBadge
               img="portal"
               name="토끼의 발자국"
@@ -102,7 +103,7 @@ const HomePage = () => {
               desc2="워프를 통해 눈 깜짝할 사이에 순간이동해보세요!🐰"
             />
           )}
-          {currentCharIndex === 1 && (
+          {characterCharIndex === 1 && (
             <SkillBadge
               img="rudolph"
               name="루돌프의 질주"
@@ -110,7 +111,7 @@ const HomePage = () => {
               desc2="루돌프 썰매를 타고 1.5배 더 빠르게 질주해보세요!🎅🏻"
             />
           )}
-          {currentCharIndex === 2 && (
+          {characterCharIndex === 2 && (
             <SkillBadge
               img="ghost"
               name="소리 없는 날갯짓"
