@@ -55,9 +55,7 @@ const SantaController = ({
   isLocalPlayer,
   mouseSpeed,
 }: SantaControllerProps): JSX.Element => {
-  const [animation, setAnimation] = useState<SantaActionName>(
-    'Armature|happy Idle',
-  );
+  const [animation, setAnimation] = useState<SantaActionName>('Armature|Idle');
 
   const [showDizzy, setShowDizzy] = useState(false);
 
@@ -223,9 +221,14 @@ const SantaController = ({
               nickName={nickName}
               animation={animation}
               charColor={charColor}
+              isInGame={true}
             />
             {Array.from({ length: giftCnt }).map((_, index) => (
-              <Present index={index} key={id + index} />
+              <Present
+                index={index}
+                key={id + index}
+                charType={charType}
+              />
             ))}
           </group>
         </group>

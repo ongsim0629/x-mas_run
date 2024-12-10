@@ -6,8 +6,9 @@ import {
   useEffect,
 } from 'react';
 import { Position } from '../types/player';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { playAudioAtom } from '../atoms/GameAtoms';
+import { animationRefsAtom } from '../atoms/PlayerAtoms';
 
 type CharType = 1 | 2 | 3;
 
@@ -35,14 +36,14 @@ const animationTable = {
     duck: 'CharacterArmature|Duck',
   },
   2: {
-    idle: 'Armature|happy Idle',
-    idleWithGift: 'Armature|Excited',
+    idle: 'Armature|Idle',
+    idleWithGift: 'Armature|Idle_Gun',
     run: 'Armature|Run',
-    runWithGift: 'Armature|Run.001',
-    walkWithGift: 'Armature|Excited',
-    jump: 'Armature|Jump',
-    punch: 'Armature|Excited',
-    duck: 'Armature|Armature.001|mixamo.com|Layer0',
+    runWithGift: 'Armature|Run_Gun',
+    walkWithGift: 'Armature|Walk_Gun',
+    jump: 'Armature|Jump_Idle',
+    punch: 'Armature|Punch_Object_5',
+    duck: 'Armature|Duck',
   },
   3: {
     idle: 'CharacterArmature|Flying_Idle',
@@ -67,6 +68,7 @@ const useCharacterAnimation = ({
   giftCnt,
   setAnimation,
 }: AnimationConfig) => {
+  const setAnimationRefs = useSetAtom(animationRefsAtom);
   const [, playAudio] = useAtom(playAudioAtom);
 
   const playJumpAnimation = useCallback(() => {
@@ -78,10 +80,24 @@ const useCharacterAnimation = ({
     playAudio('punch');
     isPunching.current = true;
     setAnimation(animationTable[charType].punch);
-    punchAnimationTimer.current = setTimeout(
-      () => (isPunching.current = false),
-      500,
-    );
+    const now = Date.now();
+    setAnimationRefs((prev) => ({
+      ...prev,
+      isPunching: true,
+      lastPunchTime: now,
+    }));
+
+    if (punchAnimationTimer.current) {
+      clearTimeout(punchAnimationTimer.current);
+    }
+
+    punchAnimationTimer.current = setTimeout(() => {
+      isPunching.current = false;
+      setAnimationRefs((prev) => ({
+        ...prev,
+        isPunching: false,
+      }));
+    }, 500);
   }, []);
 
   const updateAnimation = useCallback(

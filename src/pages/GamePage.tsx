@@ -10,6 +10,7 @@ import MouseSensitivityController from '../components/UI/MouseSensitivityControl
 import { useAtom, useAtomValue } from 'jotai';
 import { playerInfoAtom, playersAtom } from '../atoms/PlayerAtoms';
 import { playAudioAtom } from '../atoms/GameAtoms';
+import PunchCooldownIndicator from '../components/UI/PunchCooldownIndicater';
 
 const GamePage = () => {
   const { id } = useAtomValue(playerInfoAtom);
@@ -21,7 +22,7 @@ const GamePage = () => {
     [players, id],
   );
   const playerItems = currentPlayer?.items || [];
-  const mouseSpeedRef = useRef(0.025);
+  const mouseSpeedRef = useRef(0.015);
   const handleMouseSpeedChange = (value: number) => {
     mouseSpeedRef.current = value;
   };
@@ -49,6 +50,7 @@ const GamePage = () => {
       <MiniMap />
       <KillLogs />
       <SkillCooldownIndicator />
+      <PunchCooldownIndicator />
       <ItemCard itemType={playerItems} />
       <MouseSensitivityController
         mouseSpeed={mouseSpeedRef.current}
