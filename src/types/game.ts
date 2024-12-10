@@ -60,6 +60,7 @@ export interface Row {
   rank: number;
   tripleCombos: number;
   userId: string;
+  charcterColor: string;
 }
 
 export interface Badge {
