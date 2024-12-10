@@ -19,7 +19,7 @@ const MouseSensitivityController: React.FC<MouseSensitivityControllerProps> = ({
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="w-32"
       />
-      <div className="mt-2">{mouseSpeed.toFixed(3)}</div>
+      <div className="mt-2">{mouseSpeed * 1000}</div>
     </div>
   );
 };
