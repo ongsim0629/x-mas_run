@@ -12,7 +12,7 @@ const AnimatedSanta = lazy(() => import('../models/AnimatedSanta'));
 const AnimatedGhost = lazy(() => import('../models/AnimatedGhost'));
 
 const HomePage = () => {
-  const { nickname } = useAtomValue(playerInfoAtom);
+  const { id } = useAtomValue(playerInfoAtom);
   const [, setGameScreen] = useAtom(gameScreenAtom);
   const [characterCharIndex, setCharacterCharIndex] = useAtom(
     characterCharIndexAtom,
@@ -42,7 +42,7 @@ const HomePage = () => {
       <div className="inset-0 relative z-10 flex flex-col w-full h-full justify-between">
         <div className="flex items-center gap-2 m-4">
           <span className="flex flex-col justify-center items-center w-64 h-20 rounded-xl text-white border-6-pinkish-ivory border-4 bg-4-purple-light">
-            <p className="text-lg font-semibold">{nickname}</p>
+            <p className="text-lg font-semibold">{id}</p>
             <small>메리 크리스마스🎅🏻</small>
           </span>
         </div>
