@@ -10,6 +10,8 @@ import AuthRouter from './components/AuthRouter';
 import { Suspense } from 'react';
 import LoadingPage from './pages/LoadingPage';
 import { BrowserRouter } from 'react-router-dom';
+import { useIsMobile } from './hooks/useIsMobile';
+import PlatformWarningModal from './components/UI/PlatformWarningModal';
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -24,28 +26,39 @@ const keyboardMap = [
 
 function App() {
   const { reset } = useQueryErrorResetBoundary();
+  const isMobile = useIsMobile();
+
+  if (isMobile === null) {
+    return <LoadingPage />;
+  }
 
   return (
-    <KeyboardControls map={keyboardMap}>
-      <ReactQueryClientProvider>
-        <ErrorBoundary FallbackComponent={RenderErrorPage} onReset={reset}>
-          <Suspense fallback={<LoadingPage />}>
-            <SoundControlHeader />
+    <>
+      {isMobile ? (
+        <PlatformWarningModal />
+      ) : (
+        <KeyboardControls map={keyboardMap}>
+          <ReactQueryClientProvider>
+            <ErrorBoundary FallbackComponent={RenderErrorPage} onReset={reset}>
+              <Suspense fallback={<LoadingPage />}>
+                <SoundControlHeader />
             <BrowserRouter>
-              <AuthRouter />
+                <AuthRouter />
             </BrowserRouter>
-          </Suspense>
-        </ErrorBoundary>
-      </ReactQueryClientProvider>
-      <ToastContainer
-        position="top-center"
-        autoClose={1000}
-        hideProgressBar={true}
-        closeOnClick
-        theme="light"
-        transition={Flip}
-      />
-    </KeyboardControls>
+              </Suspense>
+            </ErrorBoundary>
+          </ReactQueryClientProvider>
+          <ToastContainer
+            position="top-center"
+            autoClose={1000}
+            hideProgressBar={true}
+            closeOnClick
+            theme="light"
+            transition={Flip}
+          />
+        </KeyboardControls>
+      )}
+    </>
   );
 }
 export default App;
