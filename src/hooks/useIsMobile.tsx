@@ -10,14 +10,14 @@ export const useIsMobile = () => {
           navigator.userAgent,
         );
 
-      const isSmallScreen = window.matchMedia('(max-width: 1199px)').matches;
+      const isSmallScreen = window.matchMedia('(max-width: 768px)').matches;
 
       return isMobileDevice || isSmallScreen;
     };
 
     setIsMobile(checkDevice());
 
-    const mediaQuery = window.matchMedia('(max-width: 1199px)');
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
     const handleChange = () => {
       setIsMobile(checkDevice());
     };
