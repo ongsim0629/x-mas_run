@@ -4,12 +4,11 @@ import { GameScreen } from '../types/game';
 import { playerInfoAtom } from '../atoms/PlayerAtoms';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { lazy } from 'react';
 import useSocket from '../hooks/useSocket';
 import SkillBadge from '../components/UI/SkillBadge';
-const AnimatedRabbit = lazy(() => import('../models/AnimatedRabbit'));
-const AnimatedSanta = lazy(() => import('../models/AnimatedSanta'));
-const AnimatedGhost = lazy(() => import('../models/AnimatedGhost'));
+import AnimatedRabbit from '../models/AnimatedRabbit';
+import AnimatedSanta from '../models/AnimatedSanta';
+import AnimatedGhost from '../models/AnimatedGhost';
 
 const HomePage = () => {
   const { id } = useAtomValue(playerInfoAtom);
