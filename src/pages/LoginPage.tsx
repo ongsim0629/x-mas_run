@@ -31,8 +31,8 @@ const LoginPage = () => {
     async (e: FormEvent<HTMLElement>) => {
       e.preventDefault();
       const userId = await registerPlayerQuery(player);
-      setGameScreen(GameScreen.HOME);
       setPlayer((prev) => ({ ...prev, id: userId }));
+      setGameScreen(GameScreen.HOME);
     },
     [player, registerPlayerQuery, setGameScreen],
   );

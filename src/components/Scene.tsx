@@ -88,7 +88,7 @@ export default function Scene({ mouseSpeed }: SceneProps) {
     <>
       <Environment files={import.meta.env.VITE_INGAME_MAP_FILE} />
       <ambientLight intensity={0.3} />
-      <Physics timeStep={1 / 30} colliders={false}>
+      <Physics timeStep={1 / 45} colliders={false}>
         <Map scale={0.1} position={[0, 0, 0]} model={`/maps/map.glb`} />
         <ItemBoxes items={gameItems} colors={colors} />
         <Players players={players} localPlayerId={id} mouseSpeed={mouseSpeed} />
