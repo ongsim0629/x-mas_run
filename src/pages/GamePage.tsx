@@ -22,7 +22,7 @@ const GamePage = () => {
     [players, id],
   );
   const playerItems = currentPlayer?.items || [];
-  const mouseSpeedRef = useRef(0.025);
+  const mouseSpeedRef = useRef(0.015);
   const handleMouseSpeedChange = (value: number) => {
     mouseSpeedRef.current = value;
   };
