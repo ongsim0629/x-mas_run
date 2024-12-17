@@ -72,7 +72,7 @@
 ## 🏃🏻‍♀ 관련 링크
 - **피그마 브레인스토밍**: [https://www.figma.com/board/VMNQW02vftS8S15FraLRa4](https://www.figma.com/board/VMNQW02vftS8S15FraLRa4)
 
-- **스크럼 기록**: [Slack 스크럼 기록](https://slack.com/openid/connect/login_initiate_redirect?...)
+- **스크럼 기록**: [Slack 스크럼 기록]([https://slack.com/openid/connect/login_initiate_redirect?...](https://crazy-cow.atlassian.net/wiki/spaces/C/pages/1343512/MM+DD))
 
 - **JIRA**: [https://crazy-cow.atlassian.net/jira/software/projects/CD/boards/2](https://crazy-cow.atlassian.net/jira/software/projects/CD/boards/2)
 
